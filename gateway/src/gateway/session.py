@@ -1,6 +1,7 @@
 import asyncio
 import base64
 import binascii
+from random import randint
 from typing import Any
 
 import msgspec
@@ -8,7 +9,6 @@ import pydantic
 import websockets.server as websockets
 from itsdangerous import TimestampSigner
 from pydantic import BaseModel
-from random import randint
 
 from .meta import meta
 
@@ -102,7 +102,8 @@ class Session:
                     identify = Identify.model_validate(data["d"])
                 except pydantic.ValidationError as err:
                     await self.stop(
-                        self.PAYLOAD_INVALID, err.json(indent=None, include_url=False, include_context=False)
+                        self.PAYLOAD_INVALID,
+                        err.json(indent=None, include_url=False, include_context=False),
                     )
                     break
 
@@ -131,7 +132,7 @@ class Session:
 
                     row_channels = await session.fetch(
                         "SELECT * FROM channels WHERE id IN (SELECT channel_id FROM channel_members WHERE user_id = $1);",
-                        user["id"]
+                        user["id"],
                     )
 
                     channels = []
@@ -140,7 +141,10 @@ class Session:
                         channels.append(dict(c))
 
                     for channel in channels:
-                        rows_members = await session.fetch("SELECT * FROM channel_members WHERE channel_id = $1", channel["id"])
+                        rows_members = await session.fetch(
+                            "SELECT * FROM channel_members WHERE channel_id = $1",
+                            channel["id"],
+                        )
 
                         members: list[dict[str, Any]] = []
 
@@ -149,7 +153,9 @@ class Session:
 
                         channel["recipients"] = members
 
-                    settings_row = await session.fetchrow("SELECT * FROM user_settings WHERE user_id = $1;", user["id"])
+                    settings_row = await session.fetchrow(
+                        "SELECT * FROM user_settings WHERE user_id = $1;", user["id"]
+                    )
 
                     assert settings_row is not None
 
@@ -161,14 +167,16 @@ class Session:
                             "user": user,
                             "relationships": relationships,
                             "channels": channels,
-                            "settings": dict(settings_row)
+                            "settings": dict(settings_row),
                         },
                     }
                 )
             # NOTE: once we move to Elixir, force users to provide a sequence either 10 above or under the actual sequence (to avoid disconnection due to network issues)
             elif data["op"] == self.HEARTBEAT:
                 if self.hb_received:
-                    await self.stop(self.HEARTBEAT_ALREADY_RECEIVED, "Heartbeat Already Received")
+                    await self.stop(
+                        self.HEARTBEAT_ALREADY_RECEIVED, "Heartbeat Already Received"
+                    )
                     break
 
                 self.hb_received = True
@@ -181,21 +189,15 @@ class Session:
         if not self.hb_received:
             await self.stop(self.HEARTBEAT_MISSED, "Heartbeat was missed")
 
-        await self.send({
-            "op": self.ACK,
-            "d": None
-        })
+        await self.send({"op": self.ACK, "d": None})
 
         self._hb_fut = asyncio.create_task(self.hb_wait())
 
     async def run(self) -> None:
         self._recv_fut = asyncio.create_task(self._recv())
-        await self.send({
-            "op": self.HELLO,
-            "d": {
-                "heartbeat_interval": self.hb_interval
-            }
-        })
+        await self.send(
+            {"op": self.HELLO, "d": {"heartbeat_interval": self.hb_interval}}
+        )
         self._hb_fut = asyncio.create_task(self.hb_wait())
         await self._future
         self._hb_fut.cancel()

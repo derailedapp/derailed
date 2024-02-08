@@ -1,10 +1,9 @@
 import asyncio
-import dotenv
 
+import dotenv
 import websockets.server as websockets
 
 from .meta import meta
-
 from .session import Session
 
 

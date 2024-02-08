@@ -41,8 +41,8 @@ export default async function Register() {
         await tx.insert(userSettings).values({
           user_id: userId,
           theme: "dark",
-          status: 1
-        })
+          status: 1,
+        });
       });
     } catch (_) {
       throw Error("Username already taken");

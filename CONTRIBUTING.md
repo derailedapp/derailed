@@ -42,6 +42,7 @@ Commits have a lot of guidelines to follow:
     - `vanguard`
     - `docs`
     - `core`
+    - `style`
 - If a commit is related to multiple topics a `/` should be used to separate them. (i.e. `[app/gateway] add anime girls`.)
 - Should be under 72 characters.
 - Use present tense (i.e. `add something` not `added something`)
