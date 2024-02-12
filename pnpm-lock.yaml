@@ -82,7 +82,7 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0
 
-  diesel:
+  hazel:
     dependencies:
       argon2:
         specifier: ^0.31.2

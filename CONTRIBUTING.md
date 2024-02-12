@@ -39,7 +39,7 @@ Commits have a lot of guidelines to follow:
     - `api`
     - `gateway`
     - `app`
-    - `diesel`
+    - `hazel`
     - `docs`
     - `core`
     - `style`

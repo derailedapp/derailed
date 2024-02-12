@@ -1,4 +1,4 @@
 ﻿packages:
   - "app"
-  - "diesel"
+  - "hazel"
   - "shared/**"
