@@ -1,3 +1,0 @@
-# Vanguard
-
-The Derailed frontline.

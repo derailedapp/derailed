@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], weight: "variable" });
 
 export const metadata: Metadata = {
-  title: "Derailed Vanguard",
+  title: "Derailed",
   description: "You shouldn&apos;t be seeing this.",
 };
 

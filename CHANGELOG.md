@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 This is the first addition to this changelog. This PR forces every single change in any PR afterwards to be logged in a pull request, moving away from commits to the `master` branch.
 
+### [core/diesel] [#15](https://github.com/derailedapp/derailed/issues/15): Rename Vanguard
+
+Renames Vanguard to Diesel to prevent confusion with Riot Games' Anti-Cheat Vanguard.
+
 ### Etcetera
 
 - [app] [#10](https://github.com/derailedapp/derailed/issues/10): Update Libraries
