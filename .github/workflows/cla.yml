@@ -20,7 +20,7 @@ jobs:
         with:
           path-to-signatures: 'version1/cla.json'
           path-to-document: 'https://gist.github.com/VincentRPS/3b0f267edfa23e365b03b8bbc2f0cc6e'
-          allowlist: train9
+          allowlist: steamweaver
           remote-organization-name: derailedapp
           remote-repository-name: signatures
           lock-pullrequest-aftermerge: true
