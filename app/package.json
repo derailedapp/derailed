@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.20.2",
     "@tanstack/react-router": "0.0.1-beta.279",
     "@tanstack/router-devtools": "0.0.1-alpha.0",
     "derailed.js": "workspace:*",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@iconify/react": "^4.1.1",
+    "@tanstack/eslint-plugin-query": "^5.20.1",
     "@types/json-bigint": "^1.0.4",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
@@ -30,9 +32,11 @@
     "@vitejs/plugin-react-swc": "^3.6.0",
     "autoprefixer": "^10.4.17",
     "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "postcss": "^8.4.35",
+    "prettier": "3.2.4",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3",
     "vite": "^5.1.0"
