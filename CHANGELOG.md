@@ -12,7 +12,7 @@ This is the first addition to this changelog. This PR forces every single change
 
 ### [core/hazel] [#15](https://github.com/derailedapp/derailed/issues/15): Rename Vanguard
 
-Renames Vanguard to Hazel to prevent confusion with Riot Games' Anti-Cheat Vanguard.
+Renames Vanguard to Hazel to prevent confusion with Riot Games' anti-cheat Vanguard.
 
 ### Etcetera
 
