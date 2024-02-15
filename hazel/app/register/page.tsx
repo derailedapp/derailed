@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db, getToken } from "~/database";
 import { userSettings, users } from "~/schema";
+import { createSnowflake } from "~/snowflake";
 import argon2 from "argon2";
 
 import { registerForm } from "~/zschema";
