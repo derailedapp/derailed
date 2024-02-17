@@ -1,14 +1,19 @@
 {
-  "name": "derailed.js",
+  "name": "@derailed/derailed.js",
   "version": "0.0.0",
   "description": "API Wrapper for Derailed clients",
-  "main": "src/index.ts",
+  "type": "module",
   "scripts": {},
   "author": "Derailed",
   "license": "UNLICENSED",
+  "main": "src/index.ts",
+  "browser": {
+    "ws": false
+  },
   "dependencies": {
     "eventemitter3": "^5.0.1",
-    "json-bigint": "^1.0.0"
+    "json-bigint": "^1.0.0",
+    "tsconfig": "workspace:*"
   },
   "devDependencies": {
     "@types/json-bigint": "^1.0.4",

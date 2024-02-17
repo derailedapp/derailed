@@ -1,5 +1,5 @@
 {
-  "name": "hazel",
+  "name": "@derailed/hazel",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -20,7 +20,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "server-only": "^0.0.1",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "tsconfig": "workspace:*"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.5",

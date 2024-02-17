@@ -1,5 +1,5 @@
 {
-  "name": "derailed-app",
+  "name": "@derailed/client",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -12,14 +12,15 @@
   "dependencies": {
     "@tanstack/react-query": "^5.20.2",
     "@tanstack/react-router": "0.0.1-beta.279",
-    "@tanstack/router-devtools": "0.0.1-alpha.0",
-    "derailed.js": "workspace:*",
+    "@tanstack/router-devtools": "0.0.1-beta.279",
+    "@derailed/derailed.js": "workspace:*",
     "json-bigint": "^1.0.0",
     "mobx": "^6.12.0",
     "mobx-react-lite": "^4.0.5",
     "moment": "^2.30.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "tsconfig": "workspace:*"
   },
   "devDependencies": {
     "@iconify/react": "^4.1.1",

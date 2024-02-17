@@ -1,4 +1,3 @@
-import { getState } from "../lib/state";
 import { observer } from "mobx-react-lite"
 import { Navigate } from "@tanstack/react-router";
 import Sidebar from "../components/Sidebar";
