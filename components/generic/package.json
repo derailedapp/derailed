@@ -1,8 +1,16 @@
 {
     "name": "@derailed/generic",
     "private": true,
-    "main": "src/index.ts",
+    "type": "module",
+    "main": "index.tsx",
     "dependencies": {
+        "@stylexjs/stylex": "^0.5.1",
+        "react": "^18",
+        "react-dom": "^18",
         "tsconfig": "workspace:*"
+    },
+    "devDependencies": {
+        "@types/react": "18",
+        "@types/react-dom": "^18"
     }
 }

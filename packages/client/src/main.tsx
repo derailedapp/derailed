@@ -12,7 +12,7 @@ import {
     QueryClient,
     QueryClientProvider
 } from '@tanstack/react-query'
-
+import { ModalButton } from "@derailed/generic"
 
 const queryClient = new QueryClient()
 
