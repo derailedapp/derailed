@@ -1,8 +1,12 @@
-# Derailed version 0.1.0 Pre-Alpha
+> [!CAUTION]
+> Derailed is still considered pre-alpha meaning it may include a variety of bugs a vulnerabilities yet
+> solved and may break at any time.
+
+# Derailed
 
 ## Talk to Anyone, Anywhere, Anyway
 
-An improved **open-source federated** alternative to Discord and Twitter.
+An improved *open* alternative to Discord and Twitter.
 
 Derailed tries to combine the best parts of other platforms together
 into one organized bundle, letting you host it yourself as well as being able to use

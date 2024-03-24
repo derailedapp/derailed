@@ -1,7 +1,0 @@
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS settings;
-DROP TABLE IF EXISTS channels;
-DROP TABLE IF EXISTS messages;
-DROP TABLE IF EXISTS read_states;
-DROP TABLE IF EXISTS message_reactions;
-DROP TABLE IF EXISTS relationships;
