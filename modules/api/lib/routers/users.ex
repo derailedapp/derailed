@@ -28,23 +28,23 @@ defmodule Derailed.API.Router.User do
             "type" => "string",
             "maxLength" => 320,
             "minLength" => 5,
-            "pattern" => "^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"
           },
           "password" => %{
             "type" => "string",
             "maxLength" => 100,
             "minLength" => 8,
-            "pattern" => "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
-          },
-          "required" => ["username", "email", "password"]
-        }
+          }
+        },
+        "required" => ["username", "email", "password"]
       })
 
-    is_valid = ExJsonSchema.Validator.valid?(root, conn.body_params)
+    {:ok, body, _} = read_body(conn)
+
+    data = Jsonrs.decode!(body)
+
+    is_valid = ExJsonSchema.Validator.valid?(root, Map.new(data))
 
     if is_valid do
-      data = conn.body_params
-
       user =
         Derailed.Repo.insert!(%Derailed.DB.User{
           id: Derailed.Snowflake.create(),
@@ -64,7 +64,7 @@ defmodule Derailed.API.Router.User do
         400,
         Jsonrs.encode!(%{
           code: 1,
-          reason: ExJsonSchema.Validator.validation_errors(root, schema, conn.body_params)
+          reason: ExJsonSchema.Validator.validation_errors(root, schema, data)
         })
       )
     end

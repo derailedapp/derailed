@@ -30,7 +30,8 @@ defmodule Derailed.DB.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:ex_json_schema, "~> 0.10"},
       {:jsonrs, "~> 0.3"},
-      {:joken, "~> 2.5"}
+      {:joken, "~> 2.5"},
+      {:plug, "~> 1.15"},
     ]
   end
 end

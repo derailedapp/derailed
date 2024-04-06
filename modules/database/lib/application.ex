@@ -7,12 +7,10 @@ defmodule Derailed.DB.Application do
 
   @impl true
   def start(_type, _args) do
+    Derailed.Snowflake.initialize()
+
     children = [
       Derailed.Repo,
-      %{
-        id: Derailed.Snowflake,
-        start: {Derailed.Snowflake, :start_link, []}
-      }
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -2,9 +2,9 @@ defmodule Derailed.Snowflake do
   @incr_table :snowflake_incr
   import Bitwise
 
-  def start_link do
+  def initialize do
     :ets.new(@incr_table, [:named_table, read_concurrency: true])
-    {:ok, :ets.insert(@incr_table, {:incr, 1})}
+    :ets.insert(@incr_table, {:incr, 1})
   end
 
   def create do
