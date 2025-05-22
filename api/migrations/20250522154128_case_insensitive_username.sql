@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX usernames ON profiles(lower(username));
