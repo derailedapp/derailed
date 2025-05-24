@@ -4,21 +4,39 @@
 import secrets
 from base64 import b32encode
 from hashlib import sha256
+from random import randint
 from time import time
 from typing import Annotated, cast
 
 import asyncpg
+from aiocache import SimpleMemoryCache  # type: ignore
 from argon2 import PasswordHasher
 from argon2 import exceptions as argon_exceptions
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr, Field
 
 from .db import get_current_session, get_database, snow
+from .emails import send_verification_email
 from .missing import MISSING, Maybe
 from .models import Account, Profile, Session
 
 router = APIRouter()
 hasher = PasswordHasher()
+cache = SimpleMemoryCache()
+
+
+class EmailVerification(BaseModel):
+    email: EmailStr
+
+
+@router.post("/verify-email", status_code=201)
+async def send_email_verification(model: EmailVerification) -> str:
+    code1, code2 = randint(100, 999), randint(100, 999)
+    await send_verification_email(code1, code2, model.email)
+
+    await cache.set(model.email, f"{code1}-{code2}", ttl=1_800)  # type: ignore
+
+    return ""
 
 
 class SessionDetail(BaseModel):
@@ -32,13 +50,14 @@ class Register(BaseModel):
     username: Annotated[str, Field(min_length=4, max_length=32)]
     password: str
     session_detail: SessionDetail
+    code: Annotated[str, Field(min_length=6, max_length=6)]
 
 
 class TokenData(BaseModel):
     token: str
 
 
-@router.post("/register")
+@router.post("/register", status_code=201)
 async def register_account(
     model: Register, db: Annotated[asyncpg.Pool[asyncpg.Record], Depends(get_database)]
 ) -> TokenData:
@@ -50,6 +69,10 @@ async def register_account(
 
     if username_used is not None:
         raise HTTPException(400, "Username or email already used")
+
+    code = cast(str | None, await cache.get(model.email))  # type: ignore
+    if code != model.code:
+        raise HTTPException(400, "Incorrect or non-present email verification code")
 
     user_id = cast(int, next(snow))
     password_hash = hasher.hash(model.password)
@@ -92,7 +115,7 @@ class Login(BaseModel):
     session_detail: SessionDetail
 
 
-@router.post("/login")
+@router.post("/login", status_code=201)
 async def login(
     model: Login, db: Annotated[asyncpg.Pool[asyncpg.Record], Depends(get_database)]
 ) -> TokenData:

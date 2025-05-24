@@ -17,13 +17,13 @@ async def send_verification_email(code1: int, code2: int, email: str) -> None:
     html = mjml_to_html(verify_email.format(CODE=f"{code1}-{code2}")).html
 
     if is_debug():
-        print(html)
+        print(f"{code1}-{code2}")
         return
 
     message = EmailMessage()
     message["From"] = os.environ["FROM_EMAIL"]
     message["To"] = email
-    message["Subject"] = "Verify Email Address for Derailed"
+    message["Subject"] = "Verify Your Email for Derailed"
     message.set_content(html)
     await send(
         message,
