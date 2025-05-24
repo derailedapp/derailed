@@ -16,10 +16,12 @@ snow = SnowflakeGenerator(int(os.getenv("NODE_ID", "1")), epoch=1649325271415)
 
 
 async def get_database() -> asyncpg.Pool[asyncpg.Record]:
+    global db
+
     if db is None:
-        return await asyncpg.create_pool(os.environ["DATABASE_URL"])
-    else:
-        return db
+        db = await asyncpg.create_pool(os.environ["DATABASE_URL"])
+
+    return db
 
 
 async def get_current_session_optional(

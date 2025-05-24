@@ -6,7 +6,12 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .utils import is_debug
+
 app = FastAPI()
+
+if is_debug():
+    app.debug = True
 
 app.add_middleware(
     CORSMiddleware,
