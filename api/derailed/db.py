@@ -6,10 +6,10 @@ from hashlib import sha256
 from typing import Annotated, cast
 
 import asyncpg
-from fastapi import Depends, Header, HTTPException
+from fastapi import Depends, Header, HTTPException, Path
 from snowflake import SnowflakeGenerator  # type: ignore
 
-from .models import Session  # type: ignore
+from .models import Account, Profile, Session  # type: ignore
 
 db: asyncpg.Pool[asyncpg.Record] | None = None
 snow = SnowflakeGenerator(int(os.getenv("NODE_ID", "1")), epoch=1649325271415)
@@ -43,3 +43,25 @@ async def get_current_session(
         raise HTTPException(401, "Invalid or null token")
 
     return session
+
+
+async def get_mentioned_user(
+    user_id: Annotated[int, Path()],
+    db: Annotated[asyncpg.Pool[asyncpg.Record], Depends(get_database)],
+) -> Account:
+    account = await db.fetchrow("SELECT * FROM accounts WHERE id = $1;", user_id)
+
+    if account is None:
+        raise HTTPException(404, "User not found")
+    return cast(Account, dict(account))
+
+
+async def get_profile(
+    user_id: Annotated[int, Path()],
+    db: Annotated[asyncpg.Pool[asyncpg.Record], Depends(get_database)],
+) -> Profile:
+    profile = await db.fetchrow("SELECT * FROM profiles WHERE user_id = $1;", user_id)
+
+    if profile is None:
+        raise HTTPException(404, "User not found")
+    return cast(Profile, dict(profile))
