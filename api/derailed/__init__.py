@@ -7,11 +7,20 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .utils import is_debug
+from . import (
+    messages,
+    relationships,
+    accounts
+)
 
 app = FastAPI()
 
 if is_debug():
     app.debug = True
+
+app.include_router(relationships.router)
+app.include_router(accounts.router)
+app.include_router(messages.router)
 
 app.add_middleware(
     CORSMiddleware,

@@ -28,3 +28,26 @@ class Session(TypedDict):
     operating_system: str | None
     location: str | None
     last_usage: int
+
+
+class Channel(TypedDict):
+    id: int
+    type: int
+    name: str | None
+    owner_id: int | None
+
+
+class GuildChannel(TypedDict):
+    channel_id: int
+    guild_id: int
+    position: int
+    parent_id: int | None
+
+
+class Message(TypedDict):
+    id: int
+    author_id: int
+    content: str
+    channel_id: int
+    created_at: int
+    last_modified_at: int

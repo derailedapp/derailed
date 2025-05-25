@@ -57,17 +57,22 @@ async def follow_user(
                     (mentioned_user["user_id"], ses["account_id"], 1),
                 ],
             )
-            channel_id = next(snow)
-            await conn.execute(
-                "INSERT INTO channels (id, type) VALUES ($1, 0)", channel_id
+            channel = await conn.fetchrow(
+                "SELECT * FROM channels WHERE id IN (SELECT channel_id FROM channels_members WHERE user_id = $1 UNION SELECT channel_id FROM channel_members WHERE user_id = $2) AND type = 0;"
             )
-            await conn.executemany(
-                "INSERT INTO channel_members (channel_id, user_id) VALUES ($1, $2);",
-                [
-                    (channel_id, ses["account_id"]),
-                    (channel_id, mentioned_user["user_id"]),
-                ],
-            )
+
+            if channel is None:
+                channel_id = next(snow)
+                await conn.execute(
+                    "INSERT INTO channels (id, type) VALUES ($1, 0)", channel_id
+                )
+                await conn.executemany(
+                    "INSERT INTO channel_members (channel_id, user_id) VALUES ($1, $2);",
+                    [
+                        (channel_id, ses["account_id"]),
+                        (channel_id, mentioned_user["user_id"]),
+                    ],
+                )
 
     return FollowResult(relationship_type=0, user=mentioned_user)
 
