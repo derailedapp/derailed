@@ -1,1 +1,0 @@
-ALTER TABLE guild_roles ADD guild_id BIGINT NOT NULL REFERENCES guilds(id) ON DELETE CASCADE;
