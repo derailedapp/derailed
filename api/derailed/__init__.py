@@ -6,12 +6,8 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from . import accounts, messages, relationships
 from .utils import is_debug
-from . import (
-    messages,
-    relationships,
-    accounts
-)
 
 app = FastAPI()
 

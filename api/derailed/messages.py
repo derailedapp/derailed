@@ -1,6 +1,7 @@
 # Licensed under ELv2 (Elastic License v2). Found in LICENSE.md in the project root.
 # Copyright 2025 Derailed
 
+import re
 from time import time
 from typing import Annotated, cast
 
@@ -9,15 +10,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.params import Query
 from pydantic import BaseModel, Field
 
-from .db import (
-    assure_channel_membership,
-    get_channel,
-    get_current_session,
-    get_database,
-    get_guild_channel,
-    snow,
-    to_list_dict,
-)
+from .db import (assure_channel_membership, get_channel, get_current_session,
+                 get_database, get_guild_channel, snow, to_list_dict)
 from .models import Channel, Message, Session
 
 router = APIRouter()
@@ -81,7 +75,10 @@ class CreateMessage(BaseModel):
     content: str
 
 
-@router.post("/channels/{channel_id}/messages")
+MENTION_RE = re.compile(r"<@(\d+)>")
+
+
+@router.post("/channels/{channel_id}/messages", status_code=201)
 async def create_message(
     model: CreateMessage,
     ses: Annotated[Session, Depends(get_current_session)],
@@ -101,14 +98,36 @@ async def create_message(
     await assure_channel_membership(channel, ses, db)
 
     created_at = int(time())
-    message = await db.fetchrow(
-        "INSERT INTO messages (id, author_id, content, channel_id, created_at, last_modified_at) VALUES ($1, $2, $3, $4, $5, $5) RETURNING *;",
-        next(snow),
-        ses["account_id"],
-        model.content,
-        channel["id"],
-        created_at,
-    )
+    async with db.acquire() as conn:
+        async with conn.transaction():
+            message = await db.fetchrow(
+                "INSERT INTO messages (id, author_id, content, channel_id, created_at, last_modified_at) VALUES ($1, $2, $3, $4, $5, $5) RETURNING *;",
+                next(snow),
+                ses["account_id"],
+                model.content,
+                channel["id"],
+                created_at,
+            )
+            mentions = MENTION_RE.findall(model.content)
+
+            user_ids: list[int] = []
+
+            for mention in mentions:
+                if mention in user_ids:
+                    continue
+                else:
+                    user_ids.append(mention)
+                try:
+                    await db.execute(
+                        "INSERT INTO message_mentions (channel_id, user_id) VALUES ($1, $2);",
+                        channel["id"],
+                        int(mention),
+                    )
+                except (ValueError, asyncpg.exceptions.ForeignKeyViolationError):
+                    # ignore it
+                    continue
+
+            del user_ids
 
     return cast(Message, dict(cast(asyncpg.Record, message)))
 
@@ -117,7 +136,7 @@ class UpdateMessage(BaseModel):
     content: Annotated[str | None, Field(None)]
 
 
-@router.post("/channels/{channel_id}/messages/{message_id}")
+@router.patch("/channels/{channel_id}/messages/{message_id}")
 async def update_message(
     model: UpdateMessage,
     message_id: int,
@@ -153,7 +172,7 @@ async def update_message(
     return message
 
 
-@router.delete("/channels/{channel_id}/messages/{message_id}")
+@router.delete("/channels/{channel_id}/messages/{message_id}", status_code=204)
 async def delete_message(
     model: UpdateMessage,
     message_id: int,
@@ -179,5 +198,46 @@ async def delete_message(
 
     if message is None:
         raise HTTPException(404, "Message not found")
+
+    return ""
+
+
+@router.post("/channels/{channel_id}/messages/{message_id}/read", status_code=204)
+async def message_read(
+    model: UpdateMessage,
+    message_id: int,
+    ses: Annotated[Session, Depends(get_current_session)],
+    channel: Annotated[Channel, Depends(get_channel)],
+    db: Annotated[asyncpg.Pool[asyncpg.Record], Depends(get_database)],
+) -> str:
+    if model.content and model.content.strip() == "":
+        raise HTTPException(400, "Message content empty")
+
+    await assure_channel_membership(channel, ses, db)
+
+    message = await db.fetchrow(
+        "SELECT * FROM messages WHERE id = $1 AND channel_id = $2 AND author_id = $3;",
+        message_id,
+        channel["id"],
+        ses["account_id"],
+    )
+
+    if message is None:
+        raise HTTPException(404, "Message not found")
+
+    mentions: int = await db.fetchval(
+        "SELECT count(message_id) FROM message_mentions WHERE channel_id = $1 AND message_id > $2 AND user_id = $3;",
+        channel["id"],
+        message_id,
+        ses["account_id"],
+    )
+
+    await db.execute(
+        "UPDATE read_states SET last_message_id = $3, mentions = $4 WHERE user_id = $1 AND channel_id = $2;",
+        ses["account_id"],
+        channel["id"],
+        message_id,
+        mentions,
+    )
 
     return ""

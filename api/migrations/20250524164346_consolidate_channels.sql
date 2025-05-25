@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS guild_channels (
 CREATE TABLE IF NOT EXISTS user_channel_permissions (
     user_id BIGINT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
     guild_id BIGINT NOT NULL REFERENCES guilds(id) ON DELETE CASCADE,
-    channel_id BIGINT NOT NULL REFERENCES guild_channels(id) ON DELETE CASCADE,
+    channel_id BIGINT NOT NULL REFERENCES guild_channels(channel_id) ON DELETE CASCADE,
     allow BIGINT NOT NULL,
     deny BIGINT NOT NULL,
     PRIMARY KEY (user_id, channel_id),
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS user_channel_permissions (
 );
 CREATE TABLE IF NOT EXISTS role_channel_permissions (
     role_id BIGINT NOT NULL REFERENCES guild_roles(id) ON DELETE CASCADE,
-    channel_id BIGINT NOT NULL REFERENCES guild_channels(id) ON DELETE CASCADE,
+    channel_id BIGINT NOT NULL REFERENCES guild_channels(channel_id) ON DELETE CASCADE,
     allow BIGINT NOT NULL,
     deny BIGINT NOT NULL,
     PRIMARY KEY (role_id, channel_id)
