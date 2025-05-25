@@ -13,6 +13,9 @@ dependencies = [
     "mjml>=0.11.1",
     "snowflake-id>=1.0.2",
 ]
+authors = [
+  {name = "Paillat-dev", email = "me@paillat.dev"},
+  ]
 
 [dependency-groups]
 dev = [
