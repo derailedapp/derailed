@@ -10,8 +10,15 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.params import Query
 from pydantic import BaseModel, Field
 
-from .db import (assure_channel_membership, get_channel, get_current_session,
-                 get_database, get_guild_channel, snow, to_list_dict)
+from .db import (
+    assure_channel_membership,
+    get_channel,
+    get_current_session,
+    get_database,
+    get_guild_channel,
+    snow,
+    to_list_dict,
+)
 from .models import Channel, Message, Session
 
 router = APIRouter()
