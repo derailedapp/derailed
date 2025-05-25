@@ -51,6 +51,28 @@ defmodule Derailed.Session do
         Map.put(Map.delete(Map.delete(rel, "user_id"), "target_user_id"), "target_user", profile)
       end)
 
+    {_, result} =
+      Postgrex.prepare_execute!(
+        :db,
+        "get_joined_private_channels",
+        "SELECT * FROM channels WHERE id IN (SELECT channel_id FROM channel_members WHERE user_id = $1);",
+        [user_id]
+      )
+
+    {:ok, private_channels} = Derailed.DB.maps(result)
+
+    private_channel_pids =
+      Map.new(
+        Enum.map(private_channels, fn channel ->
+          channel_id = Map.get(channel, "id")
+
+          {:ok, pid} =
+            GenRegistry.lookup_or_start(Derailed.PrivateChannel, channel_id, [channel_id])
+
+          {channel_id, pid}
+        end)
+      )
+
     {:ok,
      %{
        id: id,
@@ -58,8 +80,28 @@ defmodule Derailed.Session do
        profile: profile,
        account: account,
        relationships: relationships,
+       private_channel_pids: private_channel_pids,
        ws_pid: ws_pid,
        ws_ref: Process.monitor(ws_pid)
      }}
+  end
+
+  @spec dispatch_ready(pid()) :: :ok
+  def dispatch_ready(pid) do
+    GenServer.cast(pid, :dispatch_ready)
+  end
+
+  def handle_cast(:dispatch_ready, state) do
+    Manifold.send(state[:ws_pid], {
+      :event,
+      "READY",
+      %{
+        relationships: state[:relationships],
+        account: state[:account],
+        profile: state[:profile]
+      }
+    })
+
+    {:noreply, state}
   end
 end

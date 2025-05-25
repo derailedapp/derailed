@@ -1,10 +1,10 @@
-defmodule Derailed.WebSocket.MixProject do
+defmodule Derailed.PrivateChannel.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :websockets,
-      version: "0.0.0",
+      app: :private_channels,
+      version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
@@ -19,20 +19,17 @@ defmodule Derailed.WebSocket.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {Derailed.WebSocket.Application, []}
+      mod: {Derailed.PrivateChannel.Application, []}
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:postgrex, "~> 0.20.0"},
       {:gen_registry, "~> 1.3.0"},
-      {:db, in_umbrella: true},
-      {:sessions, in_umbrella: true},
-      {:jason, "~> 1.4"},
-      {:drops, "~> 0.2.1"},
-      {:cowboy, "~> 2.12"}
+      {:postgrex, "~> 0.20.0"},
+      {:manifold, "~> 1.6.0"},
+      {:patch, "~> 0.15.0", only: [:test]}
     ]
   end
 end
