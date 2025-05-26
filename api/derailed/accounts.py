@@ -15,6 +15,8 @@ from argon2 import exceptions as argon_exceptions
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr, Field
 
+from api.derailed.utils import dispatch_channel
+
 from .db import get_current_session, get_database, snow
 from .emails import send_verification_email
 from .missing import MISSING, Maybe
@@ -262,5 +264,13 @@ async def modify_self(
                 )
             ),
         )
+
+        channels = await conn.fetch(
+            "SELECT id FROM channels WHERE id IN (SELECT channel_id FROM channel_members WHERE user_id = $1);",
+            ses["account_id"],
+        )
+
+        for channel in channels:
+            await dispatch_channel(channel["id"], "USER_UPDATE", profile)
 
         return User(account=account, profile=profile)

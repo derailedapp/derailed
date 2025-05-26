@@ -51,3 +51,10 @@ class Message(TypedDict):
     channel_id: int
     created_at: int
     last_modified_at: int
+
+
+class ReadState(TypedDict):
+    channel_id: int
+    user_id: int
+    mentions: int
+    last_message_id: int

@@ -7,6 +7,8 @@ import asyncpg
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
+from api.derailed.utils import dispatch_user
+
 from .db import get_current_session, get_database, get_profile, snow
 from .models import Profile, Session
 
@@ -38,13 +40,55 @@ async def follow_user(
     elif relationship is not None and relationship["type"] in [3, 4]:
         raise HTTPException(400, "User is blocked or has blocked you")
     elif relationship is not None and relationship["type"] == 1:
-        await db.executemany(
-            "UPDATE relationships SET type = 2 WHERE user_id = $1 AND target_user_id = $2;",
-            [
-                (ses["account_id"], mentioned_user["user_id"]),
-                (mentioned_user["user_id"], ses["account_id"]),
-            ],
+        async with db.acquire() as conn:
+            async with conn.transaction():
+                await conn.executemany(
+                    "UPDATE relationships SET type = 2 WHERE user_id = $1 AND target_user_id = $2;",
+                    [
+                        (ses["account_id"], mentioned_user["user_id"]),
+                        (mentioned_user["user_id"], ses["account_id"]),
+                    ],
+                )
+
+                channel = await conn.fetchrow(
+                    "SELECT * FROM channels WHERE id IN (SELECT channel_id FROM channels_members WHERE user_id = $1 UNION SELECT channel_id FROM channel_members WHERE user_id = $2) AND type = 0;"
+                )
+
+                if channel is None:
+                    channel_id = next(snow)
+                    new_channel = await conn.execute(
+                        "INSERT INTO channels (id, type) VALUES ($1, 0) RETURNING *;",
+                        channel_id,
+                    )
+                    await conn.executemany(
+                        "INSERT INTO channel_members (channel_id, user_id) VALUES ($1, $2);",
+                        [
+                            (channel_id, ses["account_id"]),
+                            (channel_id, mentioned_user["user_id"]),
+                        ],
+                    )
+                else:
+                    new_channel = None
+
+        profile = await get_profile(ses["account_id"], db)
+        await dispatch_user(
+            ses["account_id"],
+            "RELATIONSHIP_UPDATE",
+            {"user": mentioned_user, "type": 2},
         )
+        await dispatch_user(
+            mentioned_user["user_id"],
+            "RELATIONSHIP_UPDATE",
+            {"user": profile, "type": 2},
+        )
+
+        if new_channel:
+            await dispatch_user(
+                ses["account_id"], "PRIVATE_CHANNEL_CREATE", new_channel
+            )
+            await dispatch_user(
+                mentioned_user["user_id"], "PRIVATE_CHANNEL_CREATE", new_channel
+            )
 
         return FollowResult(relationship_type=2, user=mentioned_user)
 
@@ -57,22 +101,18 @@ async def follow_user(
                     (mentioned_user["user_id"], ses["account_id"], 1),
                 ],
             )
-            channel = await conn.fetchrow(
-                "SELECT * FROM channels WHERE id IN (SELECT channel_id FROM channels_members WHERE user_id = $1 UNION SELECT channel_id FROM channel_members WHERE user_id = $2) AND type = 0;"
-            )
 
-            if channel is None:
-                channel_id = next(snow)
-                await conn.execute(
-                    "INSERT INTO channels (id, type) VALUES ($1, 0)", channel_id
-                )
-                await conn.executemany(
-                    "INSERT INTO channel_members (channel_id, user_id) VALUES ($1, $2);",
-                    [
-                        (channel_id, ses["account_id"]),
-                        (channel_id, mentioned_user["user_id"]),
-                    ],
-                )
+        profile = await get_profile(ses["account_id"], db)
+        await dispatch_user(
+            ses["account_id"],
+            "RELATIONSHIP_UPDATE",
+            {"user": mentioned_user, "type": 0},
+        )
+        await dispatch_user(
+            mentioned_user["user_id"],
+            "RELATIONSHIP_UPDATE",
+            {"user": profile, "type": 1},
+        )
 
     return FollowResult(relationship_type=0, user=mentioned_user)
 

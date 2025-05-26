@@ -10,6 +10,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.params import Query
 from pydantic import BaseModel, Field
 
+from api.derailed.utils import dispatch_channel
+
 from .db import (
     assure_channel_membership,
     get_channel,
@@ -19,7 +21,7 @@ from .db import (
     snow,
     to_list_dict,
 )
-from .models import Channel, Message, Session
+from .models import Channel, Message, ReadState, Session
 
 router = APIRouter()
 
@@ -136,7 +138,11 @@ async def create_message(
 
             del user_ids
 
-    return cast(Message, dict(cast(asyncpg.Record, message)))
+    message = cast(Message, dict(cast(asyncpg.Record, message)))
+
+    await dispatch_channel(channel["id"], "MESSAGE_CREATE", message)
+
+    return message
 
 
 class UpdateMessage(BaseModel):
@@ -176,6 +182,8 @@ async def update_message(
             message["id"],
         )
 
+    await dispatch_channel(channel["id"], "MESSAGE_UPDATE", message)
+
     return message
 
 
@@ -206,27 +214,28 @@ async def delete_message(
     if message is None:
         raise HTTPException(404, "Message not found")
 
+    await dispatch_channel(channel["id"], "MESSAGE_DELETE", {message_id: message["id"]})
+
     return ""
 
 
-@router.post("/channels/{channel_id}/messages/{message_id}/read", status_code=204)
+@router.post("/channels/{channel_id}/messages/{message_id}/read")
 async def message_read(
     model: UpdateMessage,
     message_id: int,
     ses: Annotated[Session, Depends(get_current_session)],
     channel: Annotated[Channel, Depends(get_channel)],
     db: Annotated[asyncpg.Pool[asyncpg.Record], Depends(get_database)],
-) -> str:
+) -> ReadState:
     if model.content and model.content.strip() == "":
         raise HTTPException(400, "Message content empty")
 
     await assure_channel_membership(channel, ses, db)
 
     message = await db.fetchrow(
-        "SELECT * FROM messages WHERE id = $1 AND channel_id = $2 AND author_id = $3;",
+        "SELECT * FROM messages WHERE id = $1 AND channel_id = $2;",
         message_id,
         channel["id"],
-        ses["account_id"],
     )
 
     if message is None:
@@ -239,12 +248,26 @@ async def message_read(
         ses["account_id"],
     )
 
-    await db.execute(
-        "UPDATE read_states SET last_message_id = $3, mentions = $4 WHERE user_id = $1 AND channel_id = $2;",
+    read_state = await db.fetchrow(
+        "UPDATE read_states SET last_message_id = $3, mentions = $4 WHERE user_id = $1 AND channel_id = $2 RETURNING *;",
         ses["account_id"],
         channel["id"],
         message_id,
         mentions,
     )
 
-    return ""
+    if read_state is None:
+        read_state = await db.fetchrow(
+            "INSERT INTO read_states (last_message_id, channel_id, user_id, mentions) VALUES ($1, $2, $3, $4) RETURNING *;",
+            message_id,
+            channel["id"],
+            ses["account_id"],
+            mentions,
+        )
+        assert read_state is not None
+
+    read_state = cast(ReadState, dict(read_state))
+
+    await dispatch_channel(channel["id"], "READ_STATE_UPDATE", read_state)
+
+    return read_state
