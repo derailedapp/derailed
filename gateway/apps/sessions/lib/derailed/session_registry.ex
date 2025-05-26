@@ -19,9 +19,9 @@ defmodule Derailed.SessionRegistry do
     GenServer.cast(pid, {:add_session, session_id, session_pid})
   end
 
-  @spec dispatch(pid(), map()) :: :ok
-  def dispatch(pid, data) do
-    GenServer.call(pid, {:dispatch, data})
+  @spec dispatch(pid(), String.t(), map()) :: :ok
+  def dispatch(pid, type, data) do
+    GenServer.call(pid, {:dispatch, type, data})
   end
 
   def handle_cast(
@@ -36,8 +36,8 @@ defmodule Derailed.SessionRegistry do
      }}
   end
 
-  def handle_call({:dispatch, data}, %{sessions: sessions} = state) do
-    Manifold.send(Map.values(sessions), data)
+  def handle_call({:dispatch, type, data}, %{sessions: sessions} = state) do
+    Enum.each(sessions, fn pid -> Derailed.Session.dispatch(pid, type, data) end)
     {:reply, :ok, state}
   end
 
