@@ -1,3 +1,6 @@
+# Licensed under ELv2 (Elastic License v2). Found in LICENSE.md in the project root.
+# Copyright 2025 Derailed
+
 defmodule Derailed.WebSocket.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
@@ -8,8 +11,10 @@ defmodule Derailed.WebSocket.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: Derailed.WebSocket.Worker.start_link(arg)
-      # {Derailed.WebSocket.Worker, arg}
+      %{
+        id: Derailed.WebSocket.Cowboy,
+        start: {Derailed.WebSocket.Cowboy, :start_link, []}
+      }
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

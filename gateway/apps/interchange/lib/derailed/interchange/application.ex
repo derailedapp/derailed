@@ -1,3 +1,6 @@
+# Licensed under ELv2 (Elastic License v2). Found in LICENSE.md in the project root.
+# Copyright 2025 Derailed
+
 defmodule Derailed.Interchange.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
