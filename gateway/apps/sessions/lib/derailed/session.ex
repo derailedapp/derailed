@@ -112,14 +112,15 @@ defmodule Derailed.Session do
     GenServer.call(pid, {:resume_ws, new_ws_pid})
   end
 
-  def handle_cast(:dispatch_ready, state) do
+  def handle_cast(:dispatch_ready, %{id: id} = state) do
     Manifold.send(state[:ws_pid], {
       :event,
       "READY",
       %{
         relationships: state[:relationships],
         account: state[:account],
-        profile: state[:profile]
+        profile: state[:profile],
+        session_id: id
       }
     })
 
