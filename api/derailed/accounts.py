@@ -15,12 +15,11 @@ from argon2 import exceptions as argon_exceptions
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr, Field
 
-from api.derailed.utils import dispatch_channel
-
-from .db import get_current_session, get_database, snow
+from .db import Pool, get_current_session, get_database, snow
 from .emails import send_verification_email
 from .missing import MISSING, Maybe
 from .models import Account, Profile, Session
+from .utils import dispatch_channel
 
 router = APIRouter()
 hasher = PasswordHasher()
@@ -36,7 +35,7 @@ async def send_email_verification(model: EmailVerification) -> str:
     code1, code2 = randint(100, 999), randint(100, 999)
     await send_verification_email(code1, code2, model.email)
 
-    await cache.set(model.email, f"{code1}-{code2}", ttl=1_800)  # type: ignore
+    await cache.set(model.email, f"{code1}{code2}", ttl=1_800)  # type: ignore
 
     return ""
 
@@ -61,10 +60,10 @@ class TokenData(BaseModel):
 
 @router.post("/register", status_code=201)
 async def register_account(
-    model: Register, db: Annotated[asyncpg.Pool[asyncpg.Record], Depends(get_database)]
+    model: Register, db: Annotated[Pool, Depends(get_database)]
 ) -> TokenData:
     username_used = await db.fetchrow(
-        "SELECT id FROM profiles WHERE lower(username) = $1 OR email = $2;",
+        "SELECT user_id FROM profiles WHERE lower(username) = $1 OR user_id IN (SELECT id FROM accounts WHERE email = $2);",
         model.username.lower(),
         model.email.lower(),
     )
@@ -104,7 +103,6 @@ async def register_account(
                 model.session_detail.browser,
                 model.session_detail.operating_system,
                 model.session_detail.location,
-                model.session_detail.location,
                 current_time,
             )
 
@@ -118,9 +116,7 @@ class Login(BaseModel):
 
 
 @router.post("/login", status_code=201)
-async def login(
-    model: Login, db: Annotated[asyncpg.Pool[asyncpg.Record], Depends(get_database)]
-) -> TokenData:
+async def login(model: Login, db: Annotated[Pool, Depends(get_database)]) -> TokenData:
     account = await db.fetchrow(
         "SELECT id, password FROM accounts WHERE email = $1", model.email.lower()
     )
@@ -146,7 +142,6 @@ async def login(
         model.session_detail.browser,
         model.session_detail.operating_system,
         model.session_detail.location,
-        model.session_detail.location,
         current_time,
     )
 
@@ -170,7 +165,7 @@ class User(BaseModel):
 async def modify_self(
     model: ModifySelf,
     ses: Annotated[Session, Depends(get_current_session)],
-    db: Annotated[asyncpg.Pool[asyncpg.Record], Depends(get_database)],
+    db: Annotated[Pool, Depends(get_database)],
 ) -> User:
     async with db.acquire() as conn:
         async with conn.transaction():

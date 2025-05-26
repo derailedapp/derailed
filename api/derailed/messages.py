@@ -1,6 +1,8 @@
 # Licensed under ELv2 (Elastic License v2). Found in LICENSE.md in the project root.
 # Copyright 2025 Derailed
 
+from __future__ import annotations
+
 import re
 from time import time
 from typing import Annotated, cast
@@ -10,9 +12,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.params import Query
 from pydantic import BaseModel, Field
 
-from api.derailed.utils import dispatch_channel
-
 from .db import (
+    Pool,
     assure_channel_membership,
     get_channel,
     get_current_session,
@@ -22,19 +23,20 @@ from .db import (
     to_list_dict,
 )
 from .models import Channel, Message, ReadState, Session
+from .utils import dispatch_channel
 
 router = APIRouter()
 
 
 @router.get("/channels/{channel_id}/message")
 async def get_channel_messages(
-    limit: Annotated[int, Query(50, ge=1, le=100)],
-    before: Annotated[int | None, Query(None)],
-    after: Annotated[int | None, Query(None)],
-    around: Annotated[int | None, Query(None)],
     ses: Annotated[Session, Depends(get_current_session)],
     channel: Annotated[Channel, Depends(get_channel)],
-    db: Annotated[asyncpg.Pool[asyncpg.Record], Depends(get_database)],
+    db: Annotated[Pool, Depends(get_database)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 50,
+    before: Annotated[int | None, Query()] = None,
+    after: Annotated[int | None, Query()] = None,
+    around: Annotated[int | None, Query()] = None,
 ) -> list[Message]:
     try:
         await get_guild_channel(channel, db)
@@ -92,7 +94,7 @@ async def create_message(
     model: CreateMessage,
     ses: Annotated[Session, Depends(get_current_session)],
     channel: Annotated[Channel, Depends(get_channel)],
-    db: Annotated[asyncpg.Pool[asyncpg.Record], Depends(get_database)],
+    db: Annotated[Pool, Depends(get_database)],
 ) -> Message:
     if model.content.strip() == "":
         raise HTTPException(400, "Message content empty")
@@ -155,7 +157,7 @@ async def update_message(
     message_id: int,
     ses: Annotated[Session, Depends(get_current_session)],
     channel: Annotated[Channel, Depends(get_channel)],
-    db: Annotated[asyncpg.Pool[asyncpg.Record], Depends(get_database)],
+    db: Annotated[Pool, Depends(get_database)],
 ) -> Message:
     if model.content and model.content.strip() == "":
         raise HTTPException(400, "Message content empty")
@@ -189,12 +191,11 @@ async def update_message(
 
 @router.delete("/channels/{channel_id}/messages/{message_id}", status_code=204)
 async def delete_message(
-    model: UpdateMessage,
     message_id: int,
     ses: Annotated[Session, Depends(get_current_session)],
     channel: Annotated[Channel, Depends(get_channel)],
-    db: Annotated[asyncpg.Pool[asyncpg.Record], Depends(get_database)],
-) -> str:
+    db: Annotated[Pool, Depends(get_database)],
+):
     try:
         await get_guild_channel(channel, db)
     except HTTPException:
@@ -225,7 +226,7 @@ async def message_read(
     message_id: int,
     ses: Annotated[Session, Depends(get_current_session)],
     channel: Annotated[Channel, Depends(get_channel)],
-    db: Annotated[asyncpg.Pool[asyncpg.Record], Depends(get_database)],
+    db: Annotated[Pool, Depends(get_database)],
 ) -> ReadState:
     if model.content and model.content.strip() == "":
         raise HTTPException(400, "Message content empty")

@@ -1,7 +1,8 @@
 <script lang="ts">
-	import '../app.css';
-	
-	let { children } = $props();
+import "@fontsource/inter";
+import "../app.css";
+
+let { children } = $props();
 </script>
 
 {@render children()}

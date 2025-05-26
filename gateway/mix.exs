@@ -17,7 +17,6 @@ defmodule Derailed.MixProject do
   # Run "mix help deps" for examples and options.
   defp deps do
     [
-      {:dotenvy, "~> 1.1.0"},
       {:styler, "~> 1.4", only: [:dev, :test], runtime: false}
     ]
   end

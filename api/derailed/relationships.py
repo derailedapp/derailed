@@ -1,16 +1,16 @@
 # Licensed under ELv2 (Elastic License v2). Found in LICENSE.md in the project root.
 # Copyright 2025 Derailed
 
+from __future__ import annotations
+
 from typing import Annotated
 
-import asyncpg
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from api.derailed.utils import dispatch_user
-
-from .db import get_current_session, get_database, get_profile, snow
+from .db import Pool, get_current_session, get_database, get_profile, snow
 from .models import Profile, Session
+from .utils import dispatch_user
 
 router = APIRouter()
 
@@ -24,7 +24,7 @@ class FollowResult(BaseModel):
 async def follow_user(
     ses: Annotated[Session, Depends(get_current_session)],
     mentioned_user: Annotated[Profile, Depends(get_profile)],
-    db: Annotated[asyncpg.Pool[asyncpg.Record], Depends(get_database)],
+    db: Annotated[Pool, Depends(get_database)],
 ) -> FollowResult:
     if mentioned_user["user_id"] == ses["account_id"]:
         raise HTTPException(400, "Cannot follow yourself")
@@ -121,7 +121,7 @@ async def follow_user(
 async def get_user_relationship(
     ses: Annotated[Session, Depends(get_current_session)],
     mentioned_user: Annotated[Profile, Depends(get_profile)],
-    db: Annotated[asyncpg.Pool[asyncpg.Record], Depends(get_database)],
+    db: Annotated[Pool, Depends(get_database)],
 ) -> FollowResult:
     relationship_type = await db.fetchval(
         "SELECT type FROM relationships WHERE user_id = $1 AND target_user_id = $2;",

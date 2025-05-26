@@ -1,6 +1,10 @@
 # Licensed under ELv2 (Elastic License v2). Found in LICENSE.md in the project root.
 # Copyright 2025 Derailed
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 import os
 
 from fastapi import FastAPI
