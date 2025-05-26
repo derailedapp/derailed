@@ -179,6 +179,11 @@ defmodule Derailed.Session do
     end
   end
 
+  def handle_info({:dispatch, type, data}, state) do
+    Derailed.Session.dispatch(self(), type, data)
+    {:noreply, state}
+  end
+
   def handle_info(:assure_online, %{ws_down: ws_down} = state) do
     if ws_down do
       {:stop, :ws_down, state}
