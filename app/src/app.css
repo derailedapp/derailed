@@ -87,7 +87,7 @@
 }
 
 @font-face {
-	font-family: "Noto Color Emoji";
+	font-family: "Apple Color Emoji";
   	font-style: normal;
 	font-weight: 400;
 	src: url("/NotoColorEmoji.ttf") format("woff");
@@ -95,7 +95,7 @@
 
 body {
 	background-color: #1b1b1e;
-	font-family: "Noto Color Emoji" "Nebula Sans";
+	font-family: "Apple Color Emoji" "Nebula Sans";
 	@apply text-white;
 }
 
