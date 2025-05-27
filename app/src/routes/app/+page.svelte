@@ -2,59 +2,41 @@
     import User from "$lib/components/User.svelte";
     import Server from "$lib/components/Server.svelte";
 
-    import { Users, Plus, Smiley, Gif } from "phosphor-svelte";
+    import { Gear } from "phosphor-svelte";
 </script>
 
-{#snippet borderR()}
-    <div class="border-r border-sexy-lighter-black h-full w-[1px]"></div>
-{/snippet}
-
 {#snippet borderB()}
-    <div class="border-b border-sexy-lighter-black w-full h-[1px]"></div>
+    <div class="border-b border-white w-full h-[1px]"></div>
 {/snippet}
 
 <!--TODO: Add logic-->
-<div class="bg-sexy-red-black h-screen w-full">
-    <div class="flex flex-row w-full h-full">
-        <div class="flex flex-row w-[400px] bg-sexy-lighter-black/20 h-full">
-            <div class="flex flex-col items-center w-[70px] h-full gap-1 p-2">
-                <button onclick={() => {}} class="bg-sexy-lighter-black rounded-full flex 
-                    justify-center items-center transition-all 
-                    duration-250 max-h-12 max-w-12 w-full h-full
-                    hover:bg-blurple/60">
+<div class="bg-[url(/home-bg.jpg)] h-screen w-full bg-center bg-cover">
+    <div class="flex h-full w-full flex-row">
+        <div class="h-full flex flex-col">
+            <div class="flex h-full w-full">
+                <div class="flex flex-col items-center gap-2 pt-2 w-[80px] 
+                backdrop-blur-3xl rounded-3xl border-[1px] my-2 ml-2 z-[999] bg-sexy-red-black/40 border-sexy-lighter-black">
 
-                    <img src="/derailed.png" alt="derailed logo" class="h-8">
-                </button>
+                    <button onclick={() => {}} class="bg-sexy-lighter-black rounded-full flex 
+                        justify-center items-center transition-all 
+                        duration-250 max-h-12 max-w-12 w-full h-full
+                        hover:bg-blurple/60">
 
-                <div class="flex flex-col overflow-y-auto gap-3 no-scrollbar">
-                    {@render borderB()}
+                        <img src="/derailed.png" alt="derailed logo" class="h-8">
+                    </button>
 
-                    <Server serverName="Server 1" avatarUrl="https://picsum.photos/200"/>
-                    <Server serverName="Server 2" avatarUrl="https://picsum.photos/300"/>
-                    <Server serverName="Server 3" avatarUrl="https://picsum.photos/400"/>
-                    <Server serverName="Server 4" avatarUrl="https://picsum.photos/500"/>
+                    <div class="flex flex-col overflow-y-auto gap-3 no-scrollbar">
+                        {@render borderB()}
+
+                        <Server serverName="Server 1" avatarUrl="https://picsum.photos/200"/>
+                        <Server serverName="Server 2" avatarUrl="https://picsum.photos/300"/>
+                        <Server serverName="Server 3" avatarUrl="https://picsum.photos/400"/>
+                        <Server serverName="Server 4" avatarUrl="https://picsum.photos/500"/>
+                    </div>
                 </div>
-            </div>
-            
-            {@render borderR()}
 
-            <div class="flex-1 px-2 flex flex-col h-full">
-                <button class="flex flex-row items-center gap-3 hover:bg-sexy-lighter-black p-2 rounded-2xl transition-all duration-100 w-full">
-                    <Users class="h-[40px] w-[40px]"/>
-
-                    <div class="font-bold">
-                        Friends
-                    </div>
-                </button>
-
-                {@render borderB()}
-
-                <div class="flex flex-col flex-1 overflow-hidden mt-1">
-                    <div class="text-center font-bold">
-                        Direct Messages
-                    </div>
-
-                    <div class="flex-1 overflow-y-auto">
+                <div class="flex flex-col w-[260px] backdrop-blur-3xl rounded-3xl border-[1px] m-2 bg-sexy-red-black/40 border-sexy-lighter-black">
+                    <div class="m-2 overflow-y-auto">
                         <User selected username="ananasmoe" avatarUrl="https://avatars.githubusercontent.com/u/132799819" />
                         <User username="THEGOLDENPRO" avatarUrl="https://avatars.githubusercontent.com/u/66202304" />
                         <User username="VincentRPS" avatarUrl="https://avatars.githubusercontent.com/u/82736662" />
@@ -66,28 +48,23 @@
                 </div>
             </div>
 
-            {@render borderR()}
-        </div>
+            <div class="flex h-[90px] w-[345px] backdrop-blur-3xl rounded-3xl border-[1px] m-2 bg-sexy-red-black/40 border-sexy-lighter-black">
+                <div class="flex flex-row justify-center items-center gap-2 p-4 self-end w-full">
+                    <img src="https://avatars.githubusercontent.com/u/132799819" class="rounded-xl h-12" alt="ananas">
+                    <div class="flex flex-col">
+                        <h1 class="font-bold text-sm">@ananasmoe</h1>
+                        <p class="text-xs text-gray-500">I love men</p>
+                    </div>
 
-        <div class="flex flex-1 w-full h-full">
-            <div class="flex self-end w-full gap-4 py-5 px-5 bg-sexy-lighter-black/30">
-                <div class="bg-sexy-lighter-black flex flex-row w-full rounded-xl py-2">
-                    <button class="flex justify-center items-center px-6">
-                        <Plus class="w-5 h-5"/>
-                    </button>
-
-                    <input style="box-shadow: none;" class="bg-sexy-lighter-black w-full rounded-xl border-none" placeholder="Message @ananasmoe"/>
-
-                    <div class="flex flex-row justify-center items-center gap-2 px-6">
-                        <button>
-                            <Smiley class="w-5 h-5"/>
-                        </button>
-                        <button>
-                            <Gif class="w-5 h-5"/>
-                        </button>
+                    <div class="flex ml-auto">
+                        <Gear weight="fill" class="w-5 h-5" />
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="flex flex-1 backdrop-blur-3xl rounded-3xl border-[1px] my-2 mr-2 bg-sexy-red-black/40 border-sexy-lighter-black">
+            
         </div>
     </div>
 </div>

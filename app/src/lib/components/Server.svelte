@@ -11,10 +11,10 @@
 <Tooltip.Provider>
     <Tooltip.Root delayDuration={100}>
         <Tooltip.Trigger>
-            <img class="rounded-full h-12" src={avatarUrl} alt={serverName} />
+            <img class="rounded-xl h-12" src={avatarUrl} alt={serverName} />
         </Tooltip.Trigger>
 
-        <Tooltip.Content side="right" sideOffset={8} forceMount>
+        <Tooltip.Content class="w-full" side="right" sideOffset={8} forceMount>
             {#snippet child({ wrapperProps, props, open })}
                 {#if open}
                     <div {...wrapperProps}>
