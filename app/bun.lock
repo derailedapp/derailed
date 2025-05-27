@@ -5,6 +5,7 @@
       "name": "derailed-app",
       "dependencies": {
         "@fontsource/aileron": "^5.2.5",
+        "@fontsource/figtree": "^5.2.8",
         "@fontsource/inter": "^5.2.5",
         "@iconify/svelte": "^5.0.0",
         "@types/ua-parser-js": "^0.7.39",
@@ -108,6 +109,8 @@
     "@floating-ui/utils": ["@floating-ui/utils@0.2.9", "", {}, "sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg=="],
 
     "@fontsource/aileron": ["@fontsource/aileron@5.2.5", "", {}, "sha512-lw633Po+g/g5mPFyCFQ0hFPCwJHFrFZorU0qeUs7Vz/PQb16qtmp/EcV5l0RgvUyu0qEGM5nbctel774jhnb3Q=="],
+
+    "@fontsource/figtree": ["@fontsource/figtree@5.2.8", "", {}, "sha512-FC+t9RSdZDUK402+h+D7kKBXEo1L5xw/ff8SpTo9ZO0xHzqFJ0u78PmNyAju5D77oXPsR3wfs+rjZvWPx4diSA=="],
 
     "@fontsource/inter": ["@fontsource/inter@5.2.5", "", {}, "sha512-kbsPKj0S4p44JdYRFiW78Td8Ge2sBVxi/PIBwmih+RpSXUdvS9nbs1HIiuUSPtRMi14CqLEZ/fbk7dj7vni1Sg=="],
 

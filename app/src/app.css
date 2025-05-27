@@ -2,108 +2,18 @@
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: normal;
-	font-weight: 900;
-	src: url("/NebulaSans/NebulaSans-Black.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: normal;
-	font-weight: 800;
-	src: url("/NebulaSans/NebulaSans-Bold.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: normal;
-	font-weight: 700;
-	src: url("/NebulaSans/NebulaSans-Semibold.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: normal;
-	font-weight: 500;
-	src: url("/NebulaSans/NebulaSans-Medium.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: normal;
-	font-weight: 400;
-	src: url("/NebulaSans/NebulaSans-Book.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: normal;
-	font-weight: 300;
-	src: url("/NebulaSans/NebulaSans-Light.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: italic;
-	font-weight: 900;
-	src: url("/NebulaSans/NebulaSans-BlackItalic.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: italic;
-	font-weight: 800;
-	src: url("/NebulaSans/NebulaSans-BoldItalic.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: italic;
-	font-weight: 700;
-	src: url("/NebulaSans/NebulaSans-SemiboldItalic.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: italic;
-	font-weight: 500;
-	src: url("/NebulaSans/NebulaSans-MediumItalic.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: italic;
-	font-weight: 400;
-	src: url("/NebulaSans/NebulaSans-BookItalic.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: italic;
-	font-weight: 300;
-	src: url("/NebulaSans/NebulaSans-LightItalic.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Apple Color Emoji";
-  	font-style: normal;
-	font-weight: 400;
-	src: url("/NotoColorEmoji.ttf") format("woff");
-}
 
 body {
 	background-color: #1b1b1e;
-	font-family: "Apple Color Emoji" "Nebula Sans";
+	font-family: "Figtree";
 	@apply text-white;
 }
 
 @theme {
-	--color-blurple: #7067cf;
-	--color-sexy-lighter-black: #272727;
-	--color-sexy-red-black: #1b1b1e;
-	--color-sexy-gray: #758173;
+	--color-blurple: #8aa3ff;
+	--color-sexy-lighter-black: #2a2a2e;
+	--color-sexy-red-black: #141417;
+	--color-sexy-gray: #a0a0a5;
 }
 
 @layer utilities {

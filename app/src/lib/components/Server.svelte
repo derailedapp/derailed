@@ -11,7 +11,7 @@
 <Tooltip.Provider>
     <Tooltip.Root delayDuration={100}>
         <Tooltip.Trigger>
-            <img class="rounded-xl h-12" src={avatarUrl} alt={serverName} />
+            <img class="rounded-full hover:rounded-lg hover:scale-105 transition-all duration-200 h-11" src={avatarUrl} alt={serverName} />
         </Tooltip.Trigger>
 
         <Tooltip.Content class="w-full" side="right" sideOffset={8} forceMount>

@@ -29,6 +29,7 @@
 	},
 	"dependencies": {
 		"@fontsource/aileron": "^5.2.5",
+		"@fontsource/figtree": "^5.2.8",
 		"@fontsource/inter": "^5.2.5",
 		"@iconify/svelte": "^5.0.0",
 		"@types/ua-parser-js": "^0.7.39",

@@ -1,5 +1,5 @@
 <script lang="ts">
-import "@fontsource/inter";
+import "@fontsource/figtree";
 import "../app.css";
 
 let { children } = $props();
