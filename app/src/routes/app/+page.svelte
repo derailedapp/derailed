@@ -1,8 +1,8 @@
 <script>
-    import { Gear, Plus } from "phosphor-svelte";
-    import GuildScroll from "./GuildScroll.svelte";
-    import { Dialog } from "bits-ui";
-    import { fly } from "svelte/transition";
+import { Gear, Plus } from "phosphor-svelte";
+import GuildScroll from "./GuildScroll.svelte";
+import { Dialog } from "bits-ui";
+import { fly } from "svelte/transition";
 </script>
 
 <!--TODO: Add logic-->

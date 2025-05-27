@@ -1,9 +1,13 @@
 <script lang="ts">
-    let { username, avatarUrl, selected = false }: {
-        username: string,
-        avatarUrl: string,
-        selected?: boolean
-    } = $props();
+let {
+	username,
+	avatarUrl,
+	selected = false,
+}: {
+	username: string;
+	avatarUrl: string;
+	selected?: boolean;
+} = $props();
 </script>
 
 <!--TODO: Add logic-->

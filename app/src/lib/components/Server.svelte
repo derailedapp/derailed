@@ -1,11 +1,14 @@
 <script lang="ts">
-    import { Tooltip } from "bits-ui";
-    import { fly } from "svelte/transition";
+import { Tooltip } from "bits-ui";
+import { fly } from "svelte/transition";
 
-    let { serverName, avatarUrl }: {
-        serverName: string,
-        avatarUrl: string,
-    } = $props();
+let {
+	serverName,
+	avatarUrl,
+}: {
+	serverName: string;
+	avatarUrl: string;
+} = $props();
 </script>
 
 <Tooltip.Provider>
