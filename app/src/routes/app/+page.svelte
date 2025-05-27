@@ -6,7 +6,7 @@ import { fly } from "svelte/transition";
 </script>
 
 <!--TODO: Add logic-->
-<div class="bg-[#0b0b0d]  h-screen w-full bg-center bg-cover">
+<div class="bg-[#0b0b0d] h-screen w-full bg-center bg-cover">
     <div class="flex h-full w-full flex-row">
         <div class="h-full flex flex-col">
             <div class="flex h-full w-full">
@@ -53,9 +53,9 @@ import { fly } from "svelte/transition";
                         <p class="text-xs text-sexy-gray">I love men</p>
                     </div>
 
-                    <div class="flex ml-auto">
-                        <Gear weight="fill" class="w-5 h-5 text-sexy-gray hover:text-white" />
-                    </div>
+                    <a href="/app/settings" class="flex ml-auto">
+                        <Gear weight="fill" class="w-5 h-5 text-sexy-gray hover:text-white transition-colors duration-100" />
+                    </a>
                 </div>
             </div>
         </div>
