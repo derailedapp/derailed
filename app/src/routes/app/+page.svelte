@@ -22,13 +22,14 @@
                             </Dialog.Trigger>
                             <Dialog.Portal>
                                 <Dialog.Overlay 
-                                    class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-[998] bg-black/80"
+                                    class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-[998] bg-black/30 backdrop-blur-sm"
                                 />
-                                <Dialog.Content class="rounded-lg outline-hidden fixed left-[50%] top-[50%] z-[9999] w-full translate-x-[-50%] translate-y-[-50%] border py-8 px-12 max-w-[500px]">
-                                    <div class="flex flex-col justify-center items-center text-white gap-2">
-                                        <h1>Add a Friend</h1>
+                                <Dialog.Content class="rounded-2xl outline-hidden fixed left-[50%] top-[50%] z-[9999] w-full translate-x-[-50%] translate-y-[-50%] border border-sexy-lighter-black py-8 px-12 max-w-[500px] bg-sexy-red-black/80">
+                                    <div class="flex flex-col items-center justify-start text-white gap-2">
+                                        <h1 class="font-semibold text-lg">Add a Friend</h1>
+                                        <p class="text-sm">Place the username of the person you wanna friend request!</p>
 
-                                        <input type="text" class="rounded-lg w-full bg-transparent">
+                                        <input type="text" class="rounded-lg w-full bg-transparent border border-sexy-lighter-black outline-none focus:ring-0 my-3">
 
                                         <button class="w-full bg-blurple p-3 rounded-lg font-semibold">
                                             Add
