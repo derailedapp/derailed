@@ -86,8 +86,16 @@
 	src: url("/NebulaSans/NebulaSans-LightItalic.woff2") format("woff"),;
 }
 
+@font-face {
+	font-family: "Noto Color Emoji";
+  	font-style: normal;
+	font-weight: 400;
+	src: url("/NotoColorEmoji.ttf") format("woff");
+}
+
 body {
-	font-family: "Nebula Sans";
+	background-color: #1b1b1e;
+	font-family: "Noto Color Emoji" "Nebula Sans";
 	@apply text-white;
 }
 
@@ -96,4 +104,14 @@ body {
 	--color-sexy-lighter-black: #272727;
 	--color-sexy-red-black: #1b1b1e;
 	--color-sexy-gray: #758173;
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
