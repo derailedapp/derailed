@@ -56,7 +56,12 @@
 
                     <div class="flex-1 overflow-y-auto">
                         <User selected username="ananasmoe" avatarUrl="https://avatars.githubusercontent.com/u/132799819" />
-
+                        <User username="THEGOLDENPRO" avatarUrl="https://avatars.githubusercontent.com/u/66202304" />
+                        <User username="VincentRPS" avatarUrl="https://avatars.githubusercontent.com/u/82736662" />
+                        <User username="elenakrittik" avatarUrl="https://avatars.githubusercontent.com/u/77104725" />
+                        <User username="EmmmaTech" avatarUrl="https://avatars.githubusercontent.com/u/50607143" />
+                        <User username="Lulalaby" avatarUrl="https://avatars.githubusercontent.com/u/14029133" />
+                        <User username="spifory" avatarUrl="https://avatars.githubusercontent.com/u/80943664" />
                     </div>
                 </div>
             </div>
