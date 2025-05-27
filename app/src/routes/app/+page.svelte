@@ -44,7 +44,7 @@
                 </div>
             </div>
 
-            <div class="flex h-[90px] w-[360px] backdrop-blur-3xl rounded-3xl border-[1px] mx-2 bg-sexy-red-black/60 border-sexy-lighter-black">
+            <div class="flex h-[80px] w-[360px] backdrop-blur-3xl rounded-3xl border-[1px] mb-2 mx-2 bg-sexy-red-black/60 border-sexy-lighter-black">
                 <div class="flex flex-row justify-center items-center gap-2 p-3 w-full">
                     <img src="https://avatars.githubusercontent.com/u/132799819" class="rounded-xl h-9" alt="ananas">
                     <div class="flex flex-col">
