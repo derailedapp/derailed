@@ -1,4 +1,4 @@
-# Licensed under ELv2 (Elastic License v2). Found in LICENSE.md in the project root.
+# Licensed under AGPL-3.0. Found in LICENSE.md in the project root.
 # Copyright 2025 Derailed
 
 from typing import TypedDict
