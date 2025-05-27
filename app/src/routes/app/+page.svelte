@@ -2,6 +2,7 @@
     import { Gear, Plus } from "phosphor-svelte";
     import GuildScroll from "./GuildScroll.svelte";
     import { Dialog } from "bits-ui";
+    import { fly } from "svelte/transition";
 </script>
 
 <!--TODO: Add logic-->
@@ -16,27 +17,34 @@
                             Direct Messages
                         </div>
                         <Dialog.Root>
-                            <Dialog.Trigger>
+                            <Dialog.Trigger class="cursor-pointer">
                                 <Plus color="#a0a0a5" class="h-5 w-5" />
                             </Dialog.Trigger>
                             <Dialog.Portal>
-                                <Dialog.Overlay class="fixed z-[998] bg-black/30 inset-0" />
-                                <Dialog.Content class="fixed h-screen w-full z-[999]">
-                                    <div class="flex items-center justify-center z-[999] bg-sexy-red-black/60 inset-0 w-[230px] h-[450px]">
-                                        <Dialog.Title>Add a friend!</Dialog.Title>
-                                        <Dialog.Description />
-                                        <Dialog.Close />
+                                <Dialog.Overlay 
+                                    class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-[998] bg-black/80"
+                                />
+                                <Dialog.Content class="rounded-lg outline-hidden fixed left-[50%] top-[50%] z-[9999] w-full translate-x-[-50%] translate-y-[-50%] border py-8 px-12 max-w-[500px]">
+                                    <div class="flex flex-col justify-center items-center text-white gap-2">
+                                        <h1>Add a Friend</h1>
+
+                                        <input type="text" class="rounded-lg w-full bg-transparent">
+
+                                        <button class="w-full bg-blurple p-3 rounded-lg font-semibold">
+                                            Add
+                                        </button>
                                     </div>
+                                    <Dialog.Close />
                                 </Dialog.Content>
                             </Dialog.Portal>
                         </Dialog.Root>
                     </div>
-                    <div class="m-2 overflow-y-auto">
+                        <div class="m-2 overflow-y-auto">
                     </div>
                 </div>
             </div>
 
-            <div class="flex h-[90px] w-[360px] backdrop-blur-3xl rounded-3xl border-[1px] m-2 bg-sexy-red-black/60 border-sexy-lighter-black">
+            <div class="flex h-[90px] w-[360px] backdrop-blur-3xl rounded-3xl border-[1px] mx-2 bg-sexy-red-black/60 border-sexy-lighter-black">
                 <div class="flex flex-row justify-center items-center gap-2 p-3 w-full">
                     <img src="https://avatars.githubusercontent.com/u/132799819" class="rounded-xl h-9" alt="ananas">
                     <div class="flex flex-col">
