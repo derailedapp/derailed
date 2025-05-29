@@ -19,3 +19,10 @@ export interface PrivateChannel {
 	name: string | null;
 	owner_id: BigInt | null;
 }
+
+export interface Toast {
+	id: number;
+	type: "info" | "error" | "success";
+	message: string;
+	timeout: number;
+}

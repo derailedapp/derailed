@@ -1,8 +1,9 @@
 <script lang="ts">
 import { Plus } from "phosphor-svelte";
 import { Dialog } from "bits-ui";
+import { addToast } from "$lib/state";
 let username: string | undefined = $state();
-let open: bool | undefined = $state(false);
+let open: boolean | undefined = $state(false);
 
 async function onSubmit(e: SubmitEvent) {
 	e.preventDefault();
@@ -13,7 +14,7 @@ async function onSubmit(e: SubmitEvent) {
 		{
 			method: "POST",
 			headers: {
-				Authorization: localStorage.getItem("token"),
+				Authorization: localStorage.getItem("token")!,
 			},
 		},
 	);
@@ -22,8 +23,9 @@ async function onSubmit(e: SubmitEvent) {
 		open = false;
 	} else {
 		const detail = (await resp.json()).detail;
-		console.error(detail);
-		alert(detail);
+
+        console.error(detail);
+		addToast("error", detail, 4000);
 	}
 }
 </script>
