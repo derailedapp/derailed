@@ -1,7 +1,12 @@
 <script lang="ts">
-    import { Tabs } from "bits-ui";
+import { Tabs } from "bits-ui";
 
-    import { User, IdentificationBadge, NotePencil, SignOut } from "phosphor-svelte";
+import {
+	User,
+	IdentificationBadge,
+	NotePencil,
+	SignOut,
+} from "phosphor-svelte";
 </script>
 
 <div class="bg-[#0b0b0d] h-screen w-full bg-center bg-cover p-4">

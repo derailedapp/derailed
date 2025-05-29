@@ -5,26 +5,26 @@ let username: string | undefined = $state();
 let open: bool | undefined = $state(false);
 
 async function onSubmit(e: SubmitEvent) {
-    e.preventDefault();
-    console.log(localStorage.getItem("token"))
+	e.preventDefault();
+	console.log(localStorage.getItem("token"));
 
-    const resp = await fetch(
-        import.meta.env.VITE_API_URL + "/users/" + username + "/follow",
-        {
-            method: "POST",
-            headers: {
-                Authorization: localStorage.getItem("token")
-            }
-        }
-    )
+	const resp = await fetch(
+		import.meta.env.VITE_API_URL + "/users/" + username + "/follow",
+		{
+			method: "POST",
+			headers: {
+				Authorization: localStorage.getItem("token"),
+			},
+		},
+	);
 
-    if (resp.status === 201) {
-        open = false;
-    } else {
-        const detail = (await resp.json()).detail;
-        console.error(detail);
-        alert(detail);
-    }
+	if (resp.status === 201) {
+		open = false;
+	} else {
+		const detail = (await resp.json()).detail;
+		console.error(detail);
+		alert(detail);
+	}
 }
 </script>
 

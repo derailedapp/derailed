@@ -108,7 +108,7 @@ async function onLogin(e: SubmitEvent) {
 	}
 	const data = await resp.json();
 	localStorage.setItem("token", String(data.token));
-    window.location.replace("/app");
+	window.location.replace("/app");
 }
 </script>
 

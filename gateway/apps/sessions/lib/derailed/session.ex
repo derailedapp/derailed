@@ -90,6 +90,7 @@ defmodule Derailed.Session do
        profile: profile,
        account: account,
        relationships: relationships,
+       private_channels: private_channels,
        private_channel_pids: private_channel_pids,
        private_channel_refs: private_channel_refs,
        channels_just_deleted: MapSet.new(),
@@ -123,6 +124,7 @@ defmodule Derailed.Session do
         relationships: state[:relationships],
         account: state[:account],
         profile: state[:profile],
+        private_channels: state[:private_channels],
         session_id: id
       }
     })

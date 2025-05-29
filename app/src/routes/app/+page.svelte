@@ -1,7 +1,7 @@
 <script>
-    import { Gear } from "phosphor-svelte";
-    import GuildScroll from "./GuildScroll.svelte";
-    import AddFriend from "$lib/components/AddFriend.svelte";
+import { Gear } from "phosphor-svelte";
+import GuildScroll from "./GuildScroll.svelte";
+import AddFriend from "$lib/components/AddFriend.svelte";
 </script>
 
 <!--TODO: Add logic-->
