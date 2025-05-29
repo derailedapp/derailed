@@ -67,7 +67,7 @@ async function onRegister(e: SubmitEvent) {
 		}),
 	});
 	const data = await resp.json();
-	localStorage.setItem("token", data);
+	localStorage.setItem("token", String(data.token));
 }
 
 async function onLogin(e: SubmitEvent) {
@@ -107,7 +107,8 @@ async function onLogin(e: SubmitEvent) {
 		alert("Email or password incorrect");
 	}
 	const data = await resp.json();
-	localStorage.setItem("token", data);
+	localStorage.setItem("token", String(data.token));
+    window.location.replace("/app");
 }
 </script>
 
@@ -138,7 +139,7 @@ async function onLogin(e: SubmitEvent) {
                                         USERNAME
                                     </div>
                                 </div>
-                                <input required minlength="1" maxlength="32" style="box-shadow: none;" bind:value={username} type="text" class="bg-transparent w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray appearance-none" />
+                                <input required minlength="4" maxlength="32" style="box-shadow: none;" bind:value={username} type="text" class="bg-transparent w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray appearance-none" />
                             </section>
                         </div>
                         {#if emailSent}

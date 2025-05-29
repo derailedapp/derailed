@@ -106,7 +106,7 @@ async def register_account(
                 current_time,
             )
 
-    return TokenData(token=str(token))
+    return TokenData(token=token.decode())
 
 
 class Login(BaseModel):
@@ -145,7 +145,7 @@ async def login(model: Login, db: Annotated[Pool, Depends(get_database)]) -> Tok
         current_time,
     )
 
-    return TokenData(token=str(token))
+    return TokenData(token=token.decode())
 
 
 class ModifySelf(BaseModel):

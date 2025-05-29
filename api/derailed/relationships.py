@@ -20,7 +20,7 @@ class FollowResult(BaseModel):
     relationship_type: int
 
 
-@router.post("/users/{user_id}/follow", status_code=201)
+@router.post("/users/{username}/follow", status_code=201)
 async def follow_user(
     ses: Annotated[Session, Depends(get_current_session)],
     mentioned_user: Annotated[Profile, Depends(get_profile)],
@@ -71,6 +71,7 @@ async def follow_user(
                     new_channel = None
 
         profile = await get_profile(ses["account_id"], db)
+
         await dispatch_user(
             ses["account_id"],
             "RELATIONSHIP_UPDATE",

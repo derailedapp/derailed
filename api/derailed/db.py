@@ -64,10 +64,13 @@ async def get_mentioned_user(
 
 
 async def get_profile(
-    user_id: Annotated[int, Path()],
+    user_id: Annotated[int | str, Path(alias="username")],
     db: Annotated[Pool, Depends(get_database)],
 ) -> Profile:
-    profile = await db.fetchrow("SELECT * FROM profiles WHERE user_id = $1;", user_id)
+    if isinstance(user_id, int):
+        profile = await db.fetchrow("SELECT * FROM profiles WHERE user_id = $1;", user_id)
+    else:
+        profile = await db.fetchrow("SELECT * FROM profiles WHERE username = $1;", user_id)
 
     if profile is None:
         raise HTTPException(404, "User not found")
