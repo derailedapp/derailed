@@ -20,6 +20,8 @@
 		"@tailwindcss/forms": "^0.5.10",
 		"@tailwindcss/typography": "^0.5.16",
 		"@tailwindcss/vite": "^4.1.7",
+		"@types/eventemitter3": "^2.0.4",
+		"@types/json-bigint": "^1.0.4",
 		"daisyui": "^5.0.37",
 		"svelte": "^5.33.2",
 		"svelte-check": "^4.2.1",
@@ -29,11 +31,14 @@
 	},
 	"dependencies": {
 		"@fontsource/aileron": "^5.2.5",
+		"@fontsource/figtree": "^5.2.8",
 		"@fontsource/inter": "^5.2.5",
 		"@iconify/svelte": "^5.0.0",
 		"@types/ua-parser-js": "^0.7.39",
 		"bits-ui": "^1.8.0",
-		"emoji-datasource-apple": "^15.1.2",
+		"eventemitter3": "^5.0.1",
+		"json-bigint": "^1.0.0",
+		"phosphor-svelte": "^3.0.1",
 		"svelte-system-info": "^1.0.3",
 		"ua-parser-js": "^0.7.33"
 	}

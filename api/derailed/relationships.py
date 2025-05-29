@@ -20,7 +20,7 @@ class FollowResult(BaseModel):
     relationship_type: int
 
 
-@router.post("/users/{user_id}/follow", status_code=201)
+@router.post("/users/{username}/follow", status_code=201)
 async def follow_user(
     ses: Annotated[Session, Depends(get_current_session)],
     mentioned_user: Annotated[Profile, Depends(get_profile)],
@@ -51,7 +51,9 @@ async def follow_user(
                 )
 
                 channel = await conn.fetchrow(
-                    "SELECT * FROM channels WHERE id IN (SELECT channel_id FROM channels_members WHERE user_id = $1 UNION SELECT channel_id FROM channel_members WHERE user_id = $2) AND type = 0;"
+                    "SELECT * FROM channels WHERE id IN (SELECT channel_id FROM channel_members WHERE user_id = $1 UNION SELECT channel_id FROM channel_members WHERE user_id = $2) AND type = 0;",
+                    ses["account_id"],
+                    mentioned_user["user_id"],
                 )
 
                 if channel is None:
@@ -71,6 +73,7 @@ async def follow_user(
                     new_channel = None
 
         profile = await get_profile(ses["account_id"], db)
+
         await dispatch_user(
             ses["account_id"],
             "RELATIONSHIP_UPDATE",

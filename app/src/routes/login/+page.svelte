@@ -1,6 +1,5 @@
 <script lang="ts">
 import { Tabs, Checkbox } from "bits-ui";
-import WaveImg from "emoji-datasource-apple/img/apple/64/1F44B.png";
 import Pin from "./Pin.svelte";
 import Icon from "@iconify/svelte";
 import UAParser from "ua-parser-js";
@@ -68,7 +67,7 @@ async function onRegister(e: SubmitEvent) {
 		}),
 	});
 	const data = await resp.json();
-	localStorage.setItem("token", data);
+	localStorage.setItem("token", String(data.token));
 }
 
 async function onLogin(e: SubmitEvent) {
@@ -108,7 +107,8 @@ async function onLogin(e: SubmitEvent) {
 		alert("Email or password incorrect");
 	}
 	const data = await resp.json();
-	localStorage.setItem("token", data);
+	localStorage.setItem("token", String(data.token));
+	window.location.replace("/app");
 }
 </script>
 
@@ -127,7 +127,7 @@ async function onLogin(e: SubmitEvent) {
                 <Tabs.Content value="register" class="w-full h-full">
                     <form onsubmit={onRegister} class="w-full h-full flex flex-col items-center justify-center gap-6 bg-sexy-red-black/80 backdrop-blur-3xl p-6 rounded-2xl">
                         <div class="flex items-center gap-2">
-                            <img src={WaveImg} width="24" alt="Wave" />
+                            <img src="/img-apple-64/1f44b.png" width="24" height="24" />
                             <div class="font-bold text-2xl">
                                 Welcome To Derailed!
                             </div>
@@ -139,7 +139,7 @@ async function onLogin(e: SubmitEvent) {
                                         USERNAME
                                     </div>
                                 </div>
-                                <input required minlength="1" maxlength="32" style="box-shadow: none;" bind:value={username} type="text" class="bg-transparent w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray appearance-none" />
+                                <input required minlength="4" maxlength="32" style="box-shadow: none;" bind:value={username} type="text" class="bg-transparent w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray appearance-none" />
                             </section>
                         </div>
                         {#if emailSent}
@@ -193,7 +193,7 @@ async function onLogin(e: SubmitEvent) {
                 <Tabs.Content value="login" class="w-full h-full">
                     <form onsubmit={onLogin} class="w-full h-full flex flex-col items-center justify-center gap-6 bg-sexy-red-black/80 backdrop-blur-3xl p-6 rounded-2xl">
                         <div class="flex items-center gap-2">
-                            <img src={WaveImg} width="24" alt="Wave" />
+                            <img src="/img-apple-64/1f44b.png" width="24" height="24" />
                             <div class="font-bold text-2xl">
                                 Welcome Back!
                             </div>
