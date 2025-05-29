@@ -24,7 +24,7 @@ async function onSubmit(e: SubmitEvent) {
 	} else {
 		const detail = (await resp.json()).detail;
 
-        console.error(detail);
+		console.error(detail);
 		addToast("error", detail, 4000);
 	}
 }

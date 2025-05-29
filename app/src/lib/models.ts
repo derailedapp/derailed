@@ -18,6 +18,7 @@ export interface PrivateChannel {
 	type: number;
 	name: string | null;
 	owner_id: BigInt | null;
+	members: Profile[] | undefined;
 }
 
 export interface Toast {

@@ -61,7 +61,8 @@ defmodule Derailed.WebSocket do
   def handle(:identify, data, state) do
     case Derailed.Contracts.Identify.conform(data) do
       {:ok, model} ->
-        token_session_id = :crypto.hash(:sha256, model[:token]) |> Base.encode16(case: :lower)
+        token_session_id =
+          Base.encode16(:crypto.hash(:sha256, Map.get(model, "token")), case: :lower)
 
         {_, result} =
           Postgrex.prepare_execute!(
@@ -78,9 +79,11 @@ defmodule Derailed.WebSocket do
 
             {:ok, session_pid} =
               GenRegistry.lookup_or_start(Derailed.Session, session_id, [
-                session_id,
-                user_id,
-                self()
+                {
+                  session_id,
+                  user_id,
+                  self()
+                }
               ])
 
             {:ok, reg_pid} =
@@ -114,7 +117,8 @@ defmodule Derailed.WebSocket do
     else
       case Derailed.Contracts.Resume.conform(data) do
         {:ok, model} ->
-          token_session_id = :crypto.hash(:sha256, model[:token]) |> Base.encode16(case: :lower)
+          token_session_id =
+            :crypto.hash(:sha256, Map.get(model, "token")) |> Base.encode16(case: :lower)
 
           {_, result} =
             Postgrex.prepare_execute!(
@@ -128,7 +132,7 @@ defmodule Derailed.WebSocket do
             {:ok, auth_session} ->
               user_id = Map.get(auth_session, "account_id")
 
-              case GenRegistry.lookup(Derailed.Session, model[:session_id]) do
+              case GenRegistry.lookup(Derailed.Session, Map.get(model, "session_id")) do
                 {:ok, session_pid} ->
                   case Derailed.Session.resume_ws(session_pid, self()) do
                     :ok ->
@@ -166,15 +170,14 @@ defmodule Derailed.WebSocket do
   def handle(
         :heartbeat,
         data,
-        %{heartbeat_received: heartbeat_received, sequence: sequence} = state
+        %{heartbeat_received: heartbeat_received, sequence: current_sequence} = state
       ) do
     case Derailed.Contracts.Heartbeat.conform(data) do
       {:ok, model} ->
         if heartbeat_received do
-          {[{:close, 4007, "Heartbeat already sent during this timer period"}], state}
+          {:ok, state}
         else
-          claimed_seq = model[:sequence]
-          current_sequence = sequence
+          claimed_seq = Map.get(model, "sequence")
 
           if claimed_seq > current_sequence or current_sequence - 10 > claimed_seq do
             {[{:close, 4008, "Sequence is invalid or too outdated"}], state}

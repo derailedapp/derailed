@@ -4,8 +4,8 @@
 defmodule Derailed.Session do
   use GenServer
 
-  def start_link(id) do
-    GenServer.start_link(__MODULE__, id)
+  def start_link({id, user_id, ws_pid}) do
+    GenServer.start_link(__MODULE__, {id, user_id, ws_pid})
   end
 
   def init({id, user_id, ws_pid}) do
@@ -117,6 +117,13 @@ defmodule Derailed.Session do
   end
 
   def handle_cast(:dispatch_ready, %{id: id} = state) do
+    channels =
+      Enum.map(state[:private_channels], fn channel ->
+        channel_id = Map.get(channel, "id")
+        {:ok, channel_pid} = GenRegistry.lookup(Derailed.PrivateChannel, channel_id)
+        Map.put(channel, "members", Derailed.PrivateChannel.get_channel_members(channel_pid))
+      end)
+
     Manifold.send(state[:ws_pid], {
       :event,
       "READY",
@@ -124,7 +131,7 @@ defmodule Derailed.Session do
         relationships: state[:relationships],
         account: state[:account],
         profile: state[:profile],
-        private_channels: state[:private_channels],
+        private_channels: channels,
         session_id: id
       }
     })
@@ -138,21 +145,50 @@ defmodule Derailed.Session do
         %{
           ws_down: ws_down,
           message_queue: message_queue,
-          channels_just_deleted: channels_just_deleted
+          channels_just_deleted: channels_just_deleted,
+          private_channels: pchannels,
+          private_channel_pids: pc_pids,
+          private_channel_refs: pc_refs
         } = state
       ) do
+    state =
+      case type do
+        "PRIVATE_CHANNEL_DELETE" ->
+          %{state | channels_just_deleted: MapSet.put(channels_just_deleted, from)}
+
+        "PRIVATE_CHANNEL_CREATE" ->
+          channel_id = Map.get(data, "id")
+
+          {:ok, channel_pid} =
+            GenRegistry.lookup_or_start(Derailed.PrivateChannel, channel_id, [channel_id])
+
+          %{
+            state
+            | private_channels: MapSet.put(pchannels, data),
+              private_channel_pids: MapSet.put(pc_pids, channel_pid),
+              private_channel_refs: MapSet.put(pc_refs, Process.monitor(channel_pid))
+          }
+
+        _ ->
+          state
+      end
+
+    data =
+      case type do
+        "PRIVATE_CHANNEL_CREATE" ->
+          channel_id = Map.get(data, "id")
+          {:ok, channel_pid} = GenRegistry.lookup(Derailed.PrivateChannel, channel_id)
+          Map.put(data, "members", Derailed.PrivateChannel.get_channel_members(channel_pid))
+
+        _ ->
+          data
+      end
+
     msg = {
       :event,
       type,
       data
     }
-
-    state =
-      if type == "CHANNEL_DELETE" do
-        %{state | channels_just_deleted: MapSet.put(channels_just_deleted, from)}
-      else
-        state
-      end
 
     if ws_down do
       {:reply, :ok, %{state | message_queue: :queue.in(msg, message_queue)}}

@@ -51,7 +51,9 @@ async def follow_user(
                 )
 
                 channel = await conn.fetchrow(
-                    "SELECT * FROM channels WHERE id IN (SELECT channel_id FROM channels_members WHERE user_id = $1 UNION SELECT channel_id FROM channel_members WHERE user_id = $2) AND type = 0;"
+                    "SELECT * FROM channels WHERE id IN (SELECT channel_id FROM channel_members WHERE user_id = $1 UNION SELECT channel_id FROM channel_members WHERE user_id = $2) AND type = 0;",
+                    ses["account_id"],
+                    mentioned_user["user_id"],
                 )
 
                 if channel is None:

@@ -1,7 +1,36 @@
-<script>
+<script lang="ts">
+import "$lib/gateway";
+
 import { Gear } from "phosphor-svelte";
 import GuildScroll from "./GuildScroll.svelte";
 import AddFriend from "$lib/components/AddFriend.svelte";
+import { currentUser, privateChannels } from "$lib/state";
+import { type Profile, type Account, type PrivateChannel } from "$lib/models";
+import User from "$lib/components/User.svelte";
+
+let currentUserData: { profile: Profile; account: Account } | null =
+	$state(null);
+
+currentUser.subscribe((data) => (currentUserData = data));
+
+let privateChannelData: PrivateChannel[] = $state([]);
+
+privateChannels.subscribe((data) => (privateChannelData = data));
+
+function getChannelName(channel: PrivateChannel) {
+	if (channel.members !== undefined && channel.type === 0) {
+		let profile = channel.members.find((v) => {
+			if (currentUserData?.profile.user_id.valueOf() !== v.user_id.valueOf()) {
+				return true;
+			}
+			return false;
+		})!;
+		let name = profile.display_name || profile.username;
+		return name!;
+	} else {
+		return channel.name || "Some Channel";
+	}
+}
 </script>
 
 <!--TODO: Add logic-->
@@ -17,6 +46,11 @@ import AddFriend from "$lib/components/AddFriend.svelte";
                         </div>
                         <AddFriend />
                     </div>
+                    <div class="m-2 overflow-y-auto">
+                        {#each privateChannelData as channel}
+                            <User username={getChannelName(channel)} avatarUrl="https://avatars.githubusercontent.com/u/132799819" />
+                        {/each}
+                    </div>
                 </div>
             </div>
 
@@ -24,8 +58,8 @@ import AddFriend from "$lib/components/AddFriend.svelte";
                 <div class="flex flex-row justify-center items-center gap-2 p-3 w-full h-full">
                     <img src="https://avatars.githubusercontent.com/u/132799819" class="rounded-xl h-9" alt="ananas">
                     <div class="flex flex-col">
-                        <h1 class="text-sm">@ananasmoe</h1>
-                        <p class="text-xs text-sexy-gray">I love men</p>
+                        <h1 class="text-sm">@{currentUserData?.profile.username}</h1>
+                        <p class="text-xs text-sexy-gray">This is a placeholder</p>
                     </div>
 
                     <a href="/app/settings" class="ml-auto">

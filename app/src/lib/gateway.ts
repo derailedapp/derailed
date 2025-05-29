@@ -1,7 +1,14 @@
 import JSON from "json-bigint";
 import { emitter } from "./events";
 
-const socket = new WebSocket(import.meta.env.GATEWAY_URL);
+let socket: WebSocket;
+
+if (localStorage.getItem("token") !== null) {
+	socket = new WebSocket(import.meta.env.VITE_GATEWAY_URL);
+} else {
+	// @ts-ignore
+	socket = null;
+}
 let hbInt: number | null = null;
 let socketOpen = false;
 let sequence: number = 0;
@@ -32,6 +39,12 @@ socket.addEventListener("message", (ev) => {
 				}
 			}
 		}, d);
+		socket.send(
+			JSON.stringify({
+				op: 0,
+				d: { token: localStorage.getItem("token") },
+			}),
+		);
 	}
 
 	if (op === 1) {

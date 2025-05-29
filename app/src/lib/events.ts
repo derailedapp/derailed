@@ -1,5 +1,6 @@
 import EventEmitter from "eventemitter3";
 import { currentUser, privateChannels, users } from "./state";
+import { type PrivateChannel } from "./models";
 
 export let emitter = new EventEmitter<string, any>();
 

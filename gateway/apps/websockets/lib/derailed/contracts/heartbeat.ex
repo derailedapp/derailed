@@ -6,7 +6,7 @@ defmodule Derailed.Contracts.Heartbeat do
 
   schema do
     %{
-      required("sequence") => string()
+      required("sequence") => integer()
     }
   end
 end

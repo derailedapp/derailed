@@ -1,12 +1,16 @@
 <script lang="ts">
+import "$lib/gateway";
 import { Tabs } from "bits-ui";
 
-import {
-	User,
-	X,
-	NotePencil,
-	SignOut,
-} from "phosphor-svelte";
+import { User, X, NotePencil, SignOut } from "phosphor-svelte";
+
+import { type Profile, type Account } from "$lib/models";
+import { currentUser } from "$lib/state";
+
+let currentUserData: { profile: Profile; account: Account } | null =
+	$state(null);
+
+currentUser.subscribe((data) => (currentUserData = data));
 </script>
 
 <div class="bg-[#0b0b0d] h-screen w-full bg-center bg-cover p-4">
@@ -39,9 +43,9 @@ import {
         </Tabs.List>
 
         <div class="flex flex-col flex-1 backdrop-blur-3xl rounded-3xl border-[1px] bg-sexy-red-black/60 border-sexy-lighter-black">
-            <button class="absolute self-end mr-4 mt-4">
+            <a href="/app" class="absolute self-end mr-4 mt-4">
                 <X class="w-6 h-6" />
-            </button>
+            </a>
 
             <Tabs.Content value="myaccount">
                 <div class="flex flex-row items-center ml-4 mt-2">
@@ -75,14 +79,14 @@ import {
                                     </span>
                                 </button>
 
-                                <h1 class="self-end mb-5 ml-3 text-4xl font-bold">Ananas</h1>
+                                <h1 class="self-end mb-5 ml-3 text-4xl font-bold">{currentUserData?.profile.display_name || currentUserData?.profile.username}</h1>
                             </div>
 
                             <div class="bg-sexy-red-black/90 flex flex-col justify-center items-center mt-18 h-full w-full rounded-lg gap-8">
                                 <div class="flex flex-row justify-center items-center w-[80%] p-4 border border-sexy-lighter-black rounded-lg h-[80px]">
                                     <div class="flex-1">
                                         <h2 class="font-bold text-xl text-white">Username</h2>
-                                        <p class="text-sexy-gray text-sm truncate">ananasmoe</p>
+                                        <p class="text-sexy-gray text-sm truncate">@{currentUserData?.profile.username}</p>
                                     </div>
                                     <button class="bg-sexy-gray/20 hover:bg-sexy-gray/30 text-white px-4 rounded-lg 
                                     transition-all duration-150 flex items-center gap-2 h-full">
@@ -94,7 +98,7 @@ import {
                                 <div class="flex flex-row justify-center items-center w-[80%] p-4 border border-sexy-lighter-black rounded-lg h-[80px]">
                                     <div class="flex-1">
                                         <h2 class="font-bold text-xl text-white">Display Name</h2>
-                                        <p class="text-sexy-gray text-sm truncate">Ananas</p>
+                                        <p class="text-sexy-gray text-sm truncate">{currentUserData?.profile.display_name || "No display name set"}</p>
                                     </div>
                                     <button class="bg-sexy-gray/20 hover:bg-sexy-gray/30 text-white px-4 rounded-lg 
                                     transition-all duration-150 flex items-center gap-2 h-full">
@@ -106,7 +110,7 @@ import {
                                 <div class="flex flex-row justify-center items-center w-[80%] p-4 border border-sexy-lighter-black rounded-lg h-[80px]">
                                     <div class="flex-1">
                                         <h2 class="font-bold text-xl text-white">E-Mail Address</h2>
-                                        <p class="text-sexy-gray text-sm truncate">ananas@ananas.moe</p>
+                                        <p class="text-sexy-gray text-sm truncate">{currentUserData?.account.email}</p>
                                     </div>
                                     <button class="bg-sexy-gray/20 hover:bg-sexy-gray/30 text-white px-4 py-1 rounded-lg 
                                     transition-all duration-150 flex items-center gap-2 h-full">

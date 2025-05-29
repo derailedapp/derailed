@@ -23,7 +23,7 @@ defmodule Derailed.PrivateChannel do
       Postgrex.prepare_execute!(
         :db,
         "get_channel_members",
-        "SELECT * FROM profiles WHERE id IN (SELECT user_id FROM channel_members WHERE channel_id = $1);",
+        "SELECT * FROM profiles WHERE user_id IN (SELECT user_id FROM channel_members WHERE channel_id = $1);",
         [id]
       )
 
@@ -47,6 +47,11 @@ defmodule Derailed.PrivateChannel do
     GenServer.cast(pid, {:subscribe, session_pid})
   end
 
+  @spec get_channel_members(pid()) :: list()
+  def get_channel_members(pid) do
+    GenServer.call(pid, :get_channel_members)
+  end
+
   @spec dispatch(pid(), String.t(), term()) :: :ok
   def dispatch(pid, type, data) do
     GenServer.call(pid, {:dispatch, type, data})
@@ -66,17 +71,26 @@ defmodule Derailed.PrivateChannel do
     {:reply, :ok, state}
   end
 
+  def handle_call(:get_channel_members, _from, %{members: members} = state) do
+    {:reply, Map.values(members), state}
+  end
+
   def handle_info(
         {:DOWN, ref, :process, _pid, _reason},
         %{sessions: sessions, session_refs: session_refs} = state
       ) do
     session_id = Map.get(session_refs, ref)
 
-    {:noreply,
-     %{
-       state
-       | sessions: Map.delete(sessions, session_id),
-         session_refs: Map.delete(session_refs, ref)
-     }}
+    state = %{
+      state
+      | sessions: Map.delete(sessions, session_id),
+        session_refs: Map.delete(session_refs, ref)
+    }
+
+    if Map.equal?(state.sessions, Map.new()) do
+      {:stop, :empty_session_list, state}
+    else
+      {:noreply, state}
+    end
   end
 end
