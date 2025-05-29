@@ -3,7 +3,7 @@ import { Tabs } from "bits-ui";
 
 import {
 	User,
-	IdentificationBadge,
+	X,
 	NotePencil,
 	SignOut,
 } from "phosphor-svelte";
@@ -39,6 +39,10 @@ import {
         </Tabs.List>
 
         <div class="flex flex-col flex-1 backdrop-blur-3xl rounded-3xl border-[1px] bg-sexy-red-black/60 border-sexy-lighter-black">
+            <button class="absolute self-end mr-4 mt-4">
+                <X class="w-6 h-6" />
+            </button>
+
             <Tabs.Content value="myaccount">
                 <div class="flex flex-row items-center ml-4 mt-2">
                     <img src="https://avatars.githubusercontent.com/u/132799819" class="rounded-xl w-12 h-12" alt="me">    
