@@ -37,5 +37,6 @@ services:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/derailed
       - ALLOW_ORIGINS=http://localhost:5173
       - GRPC_TARGET=localhost:50051
+      - DEBUG=TRUE
     ports:
       - 8000:8000

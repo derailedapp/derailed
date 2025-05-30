@@ -11,6 +11,7 @@ import {
 } from "$lib/state";
 import { type Profile, type Account, type PrivateChannel } from "$lib/models";
 import User from "$lib/components/User.svelte";
+    import Settings from "./Settings.svelte";
 
 let currentUserData: { profile: Profile; account: Account } | null =
 	$state(null);
@@ -24,6 +25,8 @@ currentSidebarType.subscribe((v) => (type = v));
 
 let currentPrivateChannelId: BigInt | null = $state(null);
 currentPrivateChannel.subscribe((v) => (currentPrivateChannelId = v));
+
+let showSettings = $state(false);
 </script>
 <div class="flex flex-col select-none">
     <div class="flex h-full w-full">
@@ -55,9 +58,7 @@ currentPrivateChannel.subscribe((v) => (currentPrivateChannelId = v));
                 <p class="text-xs text-sexy-gray">This is a placeholder</p>
             </div>
 
-            <a href="/app/settings" class="ml-auto">
-                <Gear weight="fill" class="w-5 h-5 text-sexy-gray hover:text-white transition-colors duration-100" />
-            </a>
+            <Settings />
         </div>
     </div>
 </div>

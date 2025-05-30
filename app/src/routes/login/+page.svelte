@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Tabs, Checkbox } from "bits-ui";
-import Pin from "./Pin.svelte";
+import Pin from "$lib/components/Pin.svelte";
 import Icon from "@iconify/svelte";
 import UAParser from "ua-parser-js";
 
