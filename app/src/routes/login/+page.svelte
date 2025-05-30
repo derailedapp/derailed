@@ -3,6 +3,9 @@ import { Tabs, Checkbox } from "bits-ui";
 import Pin from "$lib/components/Pin.svelte";
 import Icon from "@iconify/svelte";
 import UAParser from "ua-parser-js";
+import { fly } from "svelte/transition";
+import { goto } from "$app/navigation";
+import { onMount } from "svelte";
 
 let username: string | undefined = $state();
 let email: string | undefined = $state();
@@ -68,6 +71,7 @@ async function onRegister(e: SubmitEvent) {
 	});
 	const data = await resp.json();
 	localStorage.setItem("token", String(data.token));
+    goto("/app");
 }
 
 async function onLogin(e: SubmitEvent) {
@@ -108,8 +112,15 @@ async function onLogin(e: SubmitEvent) {
 	}
 	const data = await resp.json();
 	localStorage.setItem("token", String(data.token));
-	window.location.replace("/app");
+	goto("/app");
 }
+
+onMount(async () => {
+    const token = localStorage.getItem("token");
+    if (token !== null) {
+        await goto("/app");
+    }
+})
 </script>
 
 <div class="bg-[url('/login-bg.jpg')] w-full h-screen bg-center bg-cover">
@@ -142,25 +153,27 @@ async function onLogin(e: SubmitEvent) {
                                 <input required minlength="4" maxlength="32" style="box-shadow: none;" bind:value={username} type="text" class="bg-transparent w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray appearance-none" />
                             </section>
                         </div>
-                        {#if emailSent}
-                        <div>
-                            <Pin bind:value={pinValue}></Pin>
-                        </div>
-                        {:else}
-                        <div class="flex items-center w-full">
-                            <section class="space-y-2 w-full">
-                                <div class="flex flex-row items-center justify-between">
-                                    <div class="font-bold text-sm text-sexy-gray tracking-tight">
-                                        EMAIL
+                        <div class="flex flex-row justify-center items-center w-full">
+                            {#if emailSent}
+                            <div transition:fly={{ x: 500, duration: 350 }}>
+                                <Pin bind:value={pinValue}></Pin>
+                            </div>
+                            {:else}
+                            <div class="flex items-center w-full" transition:fly={{ x: -500, duration: 50 }}>
+                                <section class="space-y-2 w-full">
+                                    <div class="flex flex-row items-center justify-between">
+                                        <div class="font-bold text-sm text-sexy-gray tracking-tight">
+                                            EMAIL
+                                        </div>
+                                        <button onclick={sendEmail} class="font-bold text-sm text-blurple tracking-tight">
+                                            SEND EMAIL
+                                        </button>
                                     </div>
-                                    <button onclick={sendEmail} class="font-bold text-sm text-blurple tracking-tight">
-                                        SEND EMAIL
-                                    </button>
-                                </div>
-                                <input required style="box-shadow: none;" bind:value={email} type="email" class="bg-transparent appearance-none w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray" />
-                            </section>
+                                    <input required style="box-shadow: none;" bind:value={email} type="email" class="bg-transparent appearance-none w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray" />
+                                </section>
+                            </div>
+                            {/if}
                         </div>
-                        {/if}
                         <div class="flex items-center w-full">
                             <section class="space-y-2 w-full">
                                 <div class="font-bold text-sm text-sexy-gray tracking-tight">
