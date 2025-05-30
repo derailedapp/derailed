@@ -13,6 +13,7 @@ import {
 	currentPrivateChannel,
 	currentUser,
 } from "$lib/state";
+import JSON from "json-bigint";
 
 let element: Element;
 let editor: Editor;
@@ -59,7 +60,7 @@ onDestroy(() => {
 });
 
 async function onKey(event: KeyboardEvent) {
-	if (event.key == "Enter") {
+	if (event.key == "Enter" && !event.shiftKey) {
 		let content = editor.getText();
 		const currentChannelId = get(currentPrivateChannel)!;
 
@@ -83,7 +84,7 @@ async function onKey(event: KeyboardEvent) {
 				body: JSON.stringify({ content, nonce }),
 			},
 		).then(async (resp) => {
-			const data = await resp.json();
+			const data = JSON.parse(await resp.text());
 			console.log(data);
 		});
 		editor.commands.clearContent();
@@ -96,8 +97,8 @@ async function onKey(event: KeyboardEvent) {
 				nonce,
 				author_id: currentUserData!.account.id,
 				channel_id: currentChannelId,
-				created_at: BigInt(now),
-				last_modified_at: BigInt(now),
+				created_at: now,
+				last_modified_at: now,
 			});
 			v.set(currentChannelId, msgs);
 			return v;

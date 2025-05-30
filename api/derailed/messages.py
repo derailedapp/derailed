@@ -28,7 +28,7 @@ from .utils import dispatch_channel
 router = APIRouter()
 
 
-@router.get("/channels/{channel_id}/message")
+@router.get("/channels/{channel_id}/messages")
 async def get_channel_messages(
     ses: Annotated[Session, Depends(get_current_session)],
     channel: Annotated[Channel, Depends(get_channel)],
@@ -52,14 +52,14 @@ async def get_channel_messages(
 
     if before:
         messages = await db.fetch(
-            "SELECT * FROM messages WHERE id < $1 AND channel_id = $3 ORDER BY DESC LIMIT $2;",
+            "SELECT * FROM messages WHERE id < $1 AND channel_id = $3 ORDER BY id DESC LIMIT $2;",
             before,
             limit,
             channel["id"],
         )
     elif after:
         messages = await db.fetch(
-            "SELECT * FROM messages WHERE id > $1 AND channel_id = $3 ORDER BY DESC LIMIT $2;",
+            "SELECT * FROM messages WHERE id > $1 AND channel_id = $3 ORDER BY id DESC LIMIT $2;",
             before,
             limit,
             channel["id"],
@@ -67,14 +67,14 @@ async def get_channel_messages(
     elif around:
         pieces = round(limit / 2)
         messages = await db.fetch(
-            "SELECT * FROM messages WHERE id < $1 AND channel_id = $3 ORDER BY DESC LIMIT $2 UNION SELECT * FROM messages WHERE id > $1 AND channel_id = $3 ORDER BY DESC LIMIT $2",
+            "SELECT * FROM messages WHERE id < $1 AND channel_id = $3 ORDER BY id DESC LIMIT $2 UNION SELECT * FROM messages WHERE id > $1 AND channel_id = $3 ORDER BY id DESC LIMIT $2",
             around,
             pieces,
             channel["id"],
         )
     else:
         messages = await db.fetch(
-            "SELECT * FROM messages WHERE channel_id = $1 ORDER BY DESC LIMIT $2;",
+            "SELECT * FROM messages WHERE channel_id = $1 ORDER BY id DESC LIMIT $2;",
             channel["id"],
             limit,
         )

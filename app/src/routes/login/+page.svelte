@@ -71,7 +71,7 @@ async function onRegister(e: SubmitEvent) {
 	});
 	const data = await resp.json();
 	localStorage.setItem("token", String(data.token));
-    goto("/app");
+	goto("/app");
 }
 
 async function onLogin(e: SubmitEvent) {
@@ -116,11 +116,11 @@ async function onLogin(e: SubmitEvent) {
 }
 
 onMount(async () => {
-    const token = localStorage.getItem("token");
-    if (token !== null) {
-        await goto("/app");
-    }
-})
+	const token = localStorage.getItem("token");
+	if (token !== null) {
+		await goto("/app");
+	}
+});
 </script>
 
 <div class="bg-[url('/login-bg.jpg')] w-full h-screen bg-center bg-cover">

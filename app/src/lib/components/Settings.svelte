@@ -6,7 +6,7 @@ import { User, X, NotePencil, SignOut, Gear } from "phosphor-svelte";
 
 import { type Profile, type Account } from "$lib/models";
 import { currentUser } from "$lib/state";
-    import { fly } from "svelte/transition";
+import { fly } from "svelte/transition";
 
 let currentUserData: { profile: Profile; account: Account } | null =
 	$state(null);

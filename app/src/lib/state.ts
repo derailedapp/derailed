@@ -18,6 +18,7 @@ export const currentGuild = writable<BigInt | null>(null);
 export const currentSidebarType = writable<"guild" | "dms">("dms");
 export const channelMessages = writable<Map<BigInt, Message[]>>(new Map());
 export const waitingForMessages = writable<BigInt[]>([]);
+export const savedChannels = writable<BigInt[]>([]);
 
 export const toasts = writable<Toast[]>([]);
 

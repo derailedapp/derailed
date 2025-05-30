@@ -33,7 +33,7 @@ export interface Message {
 	author_id: BigInt;
 	content: string;
 	channel_id: BigInt;
-	created_at: BigInt;
-	last_modified_at: BigInt;
+	created_at: number;
+	last_modified_at: number;
 	nonce: string | undefined;
 }

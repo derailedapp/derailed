@@ -11,7 +11,7 @@ import {
 } from "$lib/state";
 import { type Profile, type Account, type PrivateChannel } from "$lib/models";
 import User from "$lib/components/User.svelte";
-    import Settings from "./Settings.svelte";
+import Settings from "./Settings.svelte";
 
 let currentUserData: { profile: Profile; account: Account } | null =
 	$state(null);
