@@ -1,6 +1,7 @@
 # Licensed under AGPL-3.0. Found in LICENSE.md in the project root.
 # Copyright 2025 Derailed
 
+import json
 import os
 from typing import Any
 
@@ -32,4 +33,6 @@ async def dispatch_channel(channel_id: int, type: str, data: Any) -> None:
 
     async with grpc.insecure_channel(grpc_target) as channel:
         stub = GatewayStub(channel)
-        await stub.dispatch_channel(Interchange(t=type, id=channel_id, d=data))  # type: ignore
+
+        msg = Interchange(t=type, id=channel_id, d=json.dumps(data))
+        await stub.dispatch_channel(msg)  # type: ignore

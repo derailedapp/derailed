@@ -18,11 +18,10 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
-from google.protobuf import any_pb2 as google_dot_protobuf_dot_any__pb2
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\rgateway.proto\x12\x10\x64\x65railed.gateway\x1a\x19google/protobuf/any.proto\x1a\x1bgoogle/protobuf/empty.proto"E\n\x0bInterchange\x12\t\n\x01t\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\x03\x12\x1f\n\x01\x64\x18\x03 \x01(\x0b\x32\x14.google.protobuf.Any"\x17\n\tGuildInfo\x12\n\n\x02id\x18\x01 \x01(\x03"5\n\rGuildMetadata\x12\x11\n\tavailable\x18\x01 \x01(\x08\x12\x11\n\tpresences\x18\x02 \x01(\x05\x32\x9c\x01\n\x07Gateway\x12\x46\n\rdispatch_user\x12\x1d.derailed.gateway.Interchange\x1a\x16.google.protobuf.Empty\x12I\n\x10\x64ispatch_channel\x12\x1d.derailed.gateway.Interchange\x1a\x16.google.protobuf.Emptyb\x06proto3'
+    b'\n\rgateway.proto\x12\x10\x64\x65railed.gateway\x1a\x1bgoogle/protobuf/empty.proto"/\n\x0bInterchange\x12\t\n\x01t\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\x03\x12\t\n\x01\x64\x18\x03 \x01(\t"\x17\n\tGuildInfo\x12\n\n\x02id\x18\x01 \x01(\x03"5\n\rGuildMetadata\x12\x11\n\tavailable\x18\x01 \x01(\x08\x12\x11\n\tpresences\x18\x02 \x01(\x05\x32\x9c\x01\n\x07Gateway\x12\x46\n\rdispatch_user\x12\x1d.derailed.gateway.Interchange\x1a\x16.google.protobuf.Empty\x12I\n\x10\x64ispatch_channel\x12\x1d.derailed.gateway.Interchange\x1a\x16.google.protobuf.Emptyb\x06proto3'
 )
 
 _globals = globals()
@@ -30,12 +29,12 @@ _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, "gateway_pb2", _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
     DESCRIPTOR._loaded_options = None
-    _globals["_INTERCHANGE"]._serialized_start = 91
-    _globals["_INTERCHANGE"]._serialized_end = 160
-    _globals["_GUILDINFO"]._serialized_start = 162
-    _globals["_GUILDINFO"]._serialized_end = 185
-    _globals["_GUILDMETADATA"]._serialized_start = 187
-    _globals["_GUILDMETADATA"]._serialized_end = 240
-    _globals["_GATEWAY"]._serialized_start = 243
-    _globals["_GATEWAY"]._serialized_end = 399
+    _globals["_INTERCHANGE"]._serialized_start = 64
+    _globals["_INTERCHANGE"]._serialized_end = 111
+    _globals["_GUILDINFO"]._serialized_start = 113
+    _globals["_GUILDINFO"]._serialized_end = 136
+    _globals["_GUILDMETADATA"]._serialized_start = 138
+    _globals["_GUILDMETADATA"]._serialized_end = 191
+    _globals["_GATEWAY"]._serialized_start = 194
+    _globals["_GATEWAY"]._serialized_end = 350
 # @@protoc_insertion_point(module_scope)

@@ -84,6 +84,7 @@ async def get_channel_messages(
 
 class CreateMessage(BaseModel):
     content: str
+    nonce: str
 
 
 MENTION_RE = re.compile(r"<@(\d+)>")
@@ -141,6 +142,7 @@ async def create_message(
             del user_ids
 
     message = cast(Message, dict(cast(asyncpg.Record, message)))
+    message["nonce"] = model.nonce  # type: ignore
 
     await dispatch_channel(channel["id"], "MESSAGE_CREATE", message)
 
@@ -178,10 +180,12 @@ async def update_message(
 
     if model.content is not None:
         message["content"] = model.content
+        message["last_modified_at"] = int(time())
         await db.execute(
-            "UPDATE messages SET content = $1 WHERE id = $2;",
+            "UPDATE messages SET content = $1, last_modified_at = $2 WHERE id = $2;",
             model.content,
             message["id"],
+            message["last_modified_at"],
         )
 
     await dispatch_channel(channel["id"], "MESSAGE_UPDATE", message)

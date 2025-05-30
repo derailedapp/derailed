@@ -30,7 +30,8 @@ defmodule Derailed.Interchange.MixProject do
       {:gen_registry, "~> 1.3.0"},
       {:protobuf, "~> 0.14.1"},
       {:private_channels, in_umbrella: true},
-      {:sessions, in_umbrella: true}
+      {:sessions, in_umbrella: true},
+      {:jason, "~> 1.4"}
     ]
   end
 end

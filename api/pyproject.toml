@@ -24,4 +24,5 @@ dev = [
     "black>=25.1.0",
     "grpc-stubs>=1.53.0.6",
     "isort>=6.0.1",
+    "types-grpcio>=1.0.0.20250525",
 ]

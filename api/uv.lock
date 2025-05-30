@@ -67,6 +67,7 @@ dev = [
     { name = "black" },
     { name = "grpc-stubs" },
     { name = "isort" },
+    { name = "types-grpcio" },
 ]
 
 [package.metadata]
@@ -90,6 +91,7 @@ dev = [
     { name = "black", specifier = ">=25.1.0" },
     { name = "grpc-stubs", specifier = ">=1.53.0.6" },
     { name = "isort", specifier = ">=6.0.1" },
+    { name = "types-grpcio", specifier = ">=1.0.0.20250525" },
 ]
 
 [[package]]
@@ -844,6 +846,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/6c/89/c527e6c848739be8ceb5c44eb8208c52ea3515c6cf6406aa61932887bf58/typer-0.15.4.tar.gz", hash = "sha256:89507b104f9b6a0730354f27c39fae5b63ccd0c95b1ce1f1a6ba0cfd329997c3", size = 101559 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c9/62/d4ba7afe2096d5659ec3db8b15d8665bdcb92a3c6ff0b95e99895b335a9c/typer-0.15.4-py3-none-any.whl", hash = "sha256:eb0651654dcdea706780c466cf06d8f174405a659ffff8f163cfbfee98c0e173", size = 45258 },
+]
+
+[[package]]
+name = "types-grpcio"
+version = "1.0.0.20250525"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a7/2c/a72fcf01e8baa4e566af66692856f8f910ea201876270503175f80aeaeed/types_grpcio-1.0.0.20250525.tar.gz", hash = "sha256:09e1474e424bab14cadcb1d6cf523c1abd94b1a2f2ca4588ec1322982bf7e043", size = 14782 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ed/00/3b18c464b13437da630aabb67f846ec23eddb1471b8e74e85833be2c218b/types_grpcio-1.0.0.20250525-py3-none-any.whl", hash = "sha256:9ecada39bda35a445829f6f02ef86297d48c5aa0f8cffadb645929489cfb8fe4", size = 15658 },
 ]
 
 [[package]]

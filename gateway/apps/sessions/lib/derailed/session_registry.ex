@@ -39,7 +39,7 @@ defmodule Derailed.SessionRegistry do
      }}
   end
 
-  def handle_call({:dispatch, type, data}, %{sessions: sessions} = state) do
+  def handle_call({:dispatch, type, data}, _from, %{sessions: sessions} = state) do
     Enum.each(sessions, fn pid -> Derailed.Session.dispatch(pid, type, data) end)
     {:reply, :ok, state}
   end

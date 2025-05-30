@@ -1,9 +1,6 @@
 from typing import ClassVar as _ClassVar
-from typing import Mapping as _Mapping
 from typing import Optional as _Optional
-from typing import Union as _Union
 
-from google.protobuf import any_pb2 as _any_pb2
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import empty_pb2 as _empty_pb2
 from google.protobuf import message as _message
@@ -17,12 +14,9 @@ class Interchange(_message.Message):
     D_FIELD_NUMBER: _ClassVar[int]
     t: str
     id: int
-    d: _any_pb2.Any
+    d: str
     def __init__(
-        self,
-        t: _Optional[str] = ...,
-        id: _Optional[int] = ...,
-        d: _Optional[_Union[_any_pb2.Any, _Mapping]] = ...,
+        self, t: _Optional[str] = ..., id: _Optional[int] = ..., d: _Optional[str] = ...
     ) -> None: ...
 
 class GuildInfo(_message.Message):

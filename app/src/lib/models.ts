@@ -27,3 +27,13 @@ export interface Toast {
 	message: string;
 	timeout: number;
 }
+
+export interface Message {
+	id: BigInt;
+	author_id: BigInt;
+	content: string;
+	channel_id: BigInt;
+	created_at: BigInt;
+	last_modified_at: BigInt;
+	nonce: string | undefined;
+}

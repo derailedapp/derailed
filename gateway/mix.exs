@@ -16,7 +16,7 @@ defmodule Derailed.MixProject do
             db: :permanent,
             websockets: :permanent
           ]
-        ],
+        ]
       ]
     ]
   end

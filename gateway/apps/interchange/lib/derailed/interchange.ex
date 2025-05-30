@@ -9,10 +9,11 @@ defmodule Derailed.Interchange do
   def dispatch_user(request, _stream) do
     user_id = request.id
     type = request.t
-    data = request.d
+    data = Jason.decode!(request.d)
 
     case GenRegistry.lookup(Derailed.SessionRegistry, user_id) do
       {:ok, pid} -> Derailed.SessionRegistry.dispatch(pid, type, data)
+      _ -> :ok
     end
 
     %Google.Protobuf.Empty{}
@@ -23,10 +24,11 @@ defmodule Derailed.Interchange do
   def dispatch_channel(request, _stream) do
     channel_id = request.id
     type = request.t
-    data = request.d
+    data = Jason.decode!(request.d)
 
     case GenRegistry.lookup(Derailed.PrivateChannel, channel_id) do
       {:ok, pid} -> Derailed.PrivateChannel.dispatch(pid, type, data)
+      _ -> :ok
     end
 
     %Google.Protobuf.Empty{}

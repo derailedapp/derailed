@@ -1,6 +1,3 @@
-# Licensed under AGPL-3.0. Found in LICENSE.md in the project root.
-# Copyright 2025 Derailed
-
 defmodule Derailed.Gateway.Interchange do
   @moduledoc false
 
@@ -8,7 +5,7 @@ defmodule Derailed.Gateway.Interchange do
 
   field(:t, 1, type: :string)
   field(:id, 2, type: :int64)
-  field(:d, 3, type: Google.Protobuf.Any)
+  field(:d, 3, type: :string)
 end
 
 defmodule Derailed.Gateway.GuildInfo do
