@@ -3,10 +3,12 @@
 
 from __future__ import annotations
 
+import io
 import os
 from hashlib import sha256
 from typing import TYPE_CHECKING, Annotated, cast
 
+import aioboto3
 import asyncpg
 from fastapi import Depends, Header, HTTPException, Path
 from snowflake import SnowflakeGenerator  # type: ignore
@@ -15,11 +17,60 @@ from .models import Account, Channel, GuildChannel, Profile, Session  # type: ig
 
 db: Pool | None = None
 snow = SnowflakeGenerator(int(os.getenv("NODE_ID", "1")), epoch=1649325271415)
+boto3_session: aioboto3.Session | None = None
 
 if TYPE_CHECKING:
     type Pool = asyncpg.Pool[asyncpg.Record]
 else:
     type Pool = asyncpg.Pool
+
+
+async def upload_file(bucket: str, key: str, file: bytes) -> None:
+    global boto3_session
+    endpoint = os.getenv("S3_ENDPOINT")
+    if endpoint is None:
+        return
+
+    if boto3_session is None:
+        boto3_session = aioboto3.Session()
+
+    async with boto3_session.client(
+        "s3",
+        region_name="us-east-1",
+        aws_access_key_id=os.environ["S3_ACCESS_KEY"],
+        aws_secret_access_key=os.environ["S3_SECRET_KEY"],
+        endpoint_url=endpoint,
+        use_ssl=False,
+    ) as s3:
+        try:
+            await s3.create_bucket(Bucket=bucket)
+        except s3.exceptions.BucketAlreadyOwnedByYou:
+            pass
+
+        await s3.upload_fileobj(Fileobj=io.BytesIO(file), Bucket=bucket, Key=key)
+
+
+async def delete_file(
+    bucket: str,
+    key: str,
+) -> None:
+    global boto3_session
+    endpoint = os.getenv("S3_ENDPOINT")
+    if endpoint is None:
+        return
+
+    if boto3_session is None:
+        boto3_session = aioboto3.Session()
+
+    async with boto3_session.client(
+        "s3",
+        region_name="us-east-1",
+        aws_access_key_id=os.environ["S3_ACCESS_KEY"],
+        aws_secret_access_key=os.environ["S3_SECRET_KEY"],
+        endpoint_url=endpoint,
+        use_ssl=False,
+    ) as s3:
+        await s3.delete_object(Bucket=bucket, Key=key)
 
 
 async def get_database() -> Pool:

@@ -5,6 +5,7 @@ description = "The Derailed API"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "aioboto3>=14.3.0",
     "aiocache>=0.12.3",
     "aiosmtplib>=4.0.1",
     "argon2-cffi>=23.1.0",
@@ -14,7 +15,9 @@ dependencies = [
     "grpcio-tools>=1.71.0",
     "jinja2[async]>=3.1.6",
     "mjml>=0.11.1",
+    "python-datauri>=3.0.2",
     "python-dotenv>=1.1.0",
+    "pyvips[binary]>=3.0.0",
     "snowflake-id>=1.0.2",
 ]
 
@@ -24,5 +27,7 @@ dev = [
     "black>=25.1.0",
     "grpc-stubs>=1.53.0.6",
     "isort>=6.0.1",
+    "requests>=2.32.3",
+    "types-aioboto3>=14.3.0",
     "types-grpcio>=1.0.0.20250525",
 ]

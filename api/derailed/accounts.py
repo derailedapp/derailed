@@ -1,7 +1,9 @@
 # Licensed under AGPL-3.0. Found in LICENSE.md in the project root.
 # Copyright 2025 Derailed
 
+import asyncio
 import secrets
+from asyncio import to_thread
 from base64 import b32encode
 from hashlib import sha256
 from random import randint
@@ -12,10 +14,20 @@ import asyncpg
 from aiocache import SimpleMemoryCache  # type: ignore
 from argon2 import PasswordHasher
 from argon2 import exceptions as argon_exceptions
+from datauri import DataURI
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr, Field
+from pyvips import Error, Image
 
-from .db import Pool, get_current_session, get_database, snow
+from .db import (
+    Pool,
+    delete_file,
+    get_current_session,
+    get_database,
+    get_profile,
+    snow,
+    upload_file,
+)
 from .emails import send_verification_email
 from .missing import MISSING, Maybe
 from .models import Account, Profile, Session
@@ -269,3 +281,129 @@ async def modify_self(
             await dispatch_channel(channel["id"], "USER_UPDATE", profile)
 
         return User(account=account, profile=profile)
+
+
+class ModifyAssets(BaseModel):
+    avatar: Maybe[DataURI | None] = Field(MISSING)
+    banner: Maybe[DataURI | None] = Field(MISSING)
+
+
+def avatar_to_webp(image: Image) -> bytes:
+    scale = max(400 / image.width, 400 / image.height)  # type: ignore
+    resized = image.resize(scale)  # type: ignore
+
+    # Crop center to 400x400
+    left = (resized.width - 400) // 2  # type: ignore
+    top = (resized.height - 400) // 2  # type: ignore
+    cropped = resized.crop(left, top, 400, 400)  # type: ignore
+
+    return cropped.webpsave_buffer(Q=40, lossless=False, near_lossless=True, strip=True)
+
+
+def banner_to_webp(image: Image) -> bytes:
+    scale = max(1500 / image.width, 500 / image.height)  # type: ignore
+    resized = image.resize(scale)  # type: ignore
+
+    # Crop center to 1500x500
+    left = (resized.width - 1500) // 2  # type: ignore
+    top = (resized.height - 500) // 2  # type: ignore
+    cropped = resized.crop(left, top, 1500, 500)  # type: ignore
+
+    return cropped.webpsave_buffer(Q=40, lossless=False, near_lossless=True, strip=True)
+
+
+@router.patch("/users/@me/assets")
+async def modify_assets(
+    model: ModifyAssets,
+    ses: Annotated[Session, Depends(get_current_session)],
+    db: Annotated[Pool, Depends(get_database)],
+) -> Profile:
+    async with db.acquire() as conn:
+        profile = await get_profile(ses["account_id"], db)
+        async with conn.transaction():
+            if model.avatar is None:
+                await db.execute(
+                    "UPDATE profiles SET avatar = $1 WHERE user_id = $2;",
+                    None,
+                    ses["account_id"],
+                )
+                profile["avatar"] = None
+
+            if model.avatar:
+                if model.avatar.mimetype in [
+                    "image/png",
+                    "image/webp",
+                    "image/gif",
+                    "image/jpeg",
+                ]:
+                    try:
+                        image: Image = cast(
+                            Image,
+                            Image.new_from_buffer(
+                                model.avatar.data, "", fail=True, access="sequential"
+                            ),
+                        )
+                    except Error:
+                        raise HTTPException(400, "Invalid image")
+
+                    avatar = await to_thread(avatar_to_webp, image=image)
+                    avatar_id = str(next(snow))
+                    if profile["avatar"] is not None:
+                        await delete_file("avatars", profile["avatar"])
+                    await upload_file("avatars", avatar_id, avatar)
+                    await conn.execute(
+                        "UPDATE profiles SET avatar = $1 WHERE user_id = $2;",
+                        avatar_id,
+                        ses["account_id"],
+                    )
+                else:
+                    raise HTTPException(400, "Mimetype not supported")
+
+            if model.banner is None:
+                await db.execute(
+                    "UPDATE profiles SET banner = $1 WHERE user_id = $2;",
+                    None,
+                    ses["account_id"],
+                )
+                profile["banner"] = None
+
+            if model.banner:
+                if model.banner.mimetype in [
+                    "image/png",
+                    "image/webp",
+                    "image/gif",
+                    "image/jpeg",
+                ]:
+                    try:
+                        image: Image = cast(
+                            Image,
+                            Image.new_from_buffer(
+                                model.banner.data, "", fail=True, access="sequential"
+                            ),
+                        )
+                    except Error:
+                        raise HTTPException(400, "Invalid image")
+
+                    banner = await to_thread(banner_to_webp, image=image)
+                    banner_id = str(next(snow))
+                    if profile["banner"] is not None:
+                        await delete_file("banners", profile["banner"])
+                    await upload_file("banners", banner_id, banner)
+                    await conn.execute(
+                        "UPDATE profiles SET banner = $1 WHERE user_id = $2;",
+                        banner_id,
+                        ses["account_id"],
+                    )
+                else:
+                    raise HTTPException(400, "Mimetype not supported")
+
+        channel_ids = await conn.fetch(
+            "SELECT id FROM channels WHERE id IN (SELECT channel_id FROM channel_members WHERE user_id = $1);",
+            ses["account_id"],
+        )
+
+    await asyncio.gather(
+        *[dispatch_channel(c["id"], "USER_UPDATE", profile) for c in channel_ids]
+    )
+
+    return cast(Profile, dict(cast(asyncpg.Record, profile)))
