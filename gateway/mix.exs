@@ -6,7 +6,18 @@ defmodule Derailed.MixProject do
       apps_path: "apps",
       version: "0.0.0",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      releases: [
+        all: [
+          applications: [
+            interchange: :permanent,
+            private_channels: :permanent,
+            sessions: :permanent,
+            db: :permanent,
+            websockets: :permanent
+          ]
+        ],
+      ]
     ]
   end
 
