@@ -1,3 +1,6 @@
+<script>
+import { goto } from "$app/navigation";
+</script>
 {#snippet borderB()}
     <div class="border-b border-sexy-lighter-gray w-full h-[1px]"></div>
 {/snippet}
@@ -5,7 +8,7 @@
 <div class="flex flex-col items-center gap-2 pt-2 w-[80px] 
 backdrop-blur-3xl rounded-3xl border-[1px] my-2 ml-2 z-[997] bg-sexy-red-black/60 border-sexy-lighter-black">
 
-    <button onclick={() => {}} class="rounded-3xl transition-all ease-in-out
+    <button onclick={() => goto("/app")} class="rounded-3xl transition-all ease-in-out
         duration-250 max-h-12 max-w-12 w-full h-full
         hover:bg-sexy-lighter-black/70 hover:rounded-xl">
 

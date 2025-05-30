@@ -1,4 +1,4 @@
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 import {
 	type Profile,
 	type Account,
@@ -12,6 +12,9 @@ export const currentUser = writable<{
 } | null>(null);
 export const users = writable<Profile[]>([]);
 export const privateChannels = writable<PrivateChannel[]>([]);
+export const currentPrivateChannel = writable<BigInt | null>(null);
+export const currentGuild = writable<BigInt | null>(null);
+export const currentSidebarType = writable<"guild" | "dms">("dms");
 
 export const toasts = writable<Toast[]>([]);
 
@@ -37,3 +40,20 @@ export const addToast = (
 export const dismissToast = (id: number) => {
 	toasts.update((all) => all.filter((t) => t.id !== id));
 };
+
+export function getChannelName(channel: PrivateChannel) {
+	const currentUserData = get(currentUser);
+
+	if (channel.members !== undefined && channel.type === 0) {
+		let profile = channel.members.find((v) => {
+			if (currentUserData?.profile.user_id.valueOf() !== v.user_id.valueOf()) {
+				return true;
+			}
+			return false;
+		})!;
+		let name = profile.display_name || profile.username;
+		return name!;
+	} else {
+		return channel.name || "Some Channel";
+	}
+}

@@ -8,6 +8,21 @@ body {
 	@apply text-white;
 }
 
+.tiptap p.is-editor-empty:first-child::before {
+	@apply text-sexy-gray/50;
+	content: attr(data-placeholder);
+	float: left;
+	height: 0;
+	pointer-events: none;
+}
+
+.ProseMirror {
+	@apply overflow-y-auto max-h-[240px];
+}
+.ProseMirror-focused {
+	@apply outline-0;
+}
+
 @theme {
 	--color-blurple: #8aa3ff;
 	--color-sexy-lighter-black: #2a2a2e;
