@@ -2,30 +2,31 @@
 import DerailedLogo from "./derailed_logo.svg";
 ---
 
-<header class="flex flex-row w-full fixed items-center py-6 justify-evenly top-0 text-white px-14 h-20">
-    <a href="/" class="flex flex-col justify-center items-center">
-        <DerailedLogo height="34" width="238" />
-        <h2 class="text-[10px] ml-10">The People's Social Media</h2>
-    </a>
+<header class="flex w-full fixed items-center py-6 justify-center top-0 text-white h-28">
+    <div class="flex flex-row items-center gap-10 px-4 rounded-full justify-evenly text-white bg-black/40 backdrop-blur-3xl h-full">
+        <a href="/">
+            <DerailedLogo height="34px" />
+        </a>
 
-    <div class="flex flex-row items-center justify-between">
-        <a href="/about" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold">
-            About
-        </a>
-        <a href="/features" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold">
-            Features
-        </a>
-        <a href="/blog" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold">
-            Blog
-        </a>
-        <a href="/terms" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold">
-            Terms
-        </a>
-        <a href="/privacy" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold">
-            Privacy
+        <div class="flex flex-row items-center justify-between">
+            <a href="/about" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold">
+                About
+            </a>
+            <a href="/features" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold">
+                Features
+            </a>
+            <a href="/news" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold">
+                Newsroom
+            </a>
+            <a href="/terms" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold">
+                Terms
+            </a>
+            <a href="/privacy" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold">
+                Privacy
+            </a>
+        </div>
+        <a href="https://app.derailed.top" class="bg-blurple p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold transition-all duration-200">
+            Open Derailed
         </a>
     </div>
-    <a href="https://app.derailed.top" class="bg-blurple p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold transition-all duration-200">
-        Open Derailed
-    </a>
 </header>

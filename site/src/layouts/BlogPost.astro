@@ -1,0 +1,46 @@
+---
+import '../global.css';
+import moment from "moment-timezone";
+import Header from "../components/Header.astro";
+const {frontmatter} = Astro.props;
+---
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{frontmatter.title} | Derailed Blog</title>
+	</head>
+    <body class="flex h-screen w-full bg-black">
+        <Header />
+
+        <div class="flex flex-col mt-44 items-center w-full">
+            <div class="max-w-3xl mb-10 space-y-5">
+                <div class="text-sexy-gray">
+                    <div>
+                        <div>
+                            {frontmatter.type}
+                        </div>
+                        <div>
+                            {moment.unix(frontmatter.timestamp).format('MMMM Do YYYY')}
+                        </div>
+                    </div>
+                    <div class="text-blurple">
+                        {frontmatter.author}
+                    </div>
+                </div>
+                <div class="text-5xl font-bold">
+                    {frontmatter.title}
+                </div>
+                <div class="text-3xl">
+                    {frontmatter.description}
+                </div>
+            </div>
+            <img class="rounded-2xl" src={frontmatter.image} height="400px" width="1000px" style="object-fit:contain;" />
+            <div class="mt-10 flex flex-col max-w-2xl text-pretty justify-center">
+                <slot />
+            </div>
+        </div>
+    </body>
+</html>

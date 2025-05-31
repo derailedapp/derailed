@@ -16,3 +16,36 @@ body {
 	--color-sexy-red-black: #141417;
 	--color-sexy-gray: #a0a0a5;
 }
+
+blockquote {
+	@apply italic text-sexy-gray ml-4;
+}
+
+p {
+	@apply text-pretty whitespace-pre-wrap my-1;
+}
+
+h1 {
+	@apply text-4xl font-bold my-4;
+}
+
+h2 {
+	@apply text-3xl font-bold my-4;
+}
+
+h3 {
+	@apply text-2xl font-bold my-2.5;
+}
+
+h4 {
+	@apply text-xl font-bold my-2.5;
+}
+
+ul {
+	list-style:disc;
+	@apply pl-8;
+}
+
+code {
+	@apply bg-sexy-lighter-black/80 p-0.5 rounded-md;
+}

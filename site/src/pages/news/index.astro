@@ -1,0 +1,79 @@
+---
+import '../../global.css';
+import Header from "../../components/Header.astro";
+// @ts-ignore
+import { getCollection } from 'astro:content';
+// @ts-ignore
+import Clock from "../../../public/clock.svg";
+import moment from "moment-timezone";
+
+const posts = await getCollection("blog");
+
+posts.sort((a, b) => a.data.timestamp - b.data.timestamp);
+const newestPostRaw = posts.pop();
+const newestPostId = newestPostRaw!.id;
+const newestPost = newestPostRaw!.data;
+
+function getDate(ts: number): string {
+    return moment.unix(ts).calendar(null, {
+        sameDay: '[Today]',
+        lastDay: '[Yesterday]',
+        lastWeek: '[Last] dddd',
+        sameElse: 'DD/MM/YYYY'
+    })
+}
+---
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Derailed Newsroom</title>
+	</head>
+    <body class="flex h-screen w-full bg-black">
+        <Header />
+
+        <div class="flex flex-col mt-44 items-center w-full">
+            <div class="mb-14 text-4xl font-bold">
+                Latest News
+            </div>
+            <a href={`/news/${newestPostId}`} class="flex flex-row w-[52rem] items-center bg-sexy-red-black/65 rounded-4xl">
+                <img class="rounded-l-4xl" src={newestPost.image} height="250px" width="500px" style="object-fit:contain;" />
+                <div class="pl-5 w-full flex flex-col justify-between py-7 h-full">
+                    <div class="space-y-3">
+                        <div class="text-sexy-gray font-semibold">
+                            {newestPost.type}
+                        </div>
+                        <div class="font-bold text-4xl">
+                            {newestPost.title}
+                        </div>
+                    </div>
+                    <div class="text-sexy-gray font-semibold flex flex-row items-center gap-0.5">
+                        <Clock height="24px" /><div>{getDate(newestPost.timestamp)}</div>
+                    </div>
+                </div>
+            </a>
+            <div class="grid grid-cols-2 gap-4 mt-4 w-[52rem]">
+                {posts.map((post) => (
+                    <a href={`/news/${post.id}`} class="flex flex-col items-center bg-sexy-red-black/65 rounded-4xl">
+                        <img class="rounded-t-4xl" src={post.data.image} height="250px" width="500px" style="object-fit:contain;" />
+                        <div class="p-5 w-full flex flex-col items-start gap-3 justify-between py-7 h-full">
+                            <div class="space-y-3">
+                                <div class="text-sexy-gray font-semibold">
+                                    {post.data.type}
+                                </div>
+                                <div class="font-bold text-4xl">
+                                    {post.data.title}
+                                </div>
+                            </div>
+                            <div class="text-sexy-gray font-semibold flex flex-row items-center justify-end gap-0.5">
+                                <Clock height="24px" /><div>{getDate(post.data.timestamp)}</div>
+                            </div>
+                        </div>
+                    </a>
+                ))}
+            </div>
+        </div>
+    </body>
+</html>
