@@ -37,3 +37,8 @@ export interface Message {
 	last_modified_at: number;
 	nonce: string | undefined;
 }
+
+export enum CropType {
+	Banner,
+	Avatar
+}

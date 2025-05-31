@@ -5,10 +5,13 @@ import { Dialog, Tabs } from "bits-ui";
 import { User, X, NotePencil, SignOut, Gear } from "phosphor-svelte";
 
 import { type Profile, type Account } from "$lib/models";
-import { currentUser } from "$lib/state";
+import { addToast, currentUser } from "$lib/state";
 
-let banner: FileList | undefined = $state();
-let avatar: FileList | undefined = $state();
+import { CropType } from "$lib/models";
+    import Cropper from "./Cropper.svelte";
+
+let banner: File | undefined = $state();
+let avatar: File | undefined = $state();
 
 let newUsername: string = $state("");
 let newDisplayName: string = $state("");
@@ -25,9 +28,11 @@ currentUser.subscribe((data) => {
     }
 });
 
+let crop: { type: CropType, image: string } | null = $state(null);
+
 const getBanner = () => {
     if (banner) {
-        return URL.createObjectURL(banner[0]);
+        return URL.createObjectURL(banner);
     } else if ($currentUser?.profile.banner) {
         return import.meta.env.VITE_CDN_URL + "/banners/" + $currentUser?.profile.banner;
     }
@@ -37,7 +42,7 @@ const getBanner = () => {
 
 const getAvatar = () => {
     if (avatar) {
-        return URL.createObjectURL(avatar[0]);
+        return URL.createObjectURL(avatar);
     } else if ($currentUser?.profile.avatar) {
         return import.meta.env.VITE_CDN_URL + "/avatars/" + $currentUser?.profile.avatar;
     }
@@ -50,11 +55,11 @@ const onSubmit = async (e: Event) => {
     const payload: { avatar?: string; banner?: string; username?: string; email?: string; display_name?: string; } = {};
 
     if (avatar) {
-        payload.avatar = await fileToDataURI(avatar[0]);
+        payload.avatar = await fileToDataURI(avatar);
     }
 
     if (banner) {
-        payload.banner = await fileToDataURI(banner[0]);
+        payload.banner = await fileToDataURI(banner);
     }
 
     if (newUsername != $currentUser?.profile.username) {
@@ -102,11 +107,30 @@ const fileToDataURI = (file: File): Promise<string> => {
         reader.readAsDataURL(file);
     });
 };
+
+const setCrop = async (e: Event & { currentTarget: EventTarget & HTMLInputElement }, type: CropType) => {
+    const file = URL.createObjectURL(e.currentTarget.files![0]);
+
+    crop = { 
+        type: type, 
+        image: file
+    }
+}
+
+const cropped = (newImage: File, type: CropType) => {
+    if (type === CropType.Banner) {
+        banner = newImage;
+    } else {
+        avatar = newImage;
+    }
+
+    crop = null;
+}
 </script>
 
 <Dialog.Root>
-    <input type="file" accept="image/png, image/jpeg, image/webp" bind:files={banner} class="hidden" bind:this={bannerInput}>
-    <input type="file" accept="image/png, image/jpeg, image/webp" bind:files={avatar} class="hidden" bind:this={avatarInput}>
+    <input type="file" accept="image/png, image/jpeg, image/webp" class="hidden" onchange={(e) => {setCrop(e, CropType.Banner)}} bind:this={bannerInput}>
+    <input type="file" accept="image/png, image/jpeg, image/webp" class="hidden" onchange={(e) => {setCrop(e, CropType.Avatar)}} bind:this={avatarInput}>
 
     <Dialog.Trigger class="ml-auto p-2 rounded-sm bg-aside">
         <Gear weight="fill" class="w-5 h-5 text-weep-gray hover:text-white transition-colors duration-100" />
@@ -146,6 +170,7 @@ const fileToDataURI = (file: File): Promise<string> => {
                                 transition-all duration-200 text-weep-gray hover:text-white text-center">
                             <SignOut class="w-5 h-5" />
                             Sign Out
+
                         </button>
                     </div>
                 </Tabs.List>
@@ -169,9 +194,9 @@ const fileToDataURI = (file: File): Promise<string> => {
                                     <button class="relative group" onclick={() => bannerInput?.click()}>
                                         {#await getBanner() then url}
                                             {#if url === null}
-                                                <div class="bg-slate-700 w-full h-[150px] rounded-4xl group-hover:opacity-70 transition-all duration-150"></div>
+                                                <div class="bg-slate-700 w-[600px] h-[240px] rounded-4xl group-hover:opacity-70 transition-all duration-150"></div>
                                             {:else}
-                                                <img src={url} alt="banner" class="w-full h-[150px] rounded-lg group-hover:opacity-70 transition-all duration-150 bg-center bg-cover">
+                                                <img src={url} alt="banner" class="w-[960px] h-[150px] rounded-lg group-hover:opacity-70 transition-all duration-150 object-cover object-center">
                                             {/if}
                                         {/await}
                                     
@@ -234,6 +259,18 @@ const fileToDataURI = (file: File): Promise<string> => {
                     </Tabs.Content>
                 </form>
             </Tabs.Root>
+            {#if crop}
+                <section class="bg-[#0b0b0d] fixed left-[50%] top-[50%] z-[999] w-full h-full translate-x-[-50%] translate-y-[-50%]">
+                    <div class="flex flex-col justify-center items-center h-full">
+                        <Cropper
+                            type={crop.type}
+                            image={crop.image}
+                            cropped={cropped}
+                            exit={() => crop = null}
+                        />
+                    </div>
+                </section>
+            {/if}
         </Dialog.Content>
     </Dialog.Portal>
 </Dialog.Root>

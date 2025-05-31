@@ -57,6 +57,7 @@
 		"remark-gfm": "^4.0.1",
 		"remark-parse": "^11.0.0",
 		"remark-rehype": "^11.1.2",
+		"svelte-easy-crop": "^4.0.1",
 		"svelte-system-info": "^1.0.3",
 		"ua-parser-js": "^0.7.33",
 		"unified": "^11.0.5"
