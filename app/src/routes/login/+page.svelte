@@ -146,7 +146,7 @@ onMount(async () => {
                         <div class="flex items-center w-full">
                             <section class="space-y-2 w-full">
                                 <div>
-                                    <div class="font-bold text-sm text-sexy-gray tracking-tight">
+                                    <div class="font-bold text-sm text-weep-gray tracking-tight">
                                         USERNAME
                                     </div>
                                 </div>
@@ -162,7 +162,7 @@ onMount(async () => {
                             <div class="flex items-center w-full" transition:fly={{ x: -500, duration: 50 }}>
                                 <section class="space-y-2 w-full">
                                     <div class="flex flex-row items-center justify-between">
-                                        <div class="font-bold text-sm text-sexy-gray tracking-tight">
+                                        <div class="font-bold text-sm text-weep-gray tracking-tight">
                                             EMAIL
                                         </div>
                                         <button onclick={sendEmail} class="font-bold text-sm text-blurple tracking-tight">
@@ -176,7 +176,7 @@ onMount(async () => {
                         </div>
                         <div class="flex items-center w-full">
                             <section class="space-y-2 w-full">
-                                <div class="font-bold text-sm text-sexy-gray tracking-tight">
+                                <div class="font-bold text-sm text-weep-gray tracking-tight">
                                     PASSWORD
                                 </div>
                                 <input required style="box-shadow: none;" bind:value={password} type="password" class="bg-transparent appearance-none w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray" />
@@ -213,7 +213,7 @@ onMount(async () => {
                         </div>
                         <div class="flex items-center w-full">
                             <section class="space-y-2 w-full">
-                                <div class="font-bold text-sm text-sexy-gray tracking-tight">
+                                <div class="font-bold text-sm text-weep-gray tracking-tight">
                                     EMAIL
                                 </div>
                                 <input required style="box-shadow: none;" bind:value={email} type="email" class="bg-transparent appearance-none w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray" />
@@ -221,7 +221,7 @@ onMount(async () => {
                         </div>
                         <div class="flex items-center w-full">
                             <section class="space-y-2 w-full">
-                                <div class="font-bold text-sm text-sexy-gray tracking-tight">
+                                <div class="font-bold text-sm text-weep-gray tracking-tight">
                                     PASSWORD
                                 </div>
                                 <input required style="box-shadow: none;" bind:value={password} type="password" class="bg-transparent appearance-none w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray" />

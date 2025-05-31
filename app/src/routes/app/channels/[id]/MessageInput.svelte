@@ -44,7 +44,7 @@ onMount(() => {
 			Newline,
 			History,
 			Placeholder.configure({
-				placeholder: "I swear I had something in mind...",
+				placeholder: "What's on your mind?",
 			}),
 		],
 		content: "",
@@ -107,4 +107,4 @@ async function onKey(event: KeyboardEvent) {
 }
 </script>
 
-<div onkeyup={onKey} role="textbox" tabindex="0" aria-keyshortcuts="Enter" aria-multiline="true" bind:this={element} class="px-4 py-1.5 w-full max-h-[580px] text-white/95"></div>
+<div onkeyup={onKey} role="textbox" tabindex="0" aria-keyshortcuts="Enter" aria-multiline="true" bind:this={element} class="px-4 py-3 w-full m-6 max-h-[800px] text-white rounded-lg bg-inps"></div>

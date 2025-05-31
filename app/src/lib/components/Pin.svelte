@@ -13,7 +13,7 @@ type CellProps = PinInputRootSnippetProps["cells"][0];
  
 <PinInput.Root
   bind:value
-  class="text-sexy-gray has-disabled:opacity-30 flex items-center"
+  class="text-weep-gray has-disabled:opacity-30 flex items-center"
   maxlength={6}
   pattern={REGEXP_ONLY_DIGITS}
 >

@@ -17,11 +17,7 @@ let newEmail: string = $state("");
 let bannerInput: HTMLInputElement | undefined = $state();
 let avatarInput: HTMLInputElement | undefined = $state();
 
-let currentUserData: { profile: Profile; account: Account } | null =
-	$state(null);
-
 currentUser.subscribe((data) => {
-    currentUserData = data;
     if (data) {
         newUsername = data!.profile.username;
         newDisplayName = data!.profile.display_name || "";
@@ -61,20 +57,32 @@ const onSubmit = async (e: Event) => {
         payload.banner = await fileToDataURI(banner[0]);
     }
 
-    if (newUsername != currentUserData?.profile.username) {
+    if (newUsername != $currentUser?.profile.username) {
         payload.username = newUsername;
     }
 
-    if (newEmail != currentUserData?.account.email) {
+    if (newEmail != $currentUser?.account.email) {
         payload.email = newEmail;
     }
 
-    if (newDisplayName != currentUserData?.profile.display_name) {
+    if (newDisplayName != $currentUser?.profile.display_name) {
         payload.display_name = newDisplayName;
     }
 
     await fetch(
 		import.meta.env.VITE_API_URL + "/users/@me/assets",
+		{
+			method: "PATCH",
+            body: JSON.stringify(payload),
+			headers: {
+				Authorization: localStorage.getItem("token")!,
+                "Content-Type": "application/json",
+			},
+		},
+	);
+
+    await fetch(
+		import.meta.env.VITE_API_URL + "/users/@me",
 		{
 			method: "PATCH",
             body: JSON.stringify(payload),
@@ -100,8 +108,8 @@ const fileToDataURI = (file: File): Promise<string> => {
     <input type="file" accept="image/png, image/jpeg, image/webp" bind:files={banner} class="hidden" bind:this={bannerInput}>
     <input type="file" accept="image/png, image/jpeg, image/webp" bind:files={avatar} class="hidden" bind:this={avatarInput}>
 
-    <Dialog.Trigger class="ml-auto">
-        <Gear weight="fill" class="w-5 h-5 text-sexy-gray hover:text-white transition-colors duration-100" />
+    <Dialog.Trigger class="ml-auto p-2 rounded-sm bg-aside">
+        <Gear weight="fill" class="w-5 h-5 text-weep-gray hover:text-white transition-colors duration-100" />
     </Dialog.Trigger>
     <Dialog.Portal>
         <Dialog.Content class="bg-[#0b0b0d] fixed left-[50%] top-[50%] z-50 w-full h-full translate-x-[-50%] translate-y-[-50%]">
@@ -112,8 +120,8 @@ const fileToDataURI = (file: File): Promise<string> => {
                     <div class="flex flex-row justify-center items-center gap-2 p-3 w-full">
                         <img src="https://avatars.githubusercontent.com/u/132799819" class="rounded-full h-10" alt="ananas">
                         <div class="flex flex-col">
-                            <h1>@{currentUserData?.profile.username}</h1>
-                            <p class="text-sm text-sexy-gray">This is a placeholder</p>
+                            <h1>@{$currentUser?.profile.username}</h1>
+                            <p class="text-sm text-weep-gray">This is a placeholder</p>
                         </div>
                     </div>
 
@@ -124,7 +132,7 @@ const fileToDataURI = (file: File): Promise<string> => {
                                 hover:bg-sexy-lighter-black/70 
                                 data-[state=active]:bg-sexy-lighter-black/40
                                 data-[state=active]:text-white
-                                transition-all duration-200 text-sexy-gray hover:text-white text-center">
+                                transition-all duration-200 text-weep-gray hover:text-white text-center">
                             <User class="w-5 h-5" />
                             Public Profile
                         </Tabs.Trigger>
@@ -135,7 +143,7 @@ const fileToDataURI = (file: File): Promise<string> => {
                             class="w-full py-3 px-4 rounded-lg flex items-center justify-start gap-2
                                 hover:bg-sexy-lighter-black/70
                                 data-[state=active]:bg-sexy-lighter-black/40 data-[state=active]:text-white
-                                transition-all duration-200 text-sexy-gray hover:text-white text-center">
+                                transition-all duration-200 text-weep-gray hover:text-white text-center">
                             <SignOut class="w-5 h-5" />
                             Sign Out
                         </button>
@@ -189,7 +197,7 @@ const fileToDataURI = (file: File): Promise<string> => {
                                             </span>
                                         </button>
 
-                                        <h1 class="self-end mb-5 ml-3 text-4xl font-bold">{currentUserData?.profile.display_name || currentUserData?.profile.username}</h1>
+                                        <h1 class="self-end mb-5 ml-3 text-4xl font-bold">{$currentUser?.profile.display_name || $currentUser?.profile.username}</h1>
                                     </div>
 
 

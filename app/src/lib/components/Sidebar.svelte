@@ -13,10 +13,6 @@ import { type Profile, type Account, type PrivateChannel } from "$lib/models";
 import User from "$lib/components/User.svelte";
 import Settings from "./Settings.svelte";
 
-let currentUserData: { profile: Profile; account: Account } | null =
-	$state(null);
-currentUser.subscribe((data) => (currentUserData = data));
-
 let privateChannelData: PrivateChannel[] = $state([]);
 privateChannels.subscribe((data) => (privateChannelData = data));
 
@@ -31,34 +27,35 @@ let showSettings = $state(false);
 <div class="flex flex-col select-none">
     <div class="flex h-full w-full">
         <GuildScroll />
-        <div class="w-[275px] backdrop-blur-3xl select-none rounded-3xl border-[1px] m-2 bg-sexy-red-black/60 border-sexy-lighter-black">
-            <div class="m-4 mb-0 flex items-center justify-between">
-                {#if (type === "dms")}
-                    <div class="text-sexy-gray">
-                        Direct Messages
+        <div class="w-[280px] select-none bg-aside h-full flex flex-col justify-between">
+            <div class="space-y-2">
+                <div class="px-4 mb-0 h-[58px] flex items-center justify-between border-b border-b-guild-aside">
+                    {#if (type === "dms")}
+                        <div class="text-weep-gray">
+                            Direct Messages
+                        </div>
+                        <AddFriend />
+                    {/if}
+                </div>
+                <div class="overflow-y-auto mt-3">
+                    {#if (type === "dms")}
+                        {#each privateChannelData as channel}
+                            <User channelId={channel.id} selected={currentPrivateChannelId?.valueOf() == channel.id.valueOf()} username={getChannelName(channel)} avatarUrl="https://avatars.githubusercontent.com/u/132799819" />
+                        {/each}
+                    {/if}
+                </div>
+            </div>
+            <div class="h-[70px] backdrop-blur-3xl bg-me border-sexy-lighter-black">
+                <div class="flex flex-row justify-center items-center gap-2 p-3 px-4 w-full h-full">
+                    <img src="https://avatars.githubusercontent.com/u/132799819" class="rounded-full h-10" alt="ananas">
+                    <div class="flex flex-col">
+                        <h1 class="text-sm text-white">{$currentUser?.profile.display_name || $currentUser?.profile.username}</h1>
+                        <p class="text-xs text-weep-gray">This is a placeholder</p>
                     </div>
-                    <AddFriend />
-                {/if}
-            </div>
-            <div class="m-2 overflow-y-auto">
-                {#if (type === "dms")}
-                    {#each privateChannelData as channel}
-                        <User channelId={channel.id} selected={currentPrivateChannelId?.valueOf() == channel.id.valueOf()} username={getChannelName(channel)} avatarUrl="https://avatars.githubusercontent.com/u/132799819" />
-                    {/each}
-                {/if}
-            </div>
-        </div>
-    </div>
 
-    <div class="h-[80px] w-[360px] backdrop-blur-3xl rounded-3xl border-[1px] mb-2 mx-2 bg-sexy-red-black/60 border-sexy-lighter-black">
-        <div class="flex flex-row justify-center items-center gap-2 p-3 w-full h-full">
-            <img src="https://avatars.githubusercontent.com/u/132799819" class="rounded-xl h-9" alt="ananas">
-            <div class="flex flex-col">
-                <h1 class="text-sm text-white/90">{currentUserData?.profile.display_name || currentUserData?.profile.username}</h1>
-                <p class="text-xs text-sexy-gray">This is a placeholder</p>
+                    <Settings />
+                </div>
             </div>
-
-            <Settings />
         </div>
     </div>
 </div>

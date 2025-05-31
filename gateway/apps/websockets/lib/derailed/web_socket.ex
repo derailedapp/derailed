@@ -78,7 +78,7 @@ defmodule Derailed.WebSocket do
             session_id = Base.url_encode64(:crypto.strong_rand_bytes(16), padding: false)
 
             {:ok, session_pid} =
-              GenRegistry.lookup_or_start(Derailed.Session, session_id, [
+              GenRegistry.start(Derailed.Session, session_id, [
                 {
                   session_id,
                   user_id,

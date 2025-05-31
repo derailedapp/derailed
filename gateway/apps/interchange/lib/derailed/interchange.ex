@@ -12,7 +12,15 @@ defmodule Derailed.Interchange do
     data = Jason.decode!(request.d)
 
     case GenRegistry.lookup(Derailed.SessionRegistry, user_id) do
-      {:ok, pid} -> Derailed.SessionRegistry.dispatch(pid, type, data)
+      # this is a cautionary precaution. I've seen processes somehow be debugged and error out
+      # as non-alive for some reason. This should happen since GenRegistry captures all children EXITs. Weird.
+      # https://github.com/discord/gen_registry/blob/master/lib/gen_registry.ex#L204
+      {:ok, pid} ->
+        if Process.alive?(pid) do
+          Derailed.SessionRegistry.dispatch(pid, type, data)
+        else
+          GenRegistry.stop(Derailed.SessionRegistry, pid)
+        end
       _ -> :ok
     end
 
@@ -27,7 +35,12 @@ defmodule Derailed.Interchange do
     data = Jason.decode!(request.d)
 
     case GenRegistry.lookup(Derailed.PrivateChannel, channel_id) do
-      {:ok, pid} -> Derailed.PrivateChannel.dispatch(pid, type, data)
+      {:ok, pid} ->
+        if Process.alive?(channel_id) do
+          Derailed.PrivateChannel.dispatch(pid, type, data)
+        else
+          GenRegistry.stop(Derailed.PrivateChannel, pid)
+        end
       _ -> :ok
     end
 
