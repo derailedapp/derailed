@@ -21,7 +21,9 @@ defmodule Derailed.Interchange do
         else
           GenRegistry.stop(Derailed.SessionRegistry, pid)
         end
-      _ -> :ok
+
+      _ ->
+        :ok
     end
 
     %Google.Protobuf.Empty{}
@@ -41,7 +43,9 @@ defmodule Derailed.Interchange do
         else
           GenRegistry.stop(Derailed.PrivateChannel, pid)
         end
-      _ -> :ok
+
+      _ ->
+        :ok
     end
 
     %Google.Protobuf.Empty{}

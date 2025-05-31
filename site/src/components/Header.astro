@@ -2,30 +2,30 @@
 import DerailedLogo from "./derailed_logo.svg";
 ---
 
-<header class="flex w-full fixed items-center py-6 justify-center top-0 text-white h-28">
-    <div class="flex flex-row items-center gap-10 px-4 rounded-full justify-evenly text-white bg-black/40 backdrop-blur-3xl h-full">
-        <a href="/">
+<header class="flex max-md:w-screen lg:w-full fixed items-center lg:py-6 justify-center top-0 text-white lg:h-28 max-md:scale-105">
+    <div class="flex max-md:flex-col max-md:py-5 mx-20 lg:flex-row items-center max-md:gap-4 lg:py-3 lg:gap-10 px-4 lg:rounded-full justify-evenly text-white bg-black/40 backdrop-blur-3xl">
+        <a href="/" class="max-md:hidden">
             <DerailedLogo height="34px" />
         </a>
 
         <div class="flex flex-row items-center justify-between">
-            <a href="/about" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold">
+            <a class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold text-white!">
                 About
             </a>
-            <a href="/features" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold">
+            <a href="/features" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold text-white!">
                 Features
             </a>
-            <a href="/news" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold">
+            <a href="/news" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold text-white!">
                 Newsroom
             </a>
-            <a href="/terms" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold">
+            <a class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold text-white!">
                 Terms
             </a>
-            <a href="/privacy" class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold">
+            <a class="p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold text-white!">
                 Privacy
             </a>
         </div>
-        <a href="https://app.derailed.top" class="bg-blurple p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold transition-all duration-200">
+        <a class="bg-blurple text-white! p-1 px-4 rounded-4xl hover:bg-sexy-red-black font-semibold transition-all duration-200 max-md:hidden">
             Open Derailed
         </a>
     </div>

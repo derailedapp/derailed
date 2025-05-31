@@ -6,12 +6,12 @@ import {
 	currentPrivateChannel,
 	getChannelName,
 	privateChannels,
-    currentUser
+	currentUser,
 } from "$lib/state";
 import { Hash } from "phosphor-svelte";
 import MessageInput from "./MessageInput.svelte";
 import MessageList from "./MessageList.svelte";
-    import moment from "moment-timezone";
+import moment from "moment-timezone";
 
 const { id } = page.params;
 
@@ -27,8 +27,8 @@ privateChannels.subscribe(
 currentPrivateChannel.set(channelId);
 
 function sfToTime(snowflake: bigint): number {
-    const milliseconds = BigInt(snowflake) >> 22n
-	return Number(milliseconds) + 1649325271415
+	const milliseconds = BigInt(snowflake) >> 22n;
+	return Number(milliseconds) + 1649325271415;
 }
 </script>
 

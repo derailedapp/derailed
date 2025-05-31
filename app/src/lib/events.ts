@@ -1,5 +1,11 @@
 import EventEmitter from "eventemitter3";
-import { channelMessages, currentUser, privateChannels, users, waitingForMessages } from "./state";
+import {
+	channelMessages,
+	currentUser,
+	privateChannels,
+	users,
+	waitingForMessages,
+} from "./state";
 import { type Message, type PrivateChannel, type Profile } from "./models";
 import { get } from "svelte/store";
 
@@ -25,7 +31,7 @@ emitter.on("READY", (data) => {
 emitter.on("USER_UPDATE", (data: Profile) => {
 	const currentUserData = get(currentUser)!;
 	if (currentUserData.profile.user_id == data.user_id) {
-		currentUser.set({account: currentUserData.account, profile: data});
+		currentUser.set({ account: currentUserData.account, profile: data });
 	}
 	users.update((v) => {
 		let idx = v.findIndex((v) => v.user_id == data.user_id);
@@ -35,11 +41,11 @@ emitter.on("USER_UPDATE", (data: Profile) => {
 			v[idx] = data;
 		}
 		return v;
-	})
-})
+	});
+});
 
 emitter.on("MESSAGE_CREATE", (data: Message) => {
-	const awaitedMessages = get(waitingForMessages)
+	const awaitedMessages = get(waitingForMessages);
 	channelMessages.update((channels) => {
 		const msgs = channels.get(data.channel_id);
 		if (msgs === undefined) {
@@ -48,11 +54,11 @@ emitter.on("MESSAGE_CREATE", (data: Message) => {
 		if (awaitedMessages.includes(data.id)) {
 			waitingForMessages.update((ms) => {
 				const idx = ms.indexOf(data.id);
-				return ms.splice(idx, 1)
+				return ms.splice(idx, 1);
 			});
 		} else {
-			msgs.push(data)
+			msgs.push(data);
 		}
 		return channels;
-	})
-})
+	});
+});

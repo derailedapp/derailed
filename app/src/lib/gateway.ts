@@ -1,6 +1,13 @@
 import JSON from "json-bigint";
 import { emitter } from "./events";
-import { channelMessages, currentUser, privateChannels, savedChannels, users, waitingForMessages } from "./state";
+import {
+	channelMessages,
+	currentUser,
+	privateChannels,
+	savedChannels,
+	users,
+	waitingForMessages,
+} from "./state";
 
 let socket: WebSocket;
 let socketOpen = false;

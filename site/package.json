@@ -1,17 +1,21 @@
 {
-  "name": "site",
-  "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "@tailwindcss/vite": "^4.1.7",
-    "astro": "^5.8.0",
-    "moment-timezone": "^0.6.0",
-    "tailwindcss": "^4.1.7"
-  }
+	"name": "site",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"astro": "astro",
+		"fmt": "biome format --write ."
+	},
+	"dependencies": {
+		"@tailwindcss/vite": "^4.1.7",
+		"astro": "^5.8.0",
+		"moment-timezone": "^0.6.0",
+		"tailwindcss": "^4.1.7"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4"
+	}
 }

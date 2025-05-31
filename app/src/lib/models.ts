@@ -40,5 +40,5 @@ export interface Message {
 
 export enum CropType {
 	Banner,
-	Avatar
+	Avatar,
 }

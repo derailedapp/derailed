@@ -8,7 +8,7 @@ import { type Profile, type Account } from "$lib/models";
 import { addToast, currentUser } from "$lib/state";
 
 import { CropType } from "$lib/models";
-    import Cropper from "./Cropper.svelte";
+import Cropper from "./Cropper.svelte";
 
 let banner: File | undefined = $state();
 let avatar: File | undefined = $state();
@@ -21,111 +21,118 @@ let bannerInput: HTMLInputElement | undefined = $state();
 let avatarInput: HTMLInputElement | undefined = $state();
 
 currentUser.subscribe((data) => {
-    if (data) {
-        newUsername = data!.profile.username;
-        newDisplayName = data!.profile.display_name || "";
-        newEmail = data!.account.email;
-    }
+	if (data) {
+		newUsername = data!.profile.username;
+		newDisplayName = data!.profile.display_name || "";
+		newEmail = data!.account.email;
+	}
 });
 
-let crop: { type: CropType, image: string } | null = $state(null);
+let crop: { type: CropType; image: string } | null = $state(null);
 
 const getBanner = () => {
-    if (banner) {
-        return URL.createObjectURL(banner);
-    } else if ($currentUser?.profile.banner) {
-        return import.meta.env.VITE_CDN_URL + "/banners/" + $currentUser?.profile.banner;
-    }
+	if (banner) {
+		return URL.createObjectURL(banner);
+	} else if ($currentUser?.profile.banner) {
+		return (
+			import.meta.env.VITE_CDN_URL + "/banners/" + $currentUser?.profile.banner
+		);
+	}
 
-    return null;   
-}
-
-const getAvatar = () => {
-    if (avatar) {
-        return URL.createObjectURL(avatar);
-    } else if ($currentUser?.profile.avatar) {
-        return import.meta.env.VITE_CDN_URL + "/avatars/" + $currentUser?.profile.avatar;
-    }
-
-    return "/default_pfp.webp";   
-}
-
-const onSubmit = async (e: Event) => {
-    e.preventDefault();
-    const payload: { avatar?: string; banner?: string; username?: string; email?: string; display_name?: string; } = {};
-
-    if (avatar) {
-        payload.avatar = await fileToDataURI(avatar);
-    }
-
-    if (banner) {
-        payload.banner = await fileToDataURI(banner);
-    }
-
-    if (newUsername != $currentUser?.profile.username) {
-        payload.username = newUsername;
-    }
-
-    if (newEmail != $currentUser?.account.email) {
-        payload.email = newEmail;
-    }
-
-    if (newDisplayName != $currentUser?.profile.display_name) {
-        payload.display_name = newDisplayName;
-    }
-
-    await fetch(
-		import.meta.env.VITE_API_URL + "/users/@me/assets",
-		{
-			method: "PATCH",
-            body: JSON.stringify(payload),
-			headers: {
-				Authorization: localStorage.getItem("token")!,
-                "Content-Type": "application/json",
-			},
-		},
-	);
-
-    await fetch(
-		import.meta.env.VITE_API_URL + "/users/@me",
-		{
-			method: "PATCH",
-            body: JSON.stringify(payload),
-			headers: {
-				Authorization: localStorage.getItem("token")!,
-                "Content-Type": "application/json",
-			},
-		},
-	);
-}
-
-const fileToDataURI = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
+	return null;
 };
 
-const setCrop = async (e: Event & { currentTarget: EventTarget & HTMLInputElement }, type: CropType) => {
-    const file = URL.createObjectURL(e.currentTarget.files![0]);
+const getAvatar = () => {
+	if (avatar) {
+		return URL.createObjectURL(avatar);
+	} else if ($currentUser?.profile.avatar) {
+		return (
+			import.meta.env.VITE_CDN_URL + "/avatars/" + $currentUser?.profile.avatar
+		);
+	}
 
-    crop = { 
-        type: type, 
-        image: file
-    }
-}
+	return "/default_pfp.webp";
+};
+
+const onSubmit = async (e: Event) => {
+	e.preventDefault();
+	const payload: {
+		avatar?: string;
+		banner?: string;
+		username?: string;
+		email?: string;
+		display_name?: string;
+	} = {};
+
+	if (avatar) {
+		payload.avatar = await fileToDataURI(avatar);
+	}
+
+	if (banner) {
+		payload.banner = await fileToDataURI(banner);
+	}
+
+	if (newUsername != $currentUser?.profile.username) {
+		payload.username = newUsername;
+	}
+
+	if (newEmail != $currentUser?.account.email) {
+		payload.email = newEmail;
+	}
+
+	if (newDisplayName != $currentUser?.profile.display_name) {
+		payload.display_name = newDisplayName;
+	}
+
+	await fetch(import.meta.env.VITE_API_URL + "/users/@me/assets", {
+		method: "PATCH",
+		body: JSON.stringify(payload),
+		headers: {
+			Authorization: localStorage.getItem("token")!,
+			"Content-Type": "application/json",
+		},
+	});
+
+	await fetch(import.meta.env.VITE_API_URL + "/users/@me", {
+		method: "PATCH",
+		body: JSON.stringify(payload),
+		headers: {
+			Authorization: localStorage.getItem("token")!,
+			"Content-Type": "application/json",
+		},
+	});
+};
+
+const fileToDataURI = (file: File): Promise<string> => {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onload = () => resolve(reader.result as string);
+		reader.onerror = reject;
+		reader.readAsDataURL(file);
+	});
+};
+
+const setCrop = async (
+	e: Event & { currentTarget: EventTarget & HTMLInputElement },
+	type: CropType,
+) => {
+	const file = URL.createObjectURL(e.currentTarget.files![0]);
+
+	crop = {
+		type: type,
+		image: file,
+	};
+};
 
 const cropped = (newImage: File, type: CropType) => {
-    if (type === CropType.Banner) {
-        banner = newImage;
-    } else {
-        avatar = newImage;
-    }
+	if (type === CropType.Banner) {
+		banner = newImage;
+	} else {
+		avatar = newImage;
+	}
 
-    crop = null;
-}
+	crop = null;
+};
 </script>
 
 <Dialog.Root>

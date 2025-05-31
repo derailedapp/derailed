@@ -24,8 +24,8 @@ body {
 	--color-mem-aside: #2e3136;
 	--color-weep-gray: hsl(215, 10%, 65.3%);
 
-	--color-foots: #292B2F;
-	--color-pops: #36393F;
+	--color-foots: #292b2f;
+	--color-pops: #36393f;
 }
 
 blockquote {
@@ -33,7 +33,7 @@ blockquote {
 }
 
 p {
-	@apply text-pretty whitespace-pre-wrap my-1;
+	@apply text-pretty whitespace-pre-wrap my-2 max-sm:text-lg;
 }
 
 h1 {
@@ -53,10 +53,14 @@ h4 {
 }
 
 ul {
-	list-style:disc;
+	list-style: disc;
 	@apply pl-8;
 }
 
 code {
 	@apply bg-sexy-lighter-black/80 p-0.5 rounded-md;
+}
+
+a {
+	@apply text-blurple hover:text-blurple/75;
 }

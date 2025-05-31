@@ -1,5 +1,5 @@
 import remarkBreaks from "remark-breaks";
-import { remark } from "remark"
+import { remark } from "remark";
 import rehypeSanitize from "rehype-sanitize";
 import rehypeStringify from "rehype-stringify";
 import remarkRehype from "remark-rehype";

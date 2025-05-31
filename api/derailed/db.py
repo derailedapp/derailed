@@ -13,7 +13,8 @@ import asyncpg
 from fastapi import Depends, Header, HTTPException, Path
 from snowflake import SnowflakeGenerator  # type: ignore
 
-from .models import Account, Channel, GuildChannel, Profile, Session  # type: ignore
+from .models import (Account, Channel, GuildChannel, Profile,  # type: ignore
+                     Session)
 
 db: Pool | None = None
 snow = SnowflakeGenerator(int(os.getenv("NODE_ID", "1")), epoch=1649325271415)

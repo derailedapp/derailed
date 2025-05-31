@@ -19,15 +19,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr, Field
 from pyvips import Error, Image
 
-from .db import (
-    Pool,
-    delete_file,
-    get_current_session,
-    get_database,
-    get_profile,
-    snow,
-    upload_file,
-)
+from .db import (Pool, delete_file, get_current_session, get_database,
+                 get_profile, snow, upload_file)
 from .emails import send_verification_email
 from .missing import MISSING, Maybe
 from .models import Account, Profile, Session
