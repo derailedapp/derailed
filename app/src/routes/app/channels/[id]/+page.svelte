@@ -42,7 +42,7 @@ function sfToTime(snowflake: bigint): number {
                 {/if}
             </div>
             <div class="text-weep-gray/50 font-black">•</div>
-            <div class="text-weep-gray/85">
+            <div class="text-weep-gray text-sm">
                 This is a text chat with another user
             </div>
         </div>

@@ -15,6 +15,17 @@ body {
 	--color-sexy-lighter-black: #2a2a2e;
 	--color-sexy-red-black: #141417;
 	--color-sexy-gray: #a0a0a5;
+
+	--color-primary: #36393e;
+	--color-me: #282b30;
+	--color-aside: #2e3136;
+	--color-guild-aside: #1e2124;
+	--color-inps: #424549;
+	--color-mem-aside: #2e3136;
+	--color-weep-gray: hsl(215, 10%, 65.3%);
+
+	--color-foots: #292B2F;
+	--color-pops: #36393F;
 }
 
 blockquote {
