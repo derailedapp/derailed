@@ -17,10 +17,30 @@ services:
       retries: 5
       start_period: 80s
 
+  minio:
+    image: quay.io/minio/minio
+    hostname: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: derailed
+      MINIO_ROOT_PASSWORD: derailed
+    volumes:
+      - ./minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
   gateway:
     image: derailed/gateway
     depends_on:
       postgres:
+        condition: service_healthy
+      minio:
         condition: service_healthy
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/derailed
@@ -33,10 +53,15 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      minio:
+        condition: service_healthy
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/derailed
       - ALLOW_ORIGINS=http://localhost:5173
       - GRPC_TARGET=localhost:50051
       - DEBUG=TRUE
+      - S3_ENDPOINT=http://minio:9000
+      - S3_ACCESS_KEY=derailed
+      - S3_SECRET_KEY=derailed
     ports:
       - 8000:8000

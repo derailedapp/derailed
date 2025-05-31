@@ -5,7 +5,7 @@ RUN cargo install sqlx-cli --no-default-features --features native-tls,postgres
 
 FROM ghcr.io/astral-sh/uv:python3.12-alpine
 
-RUN apk add --no-cache libgcc openssl
+RUN apk add --no-cache libgcc openssl vips
 
 COPY --from=sqlx /usr/local/cargo/bin/sqlx /usr/local/bin/sqlx
 

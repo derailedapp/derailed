@@ -1,4 +1,5 @@
 \target
 pg_data
+minio_data
 minio.bat
 test.py
