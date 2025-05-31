@@ -182,13 +182,15 @@ async def modify_self(
     async with db.acquire() as conn:
         async with conn.transaction():
             if model.username:
-                username_used = await conn.fetchrow(
-                    "SELECT id FROM profiles WHERE lower(username) = $1",
-                    model.username.lower(),
-                )
+                profile = await get_profile(ses["account_id"], db)
+                if model.username.lower() != profile["username"].lower():
+                    username_used = await conn.fetchrow(
+                        "SELECT id FROM profiles WHERE lower(username) = $1",
+                        model.username.lower(),
+                    )
 
-                if username_used is not None:
-                    raise HTTPException(400, "Username or email already used")
+                    if username_used is not None:
+                        raise HTTPException(400, "Username already used")
                 await conn.execute(
                     "UPDATE profiles SET username = $1 WHERE user_id = $2",
                     model.username,

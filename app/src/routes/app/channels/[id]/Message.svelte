@@ -45,6 +45,8 @@ function shouldCascade(message: Message, index: number) {
 	return false;
 }
 
+let cascade = shouldCascade(message, index);
+
 function willCascade(index: number) {
 	const msg = messages.at(index + 1);
 	const otherMsg = messages.at(index + 2);
@@ -59,37 +61,37 @@ function willCascade(index: number) {
 	}
 	return false;
 }
-
-let cascade = shouldCascade(message, index);
 let nextMessageWillCascade = willCascade(index);
 
-function processContent(content: string) {
-	return String(processor.processSync(content));
+async function processContent(content: string) {
+	return String(await processor.process(content));
 }
 </script>
 
-<li class="flex flex-row w-full group gap-3 hover:bg-sexy-lighter-black/30" class:items-center={cascade} class:py-half-one={cascade} class:pb-1={nextMessageWillCascade} class:pl-6={cascade} class:p-6={!cascade} class:py-4={!cascade}>
+<li class="flex flex-row w-full group gap-3 hover:bg-sexy-lighter-black/30 pl-4 p-1 py-0.5" class:my-2={!cascade && !nextMessageWillCascade} class:pl-5={cascade} class:hover:pl-4={cascade} class:mt-2={!cascade && nextMessageWillCascade} class:items-center={cascade} class:pb-0={nextMessageWillCascade}>
     {#if !cascade}
-        <Avatar.Root class="select-none">
-            <Avatar.Image class="rounded-full h-10 w-10" src={import.meta.env.CDN_URL + "" + userData.find((v) => message.author_id == v.user_id)?.avatar} alt={`User Profile Picture`} />
-            <Avatar.Fallback><img class="rounded-full h-10 w-10" alt="Fallback Avatar" src={"https://avatars.githubusercontent.com/u/132799819"} /></Avatar.Fallback>
+        <Avatar.Root class="select-none shrink-0 mt-[1px]">
+            <Avatar.Image class="rounded-full h-11 w-11" src={import.meta.env.CDN_URL + "" + userData.find((v) => message.author_id == v.user_id)?.avatar} alt={`User Profile Picture`} />
+            <Avatar.Fallback><img class="rounded-full h-11 w-11" alt="Fallback Avatar" src={"https://avatars.githubusercontent.com/u/132799819"} /></Avatar.Fallback>
         </Avatar.Root>
     {:else}
-        <div class="text-sexy-gray/55 tracking-tighter text-xs font-semibold hidden group-hover:block">
+        <div class="text-sexy-gray/55 w-11 tracking-tighter text-xs font-semibold hidden group-hover:block">
             {getDate(message.last_modified_at)}
         </div>
     {/if}
     <div class="flex flex-col">
-        <div class="flex gap-1.5 items-center" class:hidden={cascade}>
-            <div class="hover:underline font-semibold">
+        <div class="flex gap-1 items-center" class:hidden={cascade}>
+            <div class="hover:underline text-white font-semibold">
                 {userData.find((v) => message.author_id.valueOf() == v.user_id.valueOf())?.username || "Unknown User"}
             </div>
-            <div class="text-sexy-gray/55 tracking-tighter text-xs font-semibold">
+            <div class="text-sexy-gray/75 tracking-tighter text-xs mt-1">
                 {getDate(message.last_modified_at)}
             </div>
         </div>
-        <div class:pl-13={cascade} class:group-hover:pl-0={cascade}>
-            {@html processContent(message.content)}
+        <div class="text-white/90" class:pl-13={cascade} class:group-hover:pl-0={cascade}>
+			{#await processContent(message.content) then html}
+            	{@html html}
+			{/await}
         </div>
     </div>
 </li>

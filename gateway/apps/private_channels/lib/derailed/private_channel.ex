@@ -42,9 +42,9 @@ defmodule Derailed.PrivateChannel do
      }}
   end
 
-  @spec subscribe(pid(), pid()) :: :ok
-  def subscribe(pid, session_pid) do
-    GenServer.cast(pid, {:subscribe, session_pid})
+  @spec subscribe(pid(), String.t(), pid()) :: :ok
+  def subscribe(pid, session_id, session_pid) do
+    GenServer.cast(pid, {:subscribe, session_id, session_pid})
   end
 
   @spec get_channel_members(pid()) :: list()
@@ -67,7 +67,7 @@ defmodule Derailed.PrivateChannel do
   end
 
   def handle_call({:dispatch, type, data}, _from, %{sessions: sessions} = state) do
-    Manifold.send(Map.values(sessions), {:dispatch, type, data})
+    Enum.each(Map.values(sessions), fn pid -> Derailed.Session.dispatch(pid, type, data) end)
     {:reply, :ok, state}
   end
 

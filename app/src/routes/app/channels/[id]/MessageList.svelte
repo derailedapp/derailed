@@ -60,7 +60,7 @@ onMount(scrollToBottom);
 $effect(() => scrollToBottom);
 </script>
 
-<ul class="flex flex-col justify-end overflow-y-auto m-auto h-full w-full rounded-b-xl">
+<ul class="flex flex-col overflow-y-auto m-auto h-full w-full rounded-b-xl">
     {#each messages as message, index}
         <MessageComp channelId={channelId} message={message} index={index} />
     {/each}

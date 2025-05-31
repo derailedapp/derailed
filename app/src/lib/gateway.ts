@@ -1,17 +1,24 @@
 import JSON from "json-bigint";
 import { emitter } from "./events";
+import { channelMessages, currentUser, privateChannels, savedChannels, users, waitingForMessages } from "./state";
 
 let socket: WebSocket;
+let socketOpen = false;
 
-if (localStorage.getItem("token") !== null) {
+if (localStorage.getItem("token") !== null && !socketOpen) {
 	socket = new WebSocket(import.meta.env.VITE_GATEWAY_URL);
 } else {
 	// @ts-ignore
 	socket = null;
 }
+
+if (window) {
+	// @ts-ignore
+	window.WSS = socket;
+}
 let hbInt: number | null = null;
-let socketOpen = false;
 let sequence: number = 0;
+let resume: boolean = false;
 let sessionId: string | null = null;
 
 socket.addEventListener("open", () => {
@@ -39,6 +46,16 @@ socket.addEventListener("message", (ev) => {
 				}
 			}
 		}, d);
+	}
+
+	if (op === 2 && resume) {
+		socket.send(
+			JSON.stringify({
+				op: 3,
+				d: { token: localStorage.getItem("token"), session_id: sessionId },
+			}),
+		);
+	} else if (op === 2) {
 		socket.send(
 			JSON.stringify({
 				op: 0,
@@ -60,5 +77,14 @@ socket.addEventListener("close", (ev) => {
 	console.log(
 		`Gateway socket has closed. Closed with code ${ev.code} ("${ev.reason}")`,
 	);
-	socketOpen = false;
+	if (ev.code !== 1011) {
+		socket = new WebSocket(import.meta.env.VITE_GATEWAY_URL);
+	} else {
+		currentUser.set(null);
+		users.set([]);
+		privateChannels.set([]);
+		channelMessages.set(new Map());
+		savedChannels.set([]);
+		waitingForMessages.set([]);
+	}
 });

@@ -8,8 +8,8 @@ body {
 	@apply text-white;
 }
 
-.py-half-one {
-	@apply py-0.5;
+.text-whitekinda {
+	@apply text-white/85;
 }
 
 .tiptap p.is-editor-empty:first-child::before {

@@ -27,9 +27,9 @@ currentPrivateChannel.set(channelId);
 
 <div class="w-full h-screen grid grid-rows-[58px_1fr_minmax(58px,auto)] gap-2 p-2 pl-0.5">
     <div class="flex flex-1 flex-row items-center p-4 backdrop-blur-3xl rounded-2xl border-[1px] bg-sexy-red-black/60 border-sexy-lighter-black">
-        <div class="flex items-center gap-1.5 select-none">
+        <div class="flex items-center gap-1.5 pl-3 select-none">
             <Hash color="#a0a0a5" height="22" width="22" />
-            <div class="text-white truncate max-w-50">
+            <div class="text-white/90 truncate max-w-50">
                 {#if (currentChannel !== undefined)}
                     {getChannelName(currentChannel)}
                 {/if}

@@ -29,6 +29,7 @@ defmodule Derailed.PrivateChannel.MixProject do
       {:gen_registry, "~> 1.3.0"},
       {:postgrex, "~> 0.20.0"},
       {:manifold, "~> 1.6.0"},
+      {:db, in_umbrella: true},
       {:patch, "~> 0.15.0", only: [:test]}
     ]
   end

@@ -10,13 +10,24 @@ import { currentUser } from "$lib/state";
 let banner: FileList | undefined = $state();
 let avatar: FileList | undefined = $state();
 
+let newUsername: string = $state("");
+let newDisplayName: string = $state("");
+let newEmail: string = $state("");
+
 let bannerInput: HTMLInputElement | undefined = $state();
 let avatarInput: HTMLInputElement | undefined = $state();
 
 let currentUserData: { profile: Profile; account: Account } | null =
 	$state(null);
 
-currentUser.subscribe((data) => (currentUserData = data));
+currentUser.subscribe((data) => {
+    currentUserData = data;
+    if (data) {
+        newUsername = data!.profile.username;
+        newDisplayName = data!.profile.display_name || "";
+        newEmail = data!.account.email;
+    }
+});
 
 const getBanner = () => {
     if (banner) {
@@ -40,7 +51,7 @@ const getAvatar = () => {
 
 const onSubmit = async (e: Event) => {
     e.preventDefault();
-    const payload: { avatar?: string; banner?: string } = {};
+    const payload: { avatar?: string; banner?: string; username?: string; email?: string; display_name?: string; } = {};
 
     if (avatar) {
         payload.avatar = await fileToDataURI(avatar[0]);
@@ -50,7 +61,19 @@ const onSubmit = async (e: Event) => {
         payload.banner = await fileToDataURI(banner[0]);
     }
 
-    const resp = await fetch(
+    if (newUsername != currentUserData?.profile.username) {
+        payload.username = newUsername;
+    }
+
+    if (newEmail != currentUserData?.account.email) {
+        payload.email = newEmail;
+    }
+
+    if (newDisplayName != currentUserData?.profile.display_name) {
+        payload.display_name = newDisplayName;
+    }
+
+    await fetch(
 		import.meta.env.VITE_API_URL + "/users/@me/assets",
 		{
 			method: "PATCH",
@@ -83,26 +106,35 @@ const fileToDataURI = (file: File): Promise<string> => {
     <Dialog.Portal>
         <Dialog.Content class="bg-[#0b0b0d] fixed left-[50%] top-[50%] z-50 w-full h-full translate-x-[-50%] translate-y-[-50%]">
             <Tabs.Root value="myaccount" class="flex h-full w-full flex-row gap-2">
-                <Tabs.List class="w-[250px] backdrop-blur-3xl rounded-2xl border border-sexy-lighter-black/50 bg-sexy-red-black/60 p-4 flex flex-col gap-4 my-2 ml-2">
+                <Tabs.List class="w-[360px] backdrop-blur-3xl rounded-2xl border border-sexy-lighter-black/50 bg-sexy-red-black/60 p-4 flex flex-col gap-4 my-2 ml-2">
                     <img src="/derailed-text.svg" class="h-8 w-fit mx-auto" alt="derailed logo">
+
+                    <div class="flex flex-row justify-center items-center gap-2 p-3 w-full">
+                        <img src="https://avatars.githubusercontent.com/u/132799819" class="rounded-full h-10" alt="ananas">
+                        <div class="flex flex-col">
+                            <h1>@{currentUserData?.profile.username}</h1>
+                            <p class="text-sm text-sexy-gray">This is a placeholder</p>
+                        </div>
+                    </div>
 
                     <div class="w-full h-[1px] border-b border-sexy-lighter-black"></div>
 
                     <div class="flex flex-col items-center gap-4">
                         <Tabs.Trigger value="myaccount" class="w-full py-3 px-4 rounded-lg flex items-center gap-2
-                                hover:bg-slate-700/30 
-                                data-[state=active]:bg-slate-700/60 data-[state=active]:text-white
+                                hover:bg-sexy-lighter-black/70 
+                                data-[state=active]:bg-sexy-lighter-black/40
+                                data-[state=active]:text-white
                                 transition-all duration-200 text-sexy-gray hover:text-white text-center">
                             <User class="w-5 h-5" />
-                            My Account
+                            Public Profile
                         </Tabs.Trigger>
                     </div>
 
                     <div class="mt-auto border-t pt-2 border-sexy-lighter-black">
                         <button 
                             class="w-full py-3 px-4 rounded-lg flex items-center justify-start gap-2
-                                hover:bg-slate-700/30 
-                                data-[state=active]:bg-slate-700/60 data-[state=active]:text-white
+                                hover:bg-sexy-lighter-black/70
+                                data-[state=active]:bg-sexy-lighter-black/40 data-[state=active]:text-white
                                 transition-all duration-200 text-sexy-gray hover:text-white text-center">
                             <SignOut class="w-5 h-5" />
                             Sign Out
@@ -118,18 +150,18 @@ const fileToDataURI = (file: File): Promise<string> => {
                     <Tabs.Content value="myaccount">
                         <div class="flex flex-row items-center ml-4 mt-2">
                             {#await getAvatar() then url}
-                                <img src={url} class="rounded-xl size-12" alt="me">                            
+                                <img src={url} class="rounded-2xl size-12" alt="me">                            
                             {/await}
-                            <p class="p-4 text-2xl font-bold">My Account</p>
+                            <p class="p-4 text-2xl font-bold">Public Profile</p>
                         </div>
 
                         <div class="flex flex-row justify-center items-center gap-8">
-                            <div class="bg-sexy-black/30 p-5 rounded-xl border border-sexy-lighter-black w-[1000px] h-[900px]">
+                            <div class="p-5 rounded-2xl w-[1000px] h-[900px]">
                                 <div class="flex flex-col h-full gap-4">
                                     <button class="relative group" onclick={() => bannerInput?.click()}>
                                         {#await getBanner() then url}
                                             {#if url === null}
-                                                <div class="bg-slate-700 w-full h-[150px] rounded-lg group-hover:opacity-70 transition-all duration-150"></div>
+                                                <div class="bg-slate-700 w-full h-[150px] rounded-4xl group-hover:opacity-70 transition-all duration-150"></div>
                                             {:else}
                                                 <img src={url} alt="banner" class="w-full h-[150px] rounded-lg group-hover:opacity-70 transition-all duration-150 bg-center bg-cover">
                                             {/if}
@@ -145,7 +177,7 @@ const fileToDataURI = (file: File): Promise<string> => {
                                         <button class="relative group" onclick={() => avatarInput?.click()}>
                                             {#await getAvatar() then url}
                                                 <img
-                                                    class="size-[8rem] rounded-2xl object-cover border-2 border-sexy-lighter-black group-hover:opacity-70 transition-all"
+                                                    class="size-[7rem] rounded-4xl object-cover border-2 border-sexy-lighter-black group-hover:opacity-70 transition-all"
                                                     src={url}
                                                     alt="avatar"
                                                 />
@@ -160,58 +192,32 @@ const fileToDataURI = (file: File): Promise<string> => {
                                         <h1 class="self-end mb-5 ml-3 text-4xl font-bold">{currentUserData?.profile.display_name || currentUserData?.profile.username}</h1>
                                     </div>
 
-                                    <div class="bg-sexy-red-black/90 flex flex-col justify-center items-center mt-18 h-full w-full rounded-lg gap-8">
-                                        <div class="flex flex-row justify-center items-center w-[80%] p-4 border border-sexy-lighter-black rounded-lg h-[80px]">
-                                            <div class="flex-1">
-                                                <h2 class="font-bold text-xl text-white">Username</h2>
-                                                <p class="text-sexy-gray text-sm truncate">@{currentUserData?.profile.username}</p>
-                                            </div>
-                                            <button class="bg-sexy-gray/20 hover:bg-sexy-gray/30 text-white px-4 rounded-lg 
-                                            transition-all duration-150 flex items-center gap-2 h-full">
-                                                <NotePencil />
-                                                Edit
-                                            </button>
-                                        </div>
 
-                                        <div class="flex flex-row justify-center items-center w-[80%] p-4 border border-sexy-lighter-black rounded-lg h-[80px]">
-                                            <div class="flex-1">
-                                                <h2 class="font-bold text-xl text-white">Display Name</h2>
-                                                <p class="text-sexy-gray text-sm truncate">{currentUserData?.profile.display_name || "No display name set"}</p>
-                                            </div>
-                                            <button class="bg-sexy-gray/20 hover:bg-sexy-gray/30 text-white px-4 rounded-lg 
-                                            transition-all duration-150 flex items-center gap-2 h-full">
-                                                <NotePencil />
-                                                Edit
-                                            </button>
-                                        </div>
-
-                                        <div class="flex flex-row justify-center items-center w-[80%] p-4 border border-sexy-lighter-black rounded-lg h-[80px]">
-                                            <div class="flex-1">
-                                                <h2 class="font-bold text-xl text-white">E-Mail Address</h2>
-                                                <p class="text-sexy-gray text-sm truncate">{currentUserData?.account.email}</p>
-                                            </div>
-                                            <button class="bg-sexy-gray/20 hover:bg-sexy-gray/30 text-white px-4 py-1 rounded-lg 
-                                            transition-all duration-150 flex items-center gap-2 h-full">
-                                                <NotePencil />
-                                                Edit
-                                            </button>
-                                        </div>
-
-                                        <div class="flex flex-row justify-center items-center w-[80%] p-4 border border-sexy-lighter-black rounded-lg h-[80px]">
-                                            <div class="flex items-center justify-center h-full w-full">
-                                                <div class="flex-1">
-                                                    <h2 class="font-bold text-xl text-white">Password</h2>
-                                                </div>
-                                                <button class="bg-sexy-gray/20 hover:bg-sexy-gray/30 text-white px-4 py-1 rounded-lg 
-                                                transition-all duration-150 flex items-center gap-2 h-full">
-                                                    <NotePencil />
-                                                    Edit
-                                                </button>
+                                    <div class="flex flex-col justify-center items-center h-full w-full rounded-lg gap-6">
+                                        <div class="flex flex-row justify-center items-center w-[80%] p-4 rounded-lg h-[80px]">
+                                            <div class="flex w-full gap-2 flex-col">
+                                                <h2 class="font-bold text-white">Display Name</h2>
+                                                <input class="w-full bg-sexy-lighter-black/70 focus:ring-0 rounded-xl" bind:value={newDisplayName} maxlength="32" minlength="4" />
                                             </div>
                                         </div>
 
-                                        <button type="submit" class="flex flex-row justify-center items-center w-[80%] bg-blurple rounded-md h-[80px]">
-                                            <h2 class="font-bold text-xl text-white">Submit</h2>
+                                        <div class="flex flex-row justify-center items-center w-[80%] p-4 rounded-lg h-[80px]">
+                                            <div class="flex w-full gap-2 flex-col">
+                                                <h2 class="font-bold text-white">Username</h2>
+                                                <input class="w-full bg-sexy-lighter-black/70 rounded-xl" bind:value={newUsername} maxlength="32" minlength="4" />
+                                            </div>
+                                        </div>
+
+                                        <div class="flex flex-row justify-center items-center w-[80%] p-4 rounded-lg h-[80px]">
+                                            <div class="flex w-full gap-2 flex-col">
+                                                <h2 class="font-bold text-white">Email</h2>
+                                                <input class="w-full bg-sexy-lighter-black/70 rounded-xl" bind:value={newEmail} maxlength="32" minlength="4" />
+                                            </div>
+                                        </div>
+
+                                        <button class="bg-blurple/85 hover:bg-blurple/65 text-white px-4 rounded-4xl 
+                                            transition-all duration-150 items-center gap-2 py-1">
+                                                Update profile
                                         </button>
                                     </div>
                                 </div>

@@ -54,7 +54,7 @@ let showSettings = $state(false);
         <div class="flex flex-row justify-center items-center gap-2 p-3 w-full h-full">
             <img src="https://avatars.githubusercontent.com/u/132799819" class="rounded-xl h-9" alt="ananas">
             <div class="flex flex-col">
-                <h1 class="text-sm">@{currentUserData?.profile.username}</h1>
+                <h1 class="text-sm text-white/90">{currentUserData?.profile.display_name || currentUserData?.profile.username}</h1>
                 <p class="text-xs text-sexy-gray">This is a placeholder</p>
             </div>
 

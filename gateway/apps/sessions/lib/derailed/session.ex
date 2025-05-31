@@ -72,6 +72,7 @@ defmodule Derailed.Session do
           {:ok, pid} =
             GenRegistry.lookup_or_start(Derailed.PrivateChannel, channel_id, [channel_id])
 
+          Derailed.PrivateChannel.subscribe(pid, id, self())
           {channel_id, pid}
         end)
       )
@@ -220,11 +221,6 @@ defmodule Derailed.Session do
     end
   end
 
-  def handle_info({:dispatch, type, data}, state) do
-    Derailed.Session.dispatch(self(), type, data)
-    {:noreply, state}
-  end
-
   def handle_info(:assure_online, %{ws_down: ws_down} = state) do
     if ws_down do
       {:stop, :ws_down, state}
@@ -244,7 +240,7 @@ defmodule Derailed.Session do
       ) do
     if pid == ws_pid do
       :erlang.send_after(300_000, self(), :assure_online)
-      {:noreply, %{state | ws_pid: nil, ws_ref: nil, ws_down: true}}
+      {:noreply, %{state | ws_pid: nil, ws_ref: nil, ws_down: true, message_queue: :queue.new()}}
     else
       if Enum.any?(Map.values(private_channel_pids), fn e -> e == pid end) do
         if Enum.any?(channels_just_deleted, fn p -> p == pid end) do
