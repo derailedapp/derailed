@@ -19,7 +19,7 @@ privateChannels.subscribe((data) => (privateChannelData = data));
 let type: "guild" | "dms" = $state("dms");
 currentSidebarType.subscribe((v) => (type = v));
 
-let currentPrivateChannelId: BigInt | null = $state(null);
+let currentPrivateChannelId: string | null = $state(null);
 currentPrivateChannel.subscribe((v) => (currentPrivateChannelId = v));
 
 let showSettings = $state(false);

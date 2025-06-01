@@ -67,7 +67,7 @@ defmodule Derailed.PrivateChannel do
   end
 
   def handle_call({:dispatch, type, data}, _from, %{sessions: sessions} = state) do
-    Enum.each(Map.values(sessions), fn pid -> Derailed.Session.dispatch(pid, type, data) end)
+    Manifold.send(Map.values(sessions), {:dispatch, type, data, self()})
     {:reply, :ok, state}
   end
 

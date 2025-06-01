@@ -1,23 +1,23 @@
 export interface Account {
-	id: BigInt;
+	id: string;
 	email: string;
 	flags: number;
 }
 
 export interface Profile {
-	user_id: BigInt;
+	user_id: string;
 	username: string;
 	display_name: string | null;
 	avatar: string | null;
 	banner: string | null;
-	flags: BigInt;
+	flags: string;
 }
 
 export interface PrivateChannel {
-	id: BigInt;
+	id: string;
 	type: number;
 	name: string | null;
-	owner_id: BigInt | null;
+	owner_id: string | null;
 	members: Profile[] | undefined;
 }
 
@@ -29,10 +29,10 @@ export interface Toast {
 }
 
 export interface Message {
-	id: BigInt;
-	author_id: BigInt;
+	id: string;
+	author_id: string;
 	content: string;
-	channel_id: BigInt;
+	channel_id: string;
 	created_at: number;
 	last_modified_at: number;
 	nonce: string | undefined;

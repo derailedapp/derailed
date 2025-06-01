@@ -4,18 +4,21 @@ import moment from "moment-timezone";
 import type { Message, Profile } from "$lib/models";
 import { channelMessages, users } from "$lib/state";
 import { processor } from "$lib/markdown";
+import { unScrewHtml } from "$lib/markdown";
 
 let {
 	channelId,
 	message,
 	index,
-}: { channelId: BigInt; message: Message; index: number } = $props();
+}: { channelId: string; message: Message; index: number } = $props();
 
 let userData: Profile[] = $state([]);
 users.subscribe((data) => (userData = data));
 
 let messages: Message[] = $state([]);
-channelMessages.subscribe((v) => (messages = v.get(channelId) || []));
+channelMessages.subscribe(
+	(v) => (messages = v.get(channelId.toString()) || []),
+);
 
 function getDate(ts: number) {
 	const now = Date.now() / 1000;
@@ -36,7 +39,7 @@ function shouldCascade(message: Message, index: number) {
 			return false;
 		}
 		if (
-			msg!.author_id.valueOf() == message.author_id.valueOf() &&
+			msg!.author_id == message.author_id &&
 			message.created_at - msg!.created_at < 300
 		) {
 			return true;
@@ -54,7 +57,7 @@ function willCascade(index: number) {
 		return false;
 	}
 	if (
-		msg.author_id.valueOf() == otherMsg.author_id.valueOf() &&
+		msg.author_id == otherMsg.author_id &&
 		otherMsg.created_at - msg!.created_at < 300
 	) {
 		return true;
@@ -64,7 +67,7 @@ function willCascade(index: number) {
 let nextMessageWillCascade = willCascade(index);
 
 async function processContent(content: string) {
-	return String(await processor.process(content));
+	return String(await processor.process(unScrewHtml(content)));
 }
 </script>
 
@@ -75,14 +78,14 @@ async function processContent(content: string) {
             <Avatar.Fallback><img class="rounded-full h-11 w-11" alt="Fallback Avatar" src={"https://avatars.githubusercontent.com/u/132799819"} /></Avatar.Fallback>
         </Avatar.Root>
     {:else}
-        <div class="text-weep-gray w-12 tracking-tighter text-xs font-semibold hidden group-hover:block" style="font-variant-numeric:tabular-nums">
+        <div class="text-weep-gray select-none w-12 tracking-tighter text-xs font-semibold hidden group-hover:block" style="font-variant-numeric:tabular-nums">
             {getDate(message.last_modified_at)}
         </div>
     {/if}
     <div class="flex flex-col">
         <div class="flex gap-2 items-center" class:hidden={cascade}>
             <div class="hover:underline text-white font-semibold">
-                {userData.find((v) => message.author_id.valueOf() == v.user_id.valueOf())?.username || "Unknown User"}
+                {userData.find((v) => message.author_id == v.user_id)?.username || "Unknown User"}
             </div>
             <div class="text-weep-gray tracking-tighter text-xs">
                 {getDate(message.last_modified_at)}

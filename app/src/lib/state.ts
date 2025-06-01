@@ -13,12 +13,12 @@ export const currentUser = writable<{
 } | null>(null);
 export const users = writable<Profile[]>([]);
 export const privateChannels = writable<PrivateChannel[]>([]);
-export const currentPrivateChannel = writable<BigInt | null>(null);
-export const currentGuild = writable<BigInt | null>(null);
+export const currentPrivateChannel = writable<string | null>(null);
+export const currentGuild = writable<string | null>(null);
 export const currentSidebarType = writable<"guild" | "dms">("dms");
-export const channelMessages = writable<Map<BigInt, Message[]>>(new Map());
-export const waitingForMessages = writable<BigInt[]>([]);
-export const savedChannels = writable<BigInt[]>([]);
+export const channelMessages = writable<Map<string, Message[]>>(new Map());
+export const waitingForMessages = writable<string[]>([]);
+export const savedChannels = writable<string[]>([]);
 
 export const toasts = writable<Toast[]>([]);
 

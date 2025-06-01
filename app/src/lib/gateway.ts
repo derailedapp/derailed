@@ -34,7 +34,7 @@ socket.addEventListener("open", () => {
 });
 
 socket.addEventListener("message", (ev) => {
-	const data = JSON.parse(ev.data);
+	const data = JSON({ storeAsString: true }).parse(ev.data);
 	const op: number = data.op;
 	const d: any = data.d;
 

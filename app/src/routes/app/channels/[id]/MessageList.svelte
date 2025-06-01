@@ -3,15 +3,26 @@ import type { Message } from "$lib/models";
 import { channelMessages, savedChannels } from "$lib/state";
 import { get } from "svelte/store";
 import JSON from "json-bigint";
-import { onMount } from "svelte";
 import MessageComp from "./Message.svelte";
+import { tick } from "svelte";
 
-let { channelId }: { channelId: BigInt } = $props();
+let { channelId }: { channelId: string } = $props();
 
 // @ts-ignore
-let container: HTMLUListElement = $state();
+let container: Element = $state();
 let messages: Message[] = $state([]);
-channelMessages.subscribe((v) => (messages = v.get(channelId) || []));
+channelMessages.subscribe((v) => {
+	if (messages.length === 0) {
+		scrollToBottom();
+	}
+	messages = v.get(channelId.toString()) || [];
+});
+
+$effect(() => {
+	if (messages.length != 0) {
+		scrollToBottom();
+	}
+});
 
 async function getMessages(before: BigInt | undefined = undefined) {
 	let url = new URL(
@@ -27,18 +38,18 @@ async function getMessages(before: BigInt | undefined = undefined) {
 		},
 	});
 
-	const data = JSON.parse(await resp.text());
+	let data: Message[] = JSON({ storeAsString: true }).parse(await resp.text());
 	channelMessages.update((msgs) => {
-		const current = msgs.get(channelId) || [];
+		const current = msgs.get(channelId.toString()) || [];
 		let updated = current.concat(data);
 		updated.sort((a, b) => {
-			if (a.id.valueOf() < b.id.valueOf()) {
+			if (a.id < b.id) {
 				return -1;
 			} else {
 				return 1;
 			}
 		});
-		return msgs.set(channelId, updated);
+		return msgs.set(channelId.toString(), updated);
 	});
 }
 
@@ -50,17 +61,15 @@ if (!get(savedChannels).includes(channelId)) {
 	});
 }
 
-function scrollToBottom() {
+async function scrollToBottom() {
+	await tick();
 	if (container) {
 		container.scrollTop = container.scrollHeight;
 	}
 }
-
-onMount(scrollToBottom);
-$effect(() => scrollToBottom);
 </script>
 
-<ul class="flex flex-col overflow-y-auto m-auto h-full w-full rounded-b-xl">
+<ul bind:this={container} class="flex flex-col overflow-y-scroll m-auto h-full w-full rounded-b-xl">
     {#each messages as message, index}
         <MessageComp channelId={channelId} message={message} index={index} />
     {/each}

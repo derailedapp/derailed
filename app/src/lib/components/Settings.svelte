@@ -39,76 +39,86 @@ const getBanner = () => {
 		);
 	}
 
-    return null;   
-}
+	return null;
+};
 
 const getAvatar = () => {
-    if (avatar) {
-        return URL.createObjectURL(avatar);
-    } else if ($currentUser?.profile.avatar) {
-        return import.meta.env.VITE_CDN_URL + "/avatars/" + $currentUser?.profile.avatar;
-    }
+	if (avatar) {
+		return URL.createObjectURL(avatar);
+	} else if ($currentUser?.profile.avatar) {
+		return (
+			import.meta.env.VITE_CDN_URL + "/avatars/" + $currentUser?.profile.avatar
+		);
+	}
 
-    return "/default_pfp.webp";   
-}
+	return "/default_pfp.webp";
+};
 
 const onSubmit = async (e: Event) => {
-    e.preventDefault();
+	e.preventDefault();
 
-    const assetsPayload: { avatar?: string; banner?: string; } = {};
-    const mePayload: { email?: string; username?: string; display_name?: string; } = {};
+	const assetsPayload: { avatar?: string; banner?: string } = {};
+	const mePayload: {
+		email?: string;
+		username?: string;
+		display_name?: string;
+	} = {};
 
-    if (avatar) {
-        assetsPayload.avatar = await fileToDataURI(avatar);
-    }
+	if (avatar) {
+		assetsPayload.avatar = await fileToDataURI(avatar);
+	}
 
-    if (banner) {
-        assetsPayload.banner = await fileToDataURI(banner);
-    }
+	if (banner) {
+		assetsPayload.banner = await fileToDataURI(banner);
+	}
 
-    if (newUsername != $currentUser?.profile.username) {
-        mePayload.username = newUsername;
-    }
+	if (newUsername != $currentUser?.profile.username) {
+		mePayload.username = newUsername;
+	}
 
-    if (newEmail != $currentUser?.account.email && currentPassword) {
-        mePayload.email = newEmail;
-    } else if (newEmail != $currentUser?.account.email && currentPassword === undefined) {
-        return addToast("error", "To change your email, you need to type your password.", 3000);
-    }
+	if (newEmail != $currentUser?.account.email && currentPassword) {
+		mePayload.email = newEmail;
+	} else if (
+		newEmail != $currentUser?.account.email &&
+		currentPassword === undefined
+	) {
+		return addToast(
+			"error",
+			"To change your email, you need to type your password.",
+			3000,
+		);
+	}
 
-    if (newDisplayName != ($currentUser?.profile.display_name || "")) {
-        console.log("newDisplayName")
-        mePayload.display_name = newDisplayName;
-    }
+	if (newDisplayName != ($currentUser?.profile.display_name || "")) {
+		console.log("newDisplayName");
+		mePayload.display_name = newDisplayName;
+	}
 
-    if (assetsPayload) {
-        const resp = await fetch(
-            import.meta.env.VITE_API_URL + "/users/@me/assets",
-            {
-                method: "PATCH",
-                body: JSON.stringify(assetsPayload),
-                headers: {
-                    Authorization: localStorage.getItem("token")!,
-                    "Content-Type": "application/json",
-                },
-            },
-        );
-    }
+	if (assetsPayload) {
+		const resp = await fetch(
+			import.meta.env.VITE_API_URL + "/users/@me/assets",
+			{
+				method: "PATCH",
+				body: JSON.stringify(assetsPayload),
+				headers: {
+					Authorization: localStorage.getItem("token")!,
+					"Content-Type": "application/json",
+				},
+			},
+		);
+	}
 
-    if (mePayload) {
-        const resp = await fetch(
-            import.meta.env.VITE_API_URL + "/users/@me",
-            {
-                method: "PATCH",
-                body: JSON.stringify(mePayload),
-                headers: {
-                    Authorization: localStorage.getItem("token")!,
-                    "Content-Type": "application/json",
-                },
-            },
-        );
-    }
-}
+	if (mePayload) {
+		const resp = await fetch(import.meta.env.VITE_API_URL + "/users/@me", {
+			method: "PATCH",
+			body: JSON.stringify(mePayload),
+			headers: {
+				Authorization: localStorage.getItem("token")!,
+				"Content-Type": "application/json",
+			},
+		});
+	}
+};
 
 const fileToDataURI = (file: File): Promise<string> => {
 	return new Promise((resolve, reject) => {
@@ -138,27 +148,27 @@ const cropped = (newImage: File, type: CropType) => {
 		avatar = newImage;
 	}
 
-    crop = null;
-}
+	crop = null;
+};
 
 const reset = (reset: boolean) => {
-    if (reset) {
-        banner = undefined;
-        avatar = undefined;
+	if (reset) {
+		banner = undefined;
+		avatar = undefined;
 
-        newUsername = $currentUser!.profile.username;
-        newDisplayName = $currentUser!.profile.display_name || "";
-        newEmail = $currentUser!.account.email;
-    }
-}
+		newUsername = $currentUser!.profile.username;
+		newDisplayName = $currentUser!.profile.display_name || "";
+		newEmail = $currentUser!.account.email;
+	}
+};
 </script>
 
 <Dialog.Root onOpenChange={(v) => reset(!v)}>
     <input type="file" accept="image/png, image/jpeg, image/webp" class="hidden" onchange={(e) => {setCrop(e, CropType.Banner)}} bind:this={bannerInput}>
     <input type="file" accept="image/png, image/jpeg, image/webp" class="hidden" onchange={(e) => {setCrop(e, CropType.Avatar)}} bind:this={avatarInput}>
 
-    <Dialog.Trigger class="ml-auto p-2 rounded-sm bg-aside">
-        <Gear weight="fill" class="w-5 h-5 text-weep-gray hover:text-white transition-colors duration-100" />
+    <Dialog.Trigger class="ml-auto p-2 rounded-sm bg-aside group hover:bg-primary transition duration-400 ease-in-out">
+        <Gear weight="fill" class="w-5 h-5 text-weep-gray group-hover:text-white transition-colors duration-100" />
     </Dialog.Trigger>
     <Dialog.Portal>
         <Dialog.Overlay

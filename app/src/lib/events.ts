@@ -47,11 +47,11 @@ emitter.on("USER_UPDATE", (data: Profile) => {
 emitter.on("MESSAGE_CREATE", (data: Message) => {
 	const awaitedMessages = get(waitingForMessages);
 	channelMessages.update((channels) => {
-		const msgs = channels.get(data.channel_id);
+		const msgs = channels.get(data.channel_id.toString());
 		if (msgs === undefined) {
 			return channels;
 		}
-		if (awaitedMessages.includes(data.id)) {
+		if (awaitedMessages.includes(data.nonce || "")) {
 			waitingForMessages.update((ms) => {
 				const idx = ms.indexOf(data.id);
 				return ms.splice(idx, 1);

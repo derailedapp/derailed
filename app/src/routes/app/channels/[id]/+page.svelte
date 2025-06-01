@@ -15,18 +15,15 @@ import moment from "moment-timezone";
 
 const { id } = page.params;
 
-const channelId = BigInt(id);
+const channelId = id;
 
 let currentChannel: PrivateChannel | undefined = $state(undefined);
 privateChannels.subscribe(
-	(v) =>
-		(currentChannel = v.find(
-			(channel) => channel.id.valueOf() == channelId.valueOf(),
-		)!),
+	(v) => (currentChannel = v.find((channel) => channel.id == channelId)!),
 );
 currentPrivateChannel.set(channelId);
 
-function sfToTime(snowflake: bigint): number {
+function sfToTime(snowflake: string | bigint | number): number {
 	const milliseconds = BigInt(snowflake) >> 22n;
 	return Number(milliseconds) + 1649325271415;
 }
@@ -81,7 +78,7 @@ function sfToTime(snowflake: bigint): number {
                     {/if}
                 </div>
 
-                <div class="flex flex-col justify-center items-center pt-20">
+                <div class="flex flex-col justify-center items-center pt-20 select-none">
                     <div class="font-semibold text-xl">
                         {$currentUser?.profile.display_name || $currentUser?.profile.username}
                     </div>
@@ -92,12 +89,12 @@ function sfToTime(snowflake: bigint): number {
             </div>
         </div>
         <div class="flex flex-col w-full pt-2 gap-4">
-            <div class="w-full py-3 px-6 rounded-xl">
+            <div class="w-full py-3 px-6 rounded-xl select-none">
                 <div class="font-semibold text-sm">
                     Member Since
                 </div>
                 <div class="text-sm">
-                    {moment.unix(sfToTime(BigInt($currentUser?.account.id.valueOf() || 0)) / 1000).format('MMMM Do YYYY, h:mm a')}
+                    {moment.unix(sfToTime($currentUser?.account.id || 0) / 1000).format('MMMM Do YYYY, h:mm a')}
                 </div>
             </div>
         </div>

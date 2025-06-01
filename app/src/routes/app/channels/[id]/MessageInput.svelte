@@ -12,6 +12,7 @@ import {
 	channelMessages,
 	currentPrivateChannel,
 	currentUser,
+	waitingForMessages,
 } from "$lib/state";
 import JSON from "json-bigint";
 
@@ -70,6 +71,10 @@ async function onKey(event: KeyboardEvent) {
 			.join("");
 
 		const now = Date.now();
+		waitingForMessages.update((v) => {
+			v.push(nonce);
+			return v;
+		});
 		fetch(
 			import.meta.env.VITE_API_URL +
 				"/channels/" +
@@ -89,10 +94,10 @@ async function onKey(event: KeyboardEvent) {
 		});
 		editor.commands.clearContent();
 		channelMessages.update((v) => {
-			let msgs = v.get(currentChannelId) || [];
+			let msgs = v.get(currentChannelId.toString()) || [];
 			const currentUserData = get(currentUser);
 			msgs.push({
-				id: BigInt(900000000000000000000000000),
+				id: "900000000000000000000000000",
 				content,
 				nonce,
 				author_id: currentUserData!.account.id,
@@ -100,11 +105,11 @@ async function onKey(event: KeyboardEvent) {
 				created_at: now,
 				last_modified_at: now,
 			});
-			v.set(currentChannelId, msgs);
+			v.set(currentChannelId.toString(), msgs);
 			return v;
 		});
 	}
 }
 </script>
 
-<div onkeyup={onKey} role="textbox" tabindex="0" aria-keyshortcuts="Enter" aria-multiline="true" bind:this={element} class="px-4 py-3 w-full m-6 max-h-[800px] text-white rounded-lg bg-inps"></div>
+<div onkeyup={onKey} role="textbox" tabindex="0" aria-keyshortcuts="Enter" aria-multiline="true" bind:this={element} class="px-4 py-3 font-light w-full m-6 max-h-[800px] text-white rounded-md bg-inps"></div>

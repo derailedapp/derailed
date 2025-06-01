@@ -12,8 +12,7 @@ defmodule Derailed.Interchange.Application do
   def start(_type, _args) do
     children = [
       {GRPC.Server.Supervisor,
-       endpoint: Derailed.Gateway.Endpoint, port: 50051, start_server: true},
-      {Task.Supervisor, name: Derailed.Interchange.TaskSupervisor}
+       endpoint: Derailed.Gateway.Endpoint, port: 50051, start_server: true}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

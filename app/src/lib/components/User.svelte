@@ -5,7 +5,7 @@ let {
 	avatarUrl,
 	selected = false,
 }: {
-	channelId: BigInt;
+	channelId: string;
 	username: string;
 	avatarUrl: string;
 	selected?: boolean;

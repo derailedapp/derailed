@@ -29,6 +29,7 @@ defmodule Derailed.Session.MixProject do
       {:gen_registry, "~> 1.3.0"},
       {:postgrex, "~> 0.20.0"},
       {:db, in_umbrella: true},
+      {:private_channels, in_umbrella: true},
       {:manifold, "~> 1.6.0"}
     ]
   end
