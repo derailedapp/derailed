@@ -167,34 +167,34 @@ const reset = (reset: boolean) => {
     <input type="file" accept="image/png, image/jpeg, image/webp" class="hidden" onchange={(e) => {setCrop(e, CropType.Banner)}} bind:this={bannerInput}>
     <input type="file" accept="image/png, image/jpeg, image/webp" class="hidden" onchange={(e) => {setCrop(e, CropType.Avatar)}} bind:this={avatarInput}>
 
-    <Dialog.Trigger class="ml-auto p-2 rounded-sm bg-aside group hover:bg-primary transition duration-400 ease-in-out">
+    <Dialog.Trigger class="ml-auto p-2 rounded-sm bg-aside group border border-guild-aside hover:bg-primary transition duration-400 ease-in-out">
         <Gear weight="fill" class="w-5 h-5 text-weep-gray group-hover:text-white transition-colors duration-100" />
     </Dialog.Trigger>
     <Dialog.Portal>
         <Dialog.Overlay
             class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
         />
-        <Dialog.Content class="bg-aside fixed left-[50%] top-[50%] z-50 w-[1200px] h-[800px] translate-x-[-50%] translate-y-[-50%] 
+        <Dialog.Content class="bg-aside rounded-lg fixed left-[50%] top-[50%] z-50 w-[1000px] h-[800px] translate-x-[-50%] translate-y-[-50%] 
         data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
             <Tabs.Root value="myaccount" class="flex h-full w-full flex-row">
-                <Tabs.List class="w-[290px] h-full bg-guild-aside flex justify-end">
-                    <div class="flex flex-col gap-1 mr-4 mt-4 ml-auto">
-                        <div class="flex flex-row justify-center items-center gap-3">
-                            <img src={getAvatar()} class="rounded-full border border-aside size-[4rem]" alt="me">
+                <Tabs.List class="w-[290px] h-full bg-guild-aside rounded-l-lg flex justify-end">
+                    <div class="flex flex-col gap-1 mr-2 mt-6 ml-auto">
+                        <div class="flex flex-row font-bold">
+                            USER SETTINGS
                         </div>
                         <Tabs.Trigger 
                             value="myaccount"
-                            class="hover:bg-aside/80 transition-colors duration-100 py-1 w-[200px] flex mt-2 relative rounded-sm
-                            before:absolute before:-left-4.5 before:top-0 before:h-full before:w-1 
-                            before:bg-transparent data-[state=active]:before:bg-blue-500">
+                            class="py-4 w-[200px] flex mt-5 relative rounded-sm
+                            before:absolute before:-left-4 before:top-0 before:h-full before:w-1 
+                            before:bg-transparent text-[15px] data-[state=active]:before:bg-blurple">
 
                             <h1 class="ml-2">My Account</h1>
                         </Tabs.Trigger>
 
-                        <button class="hover:bg-red-800/70 data-[state=active]:bg-aside/40 transition-colors duration-800 rounded-sm
-                        py-1 w-[200px] flex items-center text-red-500 hover:text-white mt-auto mb-4">
-                            <h1 class="ml-2">Sign out</h1>
-                            <SignOut class="ml-auto mr-2"/>
+                        <button class="data-[state=active]:bg-aside/40 transition-colors duration-800 rounded-sm
+                        py-1.5 p-3 w-[200px] flex items-center text-red-300 hover:text-white text-sm hover:bg-red-600/20 mt-auto mb-4">
+                            <h1 class="text-[15px]">Log Out</h1>
+                            <SignOut weight="bold" class="ml-auto mr-2 h-[17px] w-[17px]"/>
                         </button>
                     </div>
                 </Tabs.List>
@@ -202,7 +202,7 @@ const reset = (reset: boolean) => {
                 <Tabs.Content value="myaccount" class="flex flex-col w-full h-full">
                     <form class="h-full w-full" onsubmit={onSubmit}>
                         <div class="flex flex-row w-full h-[90%] pl-6 pr-6 pt-12 overflow-y-auto gap-8">
-                            <div class="flex flex-col pl-8 pt-8 w-1/2 gap-18">
+                            <div class="flex flex-col pl-8 pt-8 w-1/2 gap-10">
                                 <section>
                                     <div class="font-bold text-sm text-weep-gray tracking-tighter mb-8">
                                         DISPLAY NAME
@@ -245,13 +245,13 @@ const reset = (reset: boolean) => {
                                 </section>
 
                                 <section>
-                                    <button class="font-bold px-8 py-2 bg-blurple rounded-sm">
+                                    <button class="font-semibold text-sm px-4 py-2 bg-blurple rounded-md">
                                         Change Password
                                     </button>
                                 </section>
                             </div>
 
-                            <div class="flex flex-col pr-8 pt-8 gap-12 w-1/2">
+                            <div class="flex flex-col items-center pr-8 pt-8 gap-12 w-1/2">
                                 <div class="font-bold text-sm text-weep-gray tracking-tighter text-center">
                                     PROFILE PICTURE
                                 </div>
@@ -278,7 +278,7 @@ const reset = (reset: boolean) => {
                             </div>
                         </div>
 
-                        <div class="h-[10%] w-full bg-sexy-red-black flex items-center justify-end">
+                        <div class="h-[10%] w-full bg-sexy-red-black rounded-br-lg flex items-center justify-end">
                             {#if newEmail != $currentUser?.account.email}
                                 <div class="mr-auto ml-8 w-1/2">
                                     <input

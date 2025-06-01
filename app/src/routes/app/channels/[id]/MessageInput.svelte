@@ -15,6 +15,7 @@ import {
 	waitingForMessages,
 } from "$lib/state";
 import JSON from "json-bigint";
+    import EmojiPicker from "./EmojiPicker.svelte";
 
 let element: Element;
 let editor: Editor;
@@ -62,7 +63,10 @@ onDestroy(() => {
 
 async function onKey(event: KeyboardEvent) {
 	if (event.key == "Enter" && !event.shiftKey) {
-		let content = editor.getText();
+		let content = editor.getText().trim();
+		if (content == "") {
+			return;
+		}
 		const currentChannelId = get(currentPrivateChannel)!;
 
 		let nonce = crypto
@@ -112,4 +116,9 @@ async function onKey(event: KeyboardEvent) {
 }
 </script>
 
-<div onkeyup={onKey} role="textbox" tabindex="0" aria-keyshortcuts="Enter" aria-multiline="true" bind:this={element} class="px-4 py-3 font-light w-full m-6 max-h-[800px] text-white rounded-md bg-inps"></div>
+<div class="flex flex-row justify-center px-4 py-3 font-light w-full m-6 max-h-[800px] text-white rounded-md bg-inps">
+	<div onkeyup={onKey} role="textbox" tabindex="0" aria-keyshortcuts="Enter" aria-multiline="true" bind:this={element} class="w-full text-white"></div>
+	<div class="px-4">
+		<EmojiPicker />
+	</div>
+</div>

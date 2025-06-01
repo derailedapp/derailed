@@ -43,6 +43,7 @@
 		"@tiptap/extension-text": "^2.12.0",
 		"@tiptap/pm": "^2.12.0",
 		"@tiptap/starter-kit": "^2.12.0",
+		"@twemoji/api": "^16.0.1",
 		"@types/ua-parser-js": "^0.7.39",
 		"bits-ui": "^1.8.0",
 		"eventemitter3": "^5.0.1",
