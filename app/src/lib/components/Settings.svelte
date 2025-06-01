@@ -4,7 +4,6 @@ import { Dialog, Tabs } from "bits-ui";
 
 import { User, X, NotePencil, SignOut, Gear } from "phosphor-svelte";
 
-import { type Profile, type Account } from "$lib/models";
 import { addToast, currentUser } from "$lib/state";
 
 import { CropType } from "$lib/models";
@@ -16,6 +15,7 @@ let avatar: File | undefined = $state();
 let newUsername: string = $state("");
 let newDisplayName: string = $state("");
 let newEmail: string = $state("");
+let currentPassword: string | undefined = $state();
 
 let bannerInput: HTMLInputElement | undefined = $state();
 let avatarInput: HTMLInputElement | undefined = $state();
@@ -39,69 +39,76 @@ const getBanner = () => {
 		);
 	}
 
-	return null;
-};
+    return null;   
+}
 
 const getAvatar = () => {
-	if (avatar) {
-		return URL.createObjectURL(avatar);
-	} else if ($currentUser?.profile.avatar) {
-		return (
-			import.meta.env.VITE_CDN_URL + "/avatars/" + $currentUser?.profile.avatar
-		);
-	}
+    if (avatar) {
+        return URL.createObjectURL(avatar);
+    } else if ($currentUser?.profile.avatar) {
+        return import.meta.env.VITE_CDN_URL + "/avatars/" + $currentUser?.profile.avatar;
+    }
 
-	return "/default_pfp.webp";
-};
+    return "/default_pfp.webp";   
+}
 
 const onSubmit = async (e: Event) => {
-	e.preventDefault();
-	const payload: {
-		avatar?: string;
-		banner?: string;
-		username?: string;
-		email?: string;
-		display_name?: string;
-	} = {};
+    e.preventDefault();
 
-	if (avatar) {
-		payload.avatar = await fileToDataURI(avatar);
-	}
+    const assetsPayload: { avatar?: string; banner?: string; } = {};
+    const mePayload: { email?: string; username?: string; display_name?: string; } = {};
 
-	if (banner) {
-		payload.banner = await fileToDataURI(banner);
-	}
+    if (avatar) {
+        assetsPayload.avatar = await fileToDataURI(avatar);
+    }
 
-	if (newUsername != $currentUser?.profile.username) {
-		payload.username = newUsername;
-	}
+    if (banner) {
+        assetsPayload.banner = await fileToDataURI(banner);
+    }
 
-	if (newEmail != $currentUser?.account.email) {
-		payload.email = newEmail;
-	}
+    if (newUsername != $currentUser?.profile.username) {
+        mePayload.username = newUsername;
+    }
 
-	if (newDisplayName != $currentUser?.profile.display_name) {
-		payload.display_name = newDisplayName;
-	}
+    if (newEmail != $currentUser?.account.email && currentPassword) {
+        mePayload.email = newEmail;
+    } else if (newEmail != $currentUser?.account.email && currentPassword === undefined) {
+        return addToast("error", "To change your email, you need to type your password.", 3000);
+    }
 
-	await fetch(import.meta.env.VITE_API_URL + "/users/@me/assets", {
-		method: "PATCH",
-		body: JSON.stringify(payload),
-		headers: {
-			Authorization: localStorage.getItem("token")!,
-			"Content-Type": "application/json",
-		},
-	});
+    if (newDisplayName != ($currentUser?.profile.display_name || "")) {
+        console.log("newDisplayName")
+        mePayload.display_name = newDisplayName;
+    }
 
-	await fetch(import.meta.env.VITE_API_URL + "/users/@me", {
-		method: "PATCH",
-		body: JSON.stringify(payload),
-		headers: {
-			Authorization: localStorage.getItem("token")!,
-			"Content-Type": "application/json",
-		},
-	});
-};
+    if (assetsPayload) {
+        const resp = await fetch(
+            import.meta.env.VITE_API_URL + "/users/@me/assets",
+            {
+                method: "PATCH",
+                body: JSON.stringify(assetsPayload),
+                headers: {
+                    Authorization: localStorage.getItem("token")!,
+                    "Content-Type": "application/json",
+                },
+            },
+        );
+    }
+
+    if (mePayload) {
+        const resp = await fetch(
+            import.meta.env.VITE_API_URL + "/users/@me",
+            {
+                method: "PATCH",
+                body: JSON.stringify(mePayload),
+                headers: {
+                    Authorization: localStorage.getItem("token")!,
+                    "Content-Type": "application/json",
+                },
+            },
+        );
+    }
+}
 
 const fileToDataURI = (file: File): Promise<string> => {
 	return new Promise((resolve, reject) => {
@@ -131,11 +138,22 @@ const cropped = (newImage: File, type: CropType) => {
 		avatar = newImage;
 	}
 
-	crop = null;
-};
+    crop = null;
+}
+
+const reset = (reset: boolean) => {
+    if (reset) {
+        banner = undefined;
+        avatar = undefined;
+
+        newUsername = $currentUser!.profile.username;
+        newDisplayName = $currentUser!.profile.display_name || "";
+        newEmail = $currentUser!.account.email;
+    }
+}
 </script>
 
-<Dialog.Root>
+<Dialog.Root onOpenChange={(v) => reset(!v)}>
     <input type="file" accept="image/png, image/jpeg, image/webp" class="hidden" onchange={(e) => {setCrop(e, CropType.Banner)}} bind:this={bannerInput}>
     <input type="file" accept="image/png, image/jpeg, image/webp" class="hidden" onchange={(e) => {setCrop(e, CropType.Avatar)}} bind:this={avatarInput}>
 
@@ -143,128 +161,132 @@ const cropped = (newImage: File, type: CropType) => {
         <Gear weight="fill" class="w-5 h-5 text-weep-gray hover:text-white transition-colors duration-100" />
     </Dialog.Trigger>
     <Dialog.Portal>
-        <Dialog.Content class="bg-[#0b0b0d] fixed left-[50%] top-[50%] z-50 w-full h-full translate-x-[-50%] translate-y-[-50%]">
-            <Tabs.Root value="myaccount" class="flex h-full w-full flex-row gap-2">
-                <Tabs.List class="w-[360px] backdrop-blur-3xl rounded-2xl border border-sexy-lighter-black/50 bg-sexy-red-black/60 p-4 flex flex-col gap-4 my-2 ml-2">
-                    <img src="/derailed-text.svg" class="h-8 w-fit mx-auto" alt="derailed logo">
-
-                    <div class="flex flex-row justify-center items-center gap-2 p-3 w-full">
-                        <img src="https://avatars.githubusercontent.com/u/132799819" class="rounded-full h-10" alt="ananas">
-                        <div class="flex flex-col">
-                            <h1>@{$currentUser?.profile.username}</h1>
-                            <p class="text-sm text-weep-gray">This is a placeholder</p>
+        <Dialog.Overlay
+            class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
+        />
+        <Dialog.Content class="bg-aside fixed left-[50%] top-[50%] z-50 w-[1200px] h-[800px] translate-x-[-50%] translate-y-[-50%] 
+        data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+            <Tabs.Root value="myaccount" class="flex h-full w-full flex-row">
+                <Tabs.List class="w-[290px] h-full bg-guild-aside flex justify-end">
+                    <div class="flex flex-col gap-1 mr-4 mt-4 ml-auto">
+                        <div class="flex flex-row justify-center items-center gap-3">
+                            <img src={getAvatar()} class="rounded-full border border-aside size-[4rem]" alt="me">
                         </div>
-                    </div>
+                        <Tabs.Trigger 
+                            value="myaccount"
+                            class="hover:bg-aside/80 transition-colors duration-100 py-1 w-[200px] flex mt-2 relative rounded-sm
+                            before:absolute before:-left-4.5 before:top-0 before:h-full before:w-1 
+                            before:bg-transparent data-[state=active]:before:bg-blue-500">
 
-                    <div class="w-full h-[1px] border-b border-sexy-lighter-black"></div>
-
-                    <div class="flex flex-col items-center gap-4">
-                        <Tabs.Trigger value="myaccount" class="w-full py-3 px-4 rounded-lg flex items-center gap-2
-                                hover:bg-sexy-lighter-black/70 
-                                data-[state=active]:bg-sexy-lighter-black/40
-                                data-[state=active]:text-white
-                                transition-all duration-200 text-weep-gray hover:text-white text-center">
-                            <User class="w-5 h-5" />
-                            Public Profile
+                            <h1 class="ml-2">My Account</h1>
                         </Tabs.Trigger>
-                    </div>
 
-                    <div class="mt-auto border-t pt-2 border-sexy-lighter-black">
-                        <button 
-                            class="w-full py-3 px-4 rounded-lg flex items-center justify-start gap-2
-                                hover:bg-sexy-lighter-black/70
-                                data-[state=active]:bg-sexy-lighter-black/40 data-[state=active]:text-white
-                                transition-all duration-200 text-weep-gray hover:text-white text-center">
-                            <SignOut class="w-5 h-5" />
-                            Sign Out
-
+                        <button class="hover:bg-red-800/70 data-[state=active]:bg-aside/40 transition-colors duration-800 rounded-sm
+                        py-1 w-[200px] flex items-center text-red-500 hover:text-white mt-auto mb-4">
+                            <h1 class="ml-2">Sign out</h1>
+                            <SignOut class="ml-auto mr-2"/>
                         </button>
                     </div>
                 </Tabs.List>
 
-                <form onsubmit={onSubmit} class="flex flex-col flex-1 backdrop-blur-3xl rounded-3xl border-[1px] bg-sexy-red-black/60 border-sexy-lighter-black my-2 mr-2">
-                    <Dialog.Close class="absolute self-end mr-4 mt-4">
-                        <X class="w-6 h-6" />
-                    </Dialog.Close>
+                <Tabs.Content value="myaccount" class="flex flex-col w-full h-full">
+                    <form class="h-full w-full" onsubmit={onSubmit}>
+                        <div class="flex flex-row w-full h-[90%] pl-6 pr-6 pt-12 overflow-y-auto gap-8">
+                            <div class="flex flex-col pl-8 pt-8 w-1/2 gap-18">
+                                <section>
+                                    <div class="font-bold text-sm text-weep-gray tracking-tighter mb-8">
+                                        DISPLAY NAME
+                                    </div>
 
-                    <Tabs.Content value="myaccount">
-                        <div class="flex flex-row items-center ml-4 mt-2">
-                            {#await getAvatar() then url}
-                                <img src={url} class="rounded-2xl size-12" alt="me">                            
-                            {/await}
-                            <p class="p-4 text-2xl font-bold">Public Profile</p>
-                        </div>
+                                    <input 
+                                        style="box-shadow: none;" 
+                                        placeholder="No Display Name" 
+                                        bind:value={newDisplayName} 
+                                        class="bg-transparent appearance-none w-full border-0 border-b border-b-sexy-red-gray" 
+                                    />
+                                </section>
 
-                        <div class="flex flex-row justify-center items-center gap-8">
-                            <div class="p-5 rounded-2xl w-[1000px] h-[900px]">
-                                <div class="flex flex-col h-full gap-4">
-                                    <button class="relative group" onclick={() => bannerInput?.click()}>
-                                        {#await getBanner() then url}
-                                            {#if url === null}
-                                                <div class="bg-slate-700 w-[600px] h-[240px] rounded-4xl group-hover:opacity-70 transition-all duration-150"></div>
-                                            {:else}
-                                                <img src={url} alt="banner" class="w-[960px] h-[150px] rounded-lg group-hover:opacity-70 transition-all duration-150 object-cover object-center">
-                                            {/if}
-                                        {/await}
-                                    
-                                        <span class="hidden group-hover:block group-hover:opacity-100 transition-all 
-                                        absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                                            <NotePencil class="w-6 h-6" />
-                                        </span>
+                                <section>
+                                    <div class="font-bold text-sm text-weep-gray tracking-tighter mb-8">
+                                        USERNAME
+                                    </div>
+
+                                    <input 
+                                        required 
+                                        style="box-shadow: none;" 
+                                        bind:value={newUsername} 
+                                        onkeypress={(e) => {if (e.key === " ") { e.preventDefault() }}} 
+                                        class="bg-transparent appearance-none w-full border-0 border-b border-b-sexy-red-gray" 
+                                    />
+                                </section>
+
+                                <section>
+                                    <div class="font-bold text-sm text-weep-gray tracking-tighter mb-8">
+                                        EMAIL
+                                    </div>
+
+                                    <input
+                                        required
+                                        type="email"
+                                        style="box-shadow: none;"
+                                        bind:value={newEmail}
+                                        class="bg-transparent appearance-none w-full border-0 border-b border-b-sexy-red-gray"
+                                    />
+                                </section>
+
+                                <section>
+                                    <button class="font-bold px-8 py-2 bg-blurple rounded-sm">
+                                        Change Password
                                     </button>
+                                </section>
+                            </div>
 
-                                    <div class="flex flex-row absolute top-[12rem] ml-2">
-                                        <button class="relative group" onclick={() => avatarInput?.click()}>
-                                            {#await getAvatar() then url}
-                                                <img
-                                                    class="size-[7rem] rounded-4xl object-cover border-2 border-sexy-lighter-black group-hover:opacity-70 transition-all"
-                                                    src={url}
-                                                    alt="avatar"
-                                                />
-                                            {/await}
-
-                                            <span class="hidden group-hover:block group-hover:opacity-100 transition-all 
-                                            absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                                                <NotePencil class="w-6 h-6" />
-                                            </span>
-                                        </button>
-
-                                        <h1 class="self-end mb-5 ml-3 text-4xl font-bold">{$currentUser?.profile.display_name || $currentUser?.profile.username}</h1>
-                                    </div>
-
-
-                                    <div class="flex flex-col justify-center items-center h-full w-full rounded-lg gap-6">
-                                        <div class="flex flex-row justify-center items-center w-[80%] p-4 rounded-lg h-[80px]">
-                                            <div class="flex w-full gap-2 flex-col">
-                                                <h2 class="font-bold text-white">Display Name</h2>
-                                                <input class="w-full bg-sexy-lighter-black/70 focus:ring-0 rounded-xl" bind:value={newDisplayName} maxlength="32" minlength="4" />
-                                            </div>
-                                        </div>
-
-                                        <div class="flex flex-row justify-center items-center w-[80%] p-4 rounded-lg h-[80px]">
-                                            <div class="flex w-full gap-2 flex-col">
-                                                <h2 class="font-bold text-white">Username</h2>
-                                                <input class="w-full bg-sexy-lighter-black/70 rounded-xl" bind:value={newUsername} maxlength="32" minlength="4" />
-                                            </div>
-                                        </div>
-
-                                        <div class="flex flex-row justify-center items-center w-[80%] p-4 rounded-lg h-[80px]">
-                                            <div class="flex w-full gap-2 flex-col">
-                                                <h2 class="font-bold text-white">Email</h2>
-                                                <input class="w-full bg-sexy-lighter-black/70 rounded-xl" bind:value={newEmail} maxlength="32" minlength="4" />
-                                            </div>
-                                        </div>
-
-                                        <button class="bg-blurple/85 hover:bg-blurple/65 text-white px-4 rounded-4xl 
-                                            transition-all duration-150 items-center gap-2 py-1">
-                                                Update profile
-                                        </button>
-                                    </div>
+                            <div class="flex flex-col pr-8 pt-8 gap-12 w-1/2">
+                                <div class="font-bold text-sm text-weep-gray tracking-tighter text-center">
+                                    PROFILE PICTURE
                                 </div>
+                                <button class="relative group" onclick={() => avatarInput?.click()}>
+                                    <img src={getAvatar()} class="size-[12rem] rounded-full opacity-100 group-hover:opacity-70 mx-auto transition-all duration-200" alt="me">
+
+                                    <span class="opacity-0 group-hover:opacity-200
+                                        absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 duration-200">
+                                        <NotePencil class="w-6 h-6" />
+                                    </span>
+                                </button>
+
+                                <div class="font-bold text-sm text-weep-gray tracking-tighter text-center">
+                                    BANNER
+                                </div>
+                                <button class="relative group flex" onclick={() => bannerInput?.click()}>
+                                    <img src={getBanner()} class="w-[350px] h-[130px] opacity-100 group-hover:opacity-70 mx-auto transition-all duration-200 object-cover bg-center" alt="me">
+
+                                    <span class="opacity-0 group-hover:opacity-200
+                                        absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 duration-200">
+                                        <NotePencil class="w-6 h-6" />
+                                    </span>
+                                </button>
                             </div>
                         </div>
-                    </Tabs.Content>
-                </form>
+
+                        <div class="h-[10%] w-full bg-sexy-red-black flex items-center justify-end">
+                            {#if newEmail != $currentUser?.account.email}
+                                <div class="mr-auto ml-8 w-1/2">
+                                    <input
+                                        required
+                                        type="password"
+                                        placeholder="Enter current password"
+                                        style="box-shadow: none;"
+                                        bind:value={currentPassword}
+                                        class="bg-transparent appearance-none w-full border-0 border-b border-b-sexy-red-gray"
+                                    />
+                                </div>
+                            {/if}
+                            <button type="submit" class="mr-8 bg-blurple py-1 px-8 rounded-sm">
+                                Save
+                            </button>
+                        </div>
+                    </form>
+                </Tabs.Content>
             </Tabs.Root>
             {#if crop}
                 <section class="bg-[#0b0b0d] fixed left-[50%] top-[50%] z-[999] w-full h-full translate-x-[-50%] translate-y-[-50%]">
