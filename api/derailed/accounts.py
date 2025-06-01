@@ -303,13 +303,13 @@ def avatar_to_webp(image: Image) -> bytes:
 
 
 def banner_to_webp(image: Image) -> bytes:
-    scale = max(1500 / image.width, 500 / image.height)  # type: ignore
+    scale = max(980 / image.width, 400 / image.height)  # type: ignore
     resized = image.resize(scale)  # type: ignore
 
-    # Crop center to 1500x500
-    left = (resized.width - 1500) // 2  # type: ignore
-    top = (resized.height - 500) // 2  # type: ignore
-    cropped = resized.crop(left, top, 1500, 500)  # type: ignore
+    # Crop center to 980x350
+    left = (resized.width - 980) // 2  # type: ignore
+    top = (resized.height - 400) // 2  # type: ignore
+    cropped = resized.crop(left, top, 980, 400)  # type: ignore
 
     return cropped.webpsave_buffer(Q=40, lossless=False, near_lossless=True, strip=True)
 
@@ -332,6 +332,7 @@ async def modify_assets(
                 profile["avatar"] = None
 
             if model.avatar:
+                print(model.avatar.mimetype)
                 if model.avatar.mimetype in [
                     "image/png",
                     "image/webp",
@@ -370,6 +371,7 @@ async def modify_assets(
                 profile["banner"] = None
 
             if model.banner:
+                print(model.banner.mimetype)
                 if model.banner.mimetype in [
                     "image/png",
                     "image/webp",

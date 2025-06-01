@@ -108,6 +108,10 @@ body {
 	@apply outline-0;
 }
 
+button {
+	@apply cursor-pointer;
+}
+
 @theme {
 	--color-blurple: #7a83ff;
 	--color-sexy-lighter-black: #2a2a2e;

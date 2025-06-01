@@ -58,7 +58,9 @@ const getCroppedImage = (): Promise<File | null> => {
 					return resolve(null);
 				}
 
-				resolve(new File([blob], "cropped.jpeg"));
+				resolve(new File([blob], "cropped.png", {
+					type: "image/png"	
+				}));
 			});
 		};
 	});
@@ -92,12 +94,12 @@ let {
         <X class="size-5" />
     </button>
     {#if type == CropType.Banner}
-        <div class="relative h-[500px] w-[800px]">
+        <div class="relative h-[350px] w-[980px]">
             <Cropper
                 {image}
                 bind:crop
                 bind:zoom
-                aspect={600 / 240}
+                aspect={980 / 350}
                 maxZoom={5}
                 oncropcomplete={handleCropComplete}
             />

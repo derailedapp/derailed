@@ -2,12 +2,13 @@
 import "$lib/gateway";
 import { Dialog, Tabs } from "bits-ui";
 
-import { User, X, NotePencil, SignOut, Gear } from "phosphor-svelte";
+import { NotePencil, SignOut, Gear } from "phosphor-svelte";
 
 import { addToast, currentUser } from "$lib/state";
 
 import { CropType } from "$lib/models";
 import Cropper from "./Cropper.svelte";
+import { goto } from "$app/navigation";
 
 let banner: File | undefined = $state();
 let avatar: File | undefined = $state();
@@ -90,7 +91,6 @@ const onSubmit = async (e: Event) => {
 	}
 
 	if (newDisplayName != ($currentUser?.profile.display_name || "")) {
-		console.log("newDisplayName");
 		mePayload.display_name = newDisplayName;
 	}
 
@@ -109,14 +109,17 @@ const onSubmit = async (e: Event) => {
 	}
 
 	if (mePayload) {
-		const resp = await fetch(import.meta.env.VITE_API_URL + "/users/@me", {
-			method: "PATCH",
-			body: JSON.stringify(mePayload),
-			headers: {
-				Authorization: localStorage.getItem("token")!,
-				"Content-Type": "application/json",
-			},
-		});
+		const resp = await fetch(
+            import.meta.env.VITE_API_URL + "/users/@me", 
+            {
+                method: "PATCH",
+                body: JSON.stringify(mePayload),
+                headers: {
+                    Authorization: localStorage.getItem("token")!,
+                    "Content-Type": "application/json",
+                },
+		    }
+        );
 	}
 };
 
@@ -161,11 +164,25 @@ const reset = (reset: boolean) => {
 		newEmail = $currentUser!.account.email;
 	}
 };
+
+const logout = async () => {
+    const resp = await fetch(import.meta.env.VITE_API_URL + "/logout", {
+        method: "POST",
+        headers: {
+            Authorization: localStorage.getItem("token")!,
+        },
+    });
+
+    if (resp.status === 204) {
+        localStorage.removeItem("token");
+        await goto("/login");
+    }
+}
 </script>
 
 <Dialog.Root onOpenChange={(v) => reset(!v)}>
-    <input type="file" accept="image/png, image/jpeg, image/webp" class="hidden" onchange={(e) => {setCrop(e, CropType.Banner)}} bind:this={bannerInput}>
-    <input type="file" accept="image/png, image/jpeg, image/webp" class="hidden" onchange={(e) => {setCrop(e, CropType.Avatar)}} bind:this={avatarInput}>
+    <input type="file" accept="image/png, image/jpeg, image/webp, image/gif" class="hidden" onchange={(e) => {setCrop(e, CropType.Banner)}} bind:this={bannerInput}>
+    <input type="file" accept="image/png, image/jpeg, image/webp, image/gif" class="hidden" onchange={(e) => {setCrop(e, CropType.Avatar)}} bind:this={avatarInput}>
 
     <Dialog.Trigger class="ml-auto p-2 rounded-sm bg-aside group border border-guild-aside hover:bg-primary transition duration-400 ease-in-out">
         <Gear weight="fill" class="w-5 h-5 text-weep-gray group-hover:text-white transition-colors duration-100" />
@@ -191,8 +208,8 @@ const reset = (reset: boolean) => {
                             <h1 class="ml-2">My Account</h1>
                         </Tabs.Trigger>
 
-                        <button class="data-[state=active]:bg-aside/40 transition-colors duration-800 rounded-sm
-                        py-1.5 p-3 w-[200px] flex items-center text-red-300 hover:text-white text-sm hover:bg-red-600/20 mt-auto mb-4">
+                        <button onclick={logout} class="data-[state=active]:bg-aside/40 transition-colors duration-800 rounded-sm
+                        py-1.5 p-3 w-[200px] flex items-center text-red-300 hover:text-white text-sm hover:bg-red-600/20 mt-auto mb-4 mr-1">
                             <h1 class="text-[15px]">Log Out</h1>
                             <SignOut weight="bold" class="ml-auto mr-2 h-[17px] w-[17px]"/>
                         </button>
@@ -268,7 +285,14 @@ const reset = (reset: boolean) => {
                                     BANNER
                                 </div>
                                 <button class="relative group flex" onclick={() => bannerInput?.click()}>
-                                    <img src={getBanner()} class="w-[350px] h-[130px] opacity-100 group-hover:opacity-70 mx-auto transition-all duration-200 object-cover bg-center" alt="me">
+                                    {#await getBanner() then url}
+                                        {#if url == null}
+                                            <div class="w-[350px] h-[130px] bg-guild-aside"></div>
+                                        {:else}
+                                            <img src={getBanner()} class="w-[350px] h-[130px] opacity-100 group-hover:opacity-70 mx-auto transition-all duration-200 object-cover bg-center" alt="me">
+                                        {/if}
+
+                                    {/await}
 
                                     <span class="opacity-0 group-hover:opacity-200
                                         absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 duration-200">

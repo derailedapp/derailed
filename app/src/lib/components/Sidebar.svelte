@@ -8,6 +8,7 @@ import {
 	currentUser,
 	getChannelName,
 	privateChannels,
+    getAvatar
 } from "$lib/state";
 import { type Profile, type Account, type PrivateChannel } from "$lib/models";
 import User from "$lib/components/User.svelte";
@@ -47,7 +48,7 @@ let showSettings = $state(false);
             </div>
             <div class="h-[70px] backdrop-blur-3xl bg-me border-sexy-lighter-black">
                 <div class="flex flex-row justify-center items-center gap-2 p-3 px-4 w-full h-full">
-                    <img src="https://avatars.githubusercontent.com/u/132799819" class="rounded-full h-10" alt="ananas">
+                    <img src={getAvatar()} class="rounded-full h-10" alt="me">
                     <div class="flex flex-col">
                         <h1 class="text-sm text-white">{$currentUser?.profile.display_name || $currentUser?.profile.username}</h1>
                         <p class="text-xs text-weep-gray">This is a placeholder</p>

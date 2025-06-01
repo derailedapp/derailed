@@ -61,3 +61,15 @@ export function getChannelName(channel: PrivateChannel) {
 		return channel.name || "Some Channel";
 	}
 }
+
+export const getAvatar = () => {
+	const data = get(currentUser);
+
+	if (data) {
+		if (data.profile.avatar) {
+			return import.meta.env.VITE_CDN_URL + "/avatars/" + data.profile.avatar;
+		}
+	} else {
+		return "/default_pfp.webp"
+	}
+}
