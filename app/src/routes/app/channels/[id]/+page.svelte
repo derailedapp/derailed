@@ -60,7 +60,7 @@ function sfToTime(snowflake: string | bigint | number): number {
                 {#if $currentUser?.profile.banner === null}
                     <div class="bg-guild-aside w-full h-[130px]"></div>
                 {:else}
-                    <img src={$currentUser?.profile.banner} alt="banner" class="w-full h-[130px] rounded-b-[3rem] bg-center bg-cover">
+                    <img src={import.meta.env.VITE_CDN_URL + "/banners/" +$currentUser?.profile.banner} alt="banner" class="w-full h-[130px] bg-center bg-cover">
                 {/if}
                 <div class="absolute top-[9.5rem]">
                     {#if $currentUser?.profile.avatar === null}
@@ -72,7 +72,7 @@ function sfToTime(snowflake: string | bigint | number): number {
                     {:else}
                         <img
                             class="size-[7rem] rounded-full object-cover border-[3px] border-blurple group-hover:opacity-70 transition-all"
-                            src={$currentUser?.profile.avatar}
+                            src={import.meta.env.VITE_CDN_URL + "/avatars/" + $currentUser?.profile.avatar}
                             alt="avatar"
                         />
                     {/if}

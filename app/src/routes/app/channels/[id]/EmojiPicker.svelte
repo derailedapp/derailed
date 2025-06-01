@@ -1,6 +1,6 @@
 <script lang="ts">
     import { DropdownMenu } from "bits-ui";
-    import { Bicycle, BowlFood, FlagBannerFold, Heart, Joystick, LampPendant, Leaf, Smiley } from "phosphor-svelte";
+    import { Bicycle, Person, BowlFood, FlagBannerFold, Heart, Joystick, LampPendant, Leaf, Smiley } from "phosphor-svelte";
     import emojis from "./emojis-by-group.json"
     import twemoji from "@twemoji/api";
 
@@ -14,6 +14,17 @@ function emojiToCodePoints(emoji: string) {
 
 function parseGroupName(name: string): string {
     return name;
+}
+
+const scrollToGroup = (groupName: string) => {
+    const element = document.getElementById(groupName);
+
+    if (element) {
+        element.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
 }
 </script>
 
@@ -29,34 +40,34 @@ function parseGroupName(name: string): string {
             </div>
             <div class="flex items-center flex-row h-full max-h-[293px]">
                 <div class="flex items-center h-full p-4 border-guild-aside flex-col gap-2.5 border-r select-none">
-                    <div>
+                    <button onclick={() => scrollToGroup("Smileys & Emotion")}>
                         <Smiley weight="fill" class="h-6 w-6 text-weep-gray hover:text-weep-gray/70 hover:shadow-3xl transition duration-300 ease-in-out" />
-                    </div>
-                    <div>
+                    </button>
+                    <button onclick={() => scrollToGroup("Animals & Nature")}>
                         <Leaf weight="fill" class="h-6 w-6 text-weep-gray hover:text-weep-gray/70 hover:shadow-3xl transition duration-300 ease-in-out" />
-                    </div>
-                    <div>
+                    </button>
+                    <button onclick={() => scrollToGroup("Food & Drink")}>
                         <BowlFood weight="fill" class="h-6 w-6 text-weep-gray hover:text-weep-gray/70 hover:shadow-3xl transition duration-300 ease-in-out" />
-                    </div>
-                    <div>
+                    </button>
+                    <button onclick={() => scrollToGroup("Travel & Places")}>
                         <Joystick weight="fill" class="h-6 w-6 text-weep-gray hover:text-weep-gray/70 hover:shadow-3xl transition duration-300 ease-in-out" />
-                    </div>
-                    <div>
+                    </button>
+                    <button onclick={() => scrollToGroup("Activities")}>
                         <Bicycle weight="fill" class="h-6 w-6 text-weep-gray hover:text-weep-gray/70 hover:shadow-3xl transition duration-300 ease-in-out" />
-                    </div>
-                    <div>
+                    </button>
+                    <button onclick={() => scrollToGroup("Objects")}>
                         <LampPendant weight="fill" class="h-6 w-6 text-weep-gray hover:text-weep-gray/70 hover:shadow-3xl transition duration-300 ease-in-out" />
-                    </div>
-                    <div>
+                    </button>
+                    <button onclick={() => scrollToGroup("Symbols")}>
                         <Heart weight="fill" class="h-6 w-6 text-weep-gray hover:text-weep-gray/70 hover:shadow-3xl transition duration-300 ease-in-out" />
-                    </div>
-                    <div>
+                    </button>
+                    <button onclick={() => scrollToGroup("Flags")}>
                         <FlagBannerFold weight="fill" class="h-6 w-6 text-weep-gray hover:text-weep-gray/70 hover:shadow-3xl transition duration-300 ease-in-out" />
-                    </div>
+                    </button>
                 </div>
                 <div class="flex flex-col gap-6 py-8 overflow-y-auto max-h-[293px] w-full">
                     {#each emojis as group}
-                        <div class="space-y-3">
+                        <div class="space-y-3" id={group.name}>
                             <div class="tracking-tight ml-3 select-none text-weep-gray font-semibold">
                                 {group.name}
                             </div>

@@ -35,10 +35,11 @@ async function onSubmit(e: SubmitEvent) {
         <Plus color="#a0a0a5" class="h-4 w-4" />
     </Dialog.Trigger>
     <Dialog.Portal>
-        <Dialog.Overlay 
-            class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-[998] bg-black/30 backdrop-blur-sm"
+        <Dialog.Overlay
+            class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
         />
-        <Dialog.Content class="rounded-lg border border-guild-aside outline-hidden fixed left-[50%] top-[50%] z-[9999] w-full translate-x-[-50%] translate-y-[-50%] py-8 px-12 gap-2 max-w-[450px] bg-aside">
+        <Dialog.Content class="rounded-lg border border-guild-aside outline-hidden fixed left-[50%] top-[50%] z-[9999] w-full translate-x-[-50%] translate-y-[-50%] py-8 px-12 gap-2 max-w-[450px] bg-aside
+        data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
             <form onsubmit={onSubmit} class="flex flex-col items-center justify-start text-white gap-2">
                 <h1 class="font-semibold text-xl">Add a Friend</h1>
                 <p class="text-sm mb-2">You can use your friends username to add them on Derailed.</p>

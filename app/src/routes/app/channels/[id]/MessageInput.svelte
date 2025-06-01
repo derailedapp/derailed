@@ -15,7 +15,7 @@ import {
 	waitingForMessages,
 } from "$lib/state";
 import JSON from "json-bigint";
-    import EmojiPicker from "./EmojiPicker.svelte";
+import EmojiPicker from "./EmojiPicker.svelte";
 
 let element: Element;
 let editor: Editor;
@@ -116,9 +116,17 @@ async function onKey(event: KeyboardEvent) {
 }
 </script>
 
-<div class="flex flex-row justify-center px-4 py-3 font-light w-full m-6 max-h-[800px] text-white rounded-md bg-inps">
-	<div onkeyup={onKey} role="textbox" tabindex="0" aria-keyshortcuts="Enter" aria-multiline="true" bind:this={element} class="w-full text-white"></div>
-	<div class="px-4">
+<div class="flex flex-row items-center justify-center px-4 py-3 font-light w-full m-6 max-h-[800px] text-white rounded-md bg-inps">
+	<div 
+		onkeyup={onKey} 
+		role="textbox" 
+		tabindex="0" 
+		aria-keyshortcuts="Enter" 
+		aria-multiline="true" 
+		bind:this={element} 
+		class="w-full text-white"
+	></div>
+	<div class="flex justify-center items-end">
 		<EmojiPicker />
 	</div>
 </div>
