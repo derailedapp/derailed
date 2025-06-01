@@ -15,7 +15,7 @@ from aiocache import SimpleMemoryCache  # type: ignore
 from argon2 import PasswordHasher
 from argon2 import exceptions as argon_exceptions
 from datauri import DataURI
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Header, Response, HTTPException
 from pydantic import BaseModel, EmailStr, Field
 from pyvips import Error, Image
 
@@ -409,3 +409,14 @@ async def modify_assets(
     )
 
     return cast(Profile, dict(cast(asyncpg.Record, profile)))
+
+@router.post("/logout", status_code=204)
+async def logout(
+    _: Annotated[Session, Depends(get_current_session)],
+    token: Annotated[str, Header(alias="authorization")],
+    db: Annotated[Pool, Depends(get_database)],
+):
+    session_id = sha256(token.encode()).hexdigest()
+
+    async with db.acquire() as conn:
+        await conn.execute("DELETE FROM sessions WHERE id = $1;", session_id)
