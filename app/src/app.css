@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+@plugin 'tailwindcss-animate';
 
 @font-face {
 	font-family: "Nebula Sans";
