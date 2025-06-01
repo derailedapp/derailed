@@ -15,7 +15,7 @@ from aiocache import SimpleMemoryCache  # type: ignore
 from argon2 import PasswordHasher
 from argon2 import exceptions as argon_exceptions
 from datauri import DataURI
-from fastapi import APIRouter, Depends, Header, Response, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import BaseModel, EmailStr, Field
 from pyvips import Error, Image
 
