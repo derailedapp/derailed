@@ -13,12 +13,12 @@ service Gateway {
 
 message Interchange {
     string t = 1;
-    int64 id = 2;
+    string id = 2;
     string d = 3;
 }
 
 message GuildInfo {
-    int64 id = 1;
+    string id = 1;
 }
 
 message GuildMetadata {

@@ -133,7 +133,7 @@ async def get_profile(
 
 
 async def get_channel(
-    channel_id: Annotated[int, Path()],
+    channel_id: Annotated[str, Path()],
     db: Annotated[Pool, Depends(get_database)],
 ) -> Channel:
     channel = await db.fetchrow("SELECT * FROM channels WHERE id = $1;", channel_id)

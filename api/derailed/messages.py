@@ -122,7 +122,7 @@ async def create_message(
             )
             mentions = MENTION_RE.findall(model.content)
 
-            user_ids: list[int] = []
+            user_ids: list[str] = []
 
             for mention in mentions:
                 if mention in user_ids:
@@ -133,7 +133,7 @@ async def create_message(
                     await db.execute(
                         "INSERT INTO message_mentions (channel_id, user_id) VALUES ($1, $2);",
                         channel["id"],
-                        int(mention),
+                        str(mention),
                     )
                 except (ValueError, asyncpg.exceptions.ForeignKeyViolationError):
                     # ignore it

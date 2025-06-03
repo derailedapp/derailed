@@ -4,7 +4,7 @@ defmodule Derailed.Gateway.Interchange do
   use Protobuf, protoc_gen_elixir_version: "0.14.0", syntax: :proto3
 
   field(:t, 1, type: :string)
-  field(:id, 2, type: :int64)
+  field(:id, 2, type: :string)
   field(:d, 3, type: :string)
 end
 
@@ -13,7 +13,7 @@ defmodule Derailed.Gateway.GuildInfo do
 
   use Protobuf, protoc_gen_elixir_version: "0.14.0", syntax: :proto3
 
-  field(:id, 1, type: :int64)
+  field(:id, 1, type: :string)
 end
 
 defmodule Derailed.Gateway.GuildMetadata do
