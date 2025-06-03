@@ -21,7 +21,6 @@
 		"@tailwindcss/typography": "^0.5.16",
 		"@tailwindcss/vite": "^4.1.7",
 		"@types/eventemitter3": "^2.0.4",
-		"@types/json-bigint": "^1.0.4",
 		"daisyui": "^5.0.37",
 		"svelte": "^5.33.2",
 		"svelte-check": "^4.2.1",
@@ -38,6 +37,7 @@
 		"@tiptap/core": "^2.12.0",
 		"@tiptap/extension-document": "^2.12.0",
 		"@tiptap/extension-history": "^2.12.0",
+		"@tiptap/extension-image": "^2.12.0",
 		"@tiptap/extension-paragraph": "^2.12.0",
 		"@tiptap/extension-placeholder": "^2.12.0",
 		"@tiptap/extension-text": "^2.12.0",
@@ -46,10 +46,11 @@
 		"@twemoji/api": "^16.0.1",
 		"@types/ua-parser-js": "^0.7.39",
 		"bits-ui": "^1.8.0",
+		"emojilib": "^4.0.2",
 		"eventemitter3": "^5.0.1",
 		"hast-util-sanitize": "^5.0.2",
-		"json-bigint": "^1.0.0",
 		"moment-timezone": "^0.6.0",
+		"node-emoji": "^2.2.0",
 		"phosphor-svelte": "^3.0.1",
 		"rehype-katex": "^7.0.1",
 		"rehype-sanitize": "^6.0.0",
@@ -62,6 +63,7 @@
 		"svelte-easy-crop": "^4.0.1",
 		"svelte-system-info": "^1.0.3",
 		"ua-parser-js": "^0.7.33",
+		"ulidx": "^2.4.1",
 		"unified": "^11.0.5"
 	}
 }

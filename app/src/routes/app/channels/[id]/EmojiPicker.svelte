@@ -1,31 +1,34 @@
 <script lang="ts">
-    import { DropdownMenu } from "bits-ui";
-    import { Bicycle, Person, BowlFood, FlagBannerFold, Heart, Joystick, LampPendant, Leaf, Smiley } from "phosphor-svelte";
-    import emojis from "./emojis-by-group.json"
-    import twemoji from "@twemoji/api";
+import { DropdownMenu } from "bits-ui";
+import {
+	Bicycle,
+	Person,
+	BowlFood,
+	FlagBannerFold,
+	Heart,
+	Joystick,
+	LampPendant,
+	Leaf,
+	Smiley,
+} from "phosphor-svelte";
+import emojis from "./emojis-by-group.json";
+import emojiData from "./data-by-emoji.json";
+import type { Editor } from "@tiptap/core";
 
-function emojiToCodePoints(emoji: string) {
-  const codePoints = [];
-  for (const char of emoji) {
-    codePoints.push(char.codePointAt(0)!.toString(16));
-  }
-  return codePoints.join('-');
-}
+const { editor }: { editor: Editor | undefined } = $props();
 
-function parseGroupName(name: string): string {
-    return name;
-}
+let hoveredEmoji: string | null = $state(null);
 
 const scrollToGroup = (groupName: string) => {
-    const element = document.getElementById(groupName);
+	const element = document.getElementById(groupName);
 
-    if (element) {
-        element.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
-        });
-    }
-}
+	if (element) {
+		element.scrollIntoView({
+			behavior: "smooth",
+			block: "start",
+		});
+	}
+};
 </script>
 
 <DropdownMenu.Root>
@@ -71,13 +74,24 @@ const scrollToGroup = (groupName: string) => {
                             <div class="tracking-tight ml-3 select-none text-weep-gray font-semibold">
                                 {group.name}
                             </div>
-                            <div class="w-full grid grid-cols-8 px-1.5">
+                            <ul class="w-full grid grid-cols-8 px-1.5">
                                 {#each group.emojis as emoji}
-                                    <div>
-                                        <img loading="lazy" alt={emoji.name} src={`/twemoji/${emoji.emoji.codePointAt(0)!.toString(16)}.svg`} class="h-13 text-xs w-auto hover:bg-inps px-1 py-1.5 transition rounded-md duration-300 ease-in-out" />
-                                    </div>
+                                    <li id={emoji.emoji} onmouseover={(e) => {
+                                        e.preventDefault();
+                                        hoveredEmoji = emoji.emoji;
+                                    }} onfocus={(e) => {
+                                        e.preventDefault();
+                                        hoveredEmoji = emoji.emoji;
+                                    }} class='select-none'>
+                                        <button  onclick={(e) => {
+                                        e.preventDefault();
+                                        editor!.commands.insertContent(emoji.emoji)
+                                    }}>
+                                            <img loading="lazy" alt={emoji.name} src={`/twemoji/${emoji.emoji.codePointAt(0)!.toString(16)}.svg`} class="h-13 text-xs w-auto hover:bg-inps px-1 py-1.5 transition rounded-md duration-300 ease-in-out" />
+                                        </button>
+                                    </li>
                                 {/each}
-                            </div>
+                                </ul>
                         </div>
                     {/each}
                 </div>

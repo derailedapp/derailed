@@ -58,9 +58,11 @@ const getCroppedImage = (): Promise<File | null> => {
 					return resolve(null);
 				}
 
-				resolve(new File([blob], "cropped.png", {
-					type: "image/png"	
-				}));
+				resolve(
+					new File([blob], "cropped.png", {
+						type: "image/png",
+					}),
+				);
 			});
 		};
 	});

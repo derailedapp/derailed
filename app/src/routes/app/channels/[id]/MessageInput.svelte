@@ -14,11 +14,12 @@ import {
 	currentUser,
 	waitingForMessages,
 } from "$lib/state";
-import JSON from "json-bigint";
 import EmojiPicker from "./EmojiPicker.svelte";
+import { EmojiReplacer } from "./emojiReplacer";
 
-let element: Element;
-let editor: Editor;
+let element: Element | undefined = $state();
+let editor: Editor | undefined = $state();
+
 const Newline = Extension.create({
 	name: "newline",
 	addKeyboardShortcuts() {
@@ -43,6 +44,7 @@ onMount(() => {
 			Document,
 			Text,
 			Paragraph,
+			EmojiReplacer,
 			Newline,
 			History,
 			Placeholder.configure({
@@ -63,7 +65,7 @@ onDestroy(() => {
 
 async function onKey(event: KeyboardEvent) {
 	if (event.key == "Enter" && !event.shiftKey) {
-		let content = editor.getText().trim();
+		let content = editor!.getText().trim();
 		if (content == "") {
 			return;
 		}
@@ -96,7 +98,7 @@ async function onKey(event: KeyboardEvent) {
 			const data = JSON.parse(await resp.text());
 			console.log(data);
 		});
-		editor.commands.clearContent();
+		editor!.commands.clearContent();
 		channelMessages.update((v) => {
 			let msgs = v.get(currentChannelId.toString()) || [];
 			const currentUserData = get(currentUser);
@@ -116,7 +118,7 @@ async function onKey(event: KeyboardEvent) {
 }
 </script>
 
-<div class="flex flex-row items-center justify-center px-4 py-3 font-light w-full m-6 max-h-[800px] text-white rounded-md bg-inps">
+<div class="flex flex-row justify-center px-4 py-3 font-light w-full m-6 max-h-[800px] text-white rounded-md bg-inps">
 	<div 
 		onkeyup={onKey} 
 		role="textbox" 
@@ -126,7 +128,7 @@ async function onKey(event: KeyboardEvent) {
 		bind:this={element} 
 		class="w-full text-white"
 	></div>
-	<div class="flex justify-center items-end">
-		<EmojiPicker />
+	<div class="flex justify-center items-end pb-0.5">
+		<EmojiPicker editor={editor} />
 	</div>
 </div>

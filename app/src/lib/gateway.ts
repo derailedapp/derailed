@@ -1,4 +1,4 @@
-import JSON from "json-bigint";
+import { writable, get } from "svelte/store";
 import { emitter } from "./events";
 import {
 	channelMessages,
@@ -8,11 +8,12 @@ import {
 	users,
 	waitingForMessages,
 } from "./state";
+import { goto } from "$app/navigation";
 
 let socket: WebSocket;
-let socketOpen = false;
+export let socketOpen = writable(false);
 
-if (localStorage.getItem("token") !== null && !socketOpen) {
+if (localStorage.getItem("token") !== null && !get(socketOpen)) {
 	socket = new WebSocket(import.meta.env.VITE_GATEWAY_URL);
 } else {
 	// @ts-ignore
@@ -30,11 +31,11 @@ let sessionId: string | null = null;
 
 socket.addEventListener("open", () => {
 	console.log("Successfully opened connection to Gateway");
-	socketOpen = true;
+	socketOpen.set(true);
 });
 
 socket.addEventListener("message", (ev) => {
-	const data = JSON({ storeAsString: true }).parse(ev.data);
+	const data = JSON.parse(ev.data);
 	const op: number = data.op;
 	const d: any = data.d;
 
@@ -84,7 +85,11 @@ socket.addEventListener("close", (ev) => {
 	console.log(
 		`Gateway socket has closed. Closed with code ${ev.code} ("${ev.reason}")`,
 	);
-	if (ev.code !== 1011) {
+	socketOpen.set(false);
+	if (ev.code === 4003) {
+		localStorage.removeItem("token");
+		goto("/login");
+	} else if (ev.code !== 1011) {
 		socket = new WebSocket(import.meta.env.VITE_GATEWAY_URL);
 	} else {
 		currentUser.set(null);

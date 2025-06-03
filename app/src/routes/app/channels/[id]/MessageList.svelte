@@ -2,9 +2,9 @@
 import type { Message } from "$lib/models";
 import { channelMessages, savedChannels } from "$lib/state";
 import { get } from "svelte/store";
-import JSON from "json-bigint";
 import MessageComp from "./Message.svelte";
 import { tick } from "svelte";
+import { goto } from "$app/navigation";
 
 let { channelId }: { channelId: string } = $props();
 
@@ -24,23 +24,27 @@ $effect(() => {
 	}
 });
 
-async function getMessages(before: BigInt | undefined = undefined) {
+async function getMessages(before: string | undefined = undefined) {
 	let url = new URL(
-		"/channels/" + channelId.toString() + "/messages",
+		"/channels/" + channelId + "/messages",
 		import.meta.env.VITE_API_URL,
 	);
 	if (before !== undefined) {
-		url.searchParams.append("before", before.toString());
+		url.searchParams.append("before", before);
 	}
 	const resp = await fetch(url, {
 		headers: {
 			Authorization: localStorage.getItem("token")!,
 		},
 	});
+	if (resp.status === 401) {
+		goto("/login");
+		return;
+	}
 
-	let data: Message[] = JSON({ storeAsString: true }).parse(await resp.text());
+	let data: Message[] = JSON.parse(await resp.text());
 	channelMessages.update((msgs) => {
-		const current = msgs.get(channelId.toString()) || [];
+		const current = msgs.get(channelId) || [];
 		let updated = current.concat(data);
 		updated.sort((a, b) => {
 			if (a.id < b.id) {
@@ -49,7 +53,7 @@ async function getMessages(before: BigInt | undefined = undefined) {
 				return 1;
 			}
 		});
-		return msgs.set(channelId.toString(), updated);
+		return msgs.set(channelId, updated);
 	});
 }
 

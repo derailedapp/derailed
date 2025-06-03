@@ -23,7 +23,7 @@ async def dispatch_user(user_id: str, type: str, data: Any) -> None:
 
     async with grpc.insecure_channel(grpc_target) as channel:
         stub = GatewayStub(channel)
-        await stub.dispatch_user(Interchange(t=type, id=user_id, d=data))  # type: ignore
+        await stub.dispatch_user(Interchange(t=type, id=user_id, d=data))
 
 
 async def dispatch_channel(channel_id: str, type: str, data: Any) -> None:
@@ -35,4 +35,4 @@ async def dispatch_channel(channel_id: str, type: str, data: Any) -> None:
         stub = GatewayStub(channel)
 
         msg = Interchange(t=type, id=channel_id, d=json.dumps(data))
-        await stub.dispatch_channel(msg)  # type: ignore
+        await stub.dispatch_channel(msg)

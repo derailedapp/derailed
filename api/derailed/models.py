@@ -2,17 +2,16 @@
 # Copyright 2025 Derailed
 
 from typing import NotRequired, TypedDict
-from ulid import ULID
 
 class Account(TypedDict):
-    id: ULID
+    id: str
     email: str
     password: NotRequired[str]
     flags: int
 
 
 class Profile(TypedDict):
-    user_id: ULID
+    user_id: str
     username: str
     display_name: str | None
     avatar: str | None
@@ -22,7 +21,7 @@ class Profile(TypedDict):
 
 class Session(TypedDict):
     id: int
-    account_id: ULID
+    account_id: str
     expires_at: int
     browser: str | None
     operating_system: str | None
@@ -31,30 +30,30 @@ class Session(TypedDict):
 
 
 class Channel(TypedDict):
-    id: ULID
+    id: str
     type: int
     name: str | None
-    owner_id: ULID | None
+    owner_id: str | None
 
 
 class GuildChannel(TypedDict):
-    channel_id: ULID
-    guild_id: ULID
+    channel_id: str
+    guild_id: str
     position: int
-    parent_id: ULID | None
+    parent_id: str | None
 
 
 class Message(TypedDict):
-    id: ULID
-    author_id: ULID
+    id: str
+    author_id: str
     content: str
-    channel_id: ULID
+    channel_id: str
     created_at: int
     last_modified_at: int
 
 
 class ReadState(TypedDict):
-    channel_id: ULID
-    user_id: ULID
+    channel_id: str
+    user_id: str
     mentions: int
-    last_message_id: ULID
+    last_message_id: str

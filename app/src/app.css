@@ -112,6 +112,33 @@ button {
 	@apply cursor-pointer;
 }
 
+.Markdown {
+	h1 {
+		@apply text-2xl font-bold;
+	}
+	h2 {
+		@apply text-xl font-bold;
+	}
+	h3 {
+		@apply text-lg font-bold;
+	}
+	h4 {
+		@apply font-bold;
+	}
+	h5 {
+		@apply text-sm font-bold;
+	}
+	h6 {
+		@apply text-xs font-semibold;
+	}
+	b {
+		@apply font-bold;
+	}
+	i {
+		@apply italic;
+	}
+}
+
 @theme {
 	--color-blurple: #7a83ff;
 	--color-sexy-lighter-black: #2a2a2e;

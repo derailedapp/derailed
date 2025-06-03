@@ -102,7 +102,7 @@ defmodule Derailed.WebSocket do
                  ready: true
              }}
 
-          {:error, :no_rows_nil} ->
+          {:error, :no_rows_empty} ->
             {[{:close, 4003, "Invalid token"}], state}
         end
 
@@ -157,7 +157,7 @@ defmodule Derailed.WebSocket do
                   {[{:close, 4006, "Invalid session"}], state}
               end
 
-            {:error, :no_rows_nil} ->
+            {:error, :no_rows_empty} ->
               {[{:close, 4003, "Invalid token"}], state}
           end
 

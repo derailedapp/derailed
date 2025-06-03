@@ -138,7 +138,7 @@ onMount(async () => {
                 <Tabs.Content value="register" class="w-full h-full">
                     <form onsubmit={onRegister} class="w-full h-full flex flex-col items-center justify-center gap-6 bg-sexy-red-black/80 backdrop-blur-3xl p-6 rounded-2xl">
                         <div class="flex items-center gap-2">
-                            <img src="/img-apple-64/1f44b.png" width="24" height="24" />
+                            <img src="/twemoji/1f44b.svg" width="24" height="24" />
                             <div class="font-bold text-2xl">
                                 Welcome To Derailed!
                             </div>
@@ -206,7 +206,7 @@ onMount(async () => {
                 <Tabs.Content value="login" class="w-full h-full">
                     <form onsubmit={onLogin} class="w-full h-full flex flex-col items-center justify-center gap-6 bg-sexy-red-black/80 backdrop-blur-3xl p-6 rounded-2xl">
                         <div class="flex items-center gap-2">
-                            <img src="/img-apple-64/1f44b.png" width="24" height="24" />
+                            <img src="/twemoji/1f44b.svg" width="24" height="24" />
                             <div class="font-bold text-2xl">
                                 Welcome Back!
                             </div>

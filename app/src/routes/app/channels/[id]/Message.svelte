@@ -91,7 +91,7 @@ async function processContent(content: string) {
                 {getDate(message.last_modified_at)}
             </div>
         </div>
-        <div class="text-white font-light" class:pl-13={cascade} class:group-hover:pl-0={cascade}>
+        <div class="text-white font-light Markdown" class:pl-13={cascade} class:group-hover:pl-0={cascade}>
 			{#await processContent(message.content) then html}
             	{@html html}
 			{/await}

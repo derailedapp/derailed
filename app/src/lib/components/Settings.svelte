@@ -109,17 +109,14 @@ const onSubmit = async (e: Event) => {
 	}
 
 	if (mePayload) {
-		const resp = await fetch(
-            import.meta.env.VITE_API_URL + "/users/@me", 
-            {
-                method: "PATCH",
-                body: JSON.stringify(mePayload),
-                headers: {
-                    Authorization: localStorage.getItem("token")!,
-                    "Content-Type": "application/json",
-                },
-		    }
-        );
+		const resp = await fetch(import.meta.env.VITE_API_URL + "/users/@me", {
+			method: "PATCH",
+			body: JSON.stringify(mePayload),
+			headers: {
+				Authorization: localStorage.getItem("token")!,
+				"Content-Type": "application/json",
+			},
+		});
 	}
 };
 
@@ -166,18 +163,18 @@ const reset = (reset: boolean) => {
 };
 
 const logout = async () => {
-    const resp = await fetch(import.meta.env.VITE_API_URL + "/logout", {
-        method: "POST",
-        headers: {
-            Authorization: localStorage.getItem("token")!,
-        },
-    });
+	const resp = await fetch(import.meta.env.VITE_API_URL + "/logout", {
+		method: "POST",
+		headers: {
+			Authorization: localStorage.getItem("token")!,
+		},
+	});
 
-    if (resp.status === 204) {
-        localStorage.removeItem("token");
-        await goto("/login");
-    }
-}
+	if (resp.status === 204) {
+		localStorage.removeItem("token");
+		await goto("/login");
+	}
+};
 </script>
 
 <Dialog.Root onOpenChange={(v) => reset(!v)}>

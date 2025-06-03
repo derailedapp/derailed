@@ -70,6 +70,6 @@ export const getAvatar = () => {
 			return import.meta.env.VITE_CDN_URL + "/avatars/" + data.profile.avatar;
 		}
 	} else {
-		return "/default_pfp.webp"
+		return "/default_pfp.webp";
 	}
-}
+};
