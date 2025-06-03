@@ -11,8 +11,7 @@ from typing import TYPE_CHECKING, Annotated, cast
 import aioboto3
 import asyncpg
 from fastapi import Depends, Header, HTTPException, Path
-from snowflake import SnowflakeGenerator
-from ulid import ULID  # type: ignore
+from ulid import ULID
 
 from .models import Account, Channel, GuildChannel, Profile, Session  # type: ignore
 
