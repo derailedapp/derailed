@@ -13,17 +13,17 @@ class Interchange(_message.Message):
     ID_FIELD_NUMBER: _ClassVar[int]
     D_FIELD_NUMBER: _ClassVar[int]
     t: str
-    id: int
+    id: str
     d: str
     def __init__(
-        self, t: _Optional[str] = ..., id: _Optional[int] = ..., d: _Optional[str] = ...
+        self, t: _Optional[str] = ..., id: _Optional[str] = ..., d: _Optional[str] = ...
     ) -> None: ...
 
 class GuildInfo(_message.Message):
     __slots__ = ("id",)
     ID_FIELD_NUMBER: _ClassVar[int]
-    id: int
-    def __init__(self, id: _Optional[int] = ...) -> None: ...
+    id: str
+    def __init__(self, id: _Optional[str] = ...) -> None: ...
 
 class GuildMetadata(_message.Message):
     __slots__ = ("available", "presences")

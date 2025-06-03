@@ -7,8 +7,9 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+from ulid import ULID
 
-from .db import Pool, get_current_session, get_database, get_profile, snow
+from .db import Pool, get_current_session, get_database, get_profile
 from .models import Profile, Session
 from .utils import dispatch_user
 
@@ -57,7 +58,7 @@ async def follow_user(
                 )
 
                 if channel is None:
-                    channel_id = next(snow)
+                    channel_id = str(ULID())
                     new_channel = await conn.execute(
                         "INSERT INTO channels (id, type) VALUES ($1, 0) RETURNING *;",
                         channel_id,

@@ -11,12 +11,12 @@ from typing import TYPE_CHECKING, Annotated, cast
 import aioboto3
 import asyncpg
 from fastapi import Depends, Header, HTTPException, Path
-from snowflake import SnowflakeGenerator  # type: ignore
+from snowflake import SnowflakeGenerator
+from ulid import ULID  # type: ignore
 
 from .models import Account, Channel, GuildChannel, Profile, Session  # type: ignore
 
 db: Pool | None = None
-snow = SnowflakeGenerator(int(os.getenv("NODE_ID", "1")), epoch=1649325271415)
 boto3_session: aioboto3.Session | None = None
 
 if TYPE_CHECKING:
@@ -115,14 +115,15 @@ async def get_mentioned_user(
 
 
 async def get_profile(
-    user_id: Annotated[int | str, Path(alias="username")],
+    user_id: Annotated[str, Path(alias="username")],
     db: Annotated[Pool, Depends(get_database)],
 ) -> Profile:
-    if isinstance(user_id, int):
+    try: 
+        ULID.parse(user_id)
         profile = await db.fetchrow(
             "SELECT * FROM profiles WHERE user_id = $1;", user_id
         )
-    else:
+    except:
         profile = await db.fetchrow(
             "SELECT * FROM profiles WHERE username = $1;", user_id
         )

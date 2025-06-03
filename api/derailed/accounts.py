@@ -18,6 +18,7 @@ from datauri import DataURI
 from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import BaseModel, EmailStr, Field
 from pyvips import Error, Image
+from ulid import ULID
 
 from .db import (
     Pool,
@@ -25,7 +26,6 @@ from .db import (
     get_current_session,
     get_database,
     get_profile,
-    snow,
     upload_file,
 )
 from .emails import send_verification_email
@@ -50,7 +50,6 @@ async def send_email_verification(model: EmailVerification) -> str:
     await cache.set(model.email, f"{code1}{code2}", ttl=1_800)  # type: ignore
 
     return ""
-
 
 class SessionDetail(BaseModel):
     operating_system: Annotated[str, Field(min_length=1, max_length=32)]
@@ -87,7 +86,7 @@ async def register_account(
     if code != model.code:
         raise HTTPException(400, "Incorrect or non-present email verification code")
 
-    user_id = cast(int, next(snow))
+    user_id = str(ULID())
     password_hash = hasher.hash(model.password)
     token = b32encode(secrets.token_bytes(32))
 
@@ -332,7 +331,6 @@ async def modify_assets(
                 profile["avatar"] = None
 
             if model.avatar:
-                print(model.avatar.mimetype)
                 if model.avatar.mimetype in [
                     "image/png",
                     "image/webp",
@@ -350,7 +348,7 @@ async def modify_assets(
                         raise HTTPException(400, "Invalid image")
 
                     avatar = await to_thread(avatar_to_webp, image=image)
-                    avatar_id = str(next(snow))
+                    avatar_id = str(ULID())
                     if profile["avatar"] is not None:
                         await delete_file("avatars", profile["avatar"])
                     await upload_file("avatars", avatar_id, avatar)
@@ -371,7 +369,6 @@ async def modify_assets(
                 profile["banner"] = None
 
             if model.banner:
-                print(model.banner.mimetype)
                 if model.banner.mimetype in [
                     "image/png",
                     "image/webp",
@@ -389,7 +386,7 @@ async def modify_assets(
                         raise HTTPException(400, "Invalid image")
 
                     banner = await to_thread(banner_to_webp, image=image)
-                    banner_id = str(next(snow))
+                    banner_id = str(ULID())
                     if profile["banner"] is not None:
                         await delete_file("banners", profile["banner"])
                     await upload_file("banners", banner_id, banner)

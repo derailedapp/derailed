@@ -11,6 +11,7 @@ import asyncpg
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.params import Query
 from pydantic import BaseModel, Field
+from ulid import ULID
 
 from .db import (
     Pool,
@@ -19,7 +20,6 @@ from .db import (
     get_current_session,
     get_database,
     get_guild_channel,
-    snow,
     to_list_dict,
 )
 from .models import Channel, Message, ReadState, Session
@@ -114,7 +114,7 @@ async def create_message(
         async with conn.transaction():
             message = await db.fetchrow(
                 "INSERT INTO messages (id, author_id, content, channel_id, created_at, last_modified_at) VALUES ($1, $2, $3, $4, $5, $5) RETURNING *;",
-                next(snow),
+                str(ULID()),
                 ses["account_id"],
                 model.content,
                 channel["id"],

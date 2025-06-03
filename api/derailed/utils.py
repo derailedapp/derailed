@@ -16,7 +16,7 @@ def is_debug() -> bool:
     return False
 
 
-async def dispatch_user(user_id: int, type: str, data: Any) -> None:
+async def dispatch_user(user_id: str, type: str, data: Any) -> None:
     grpc_target = os.getenv("GRPC_TARGET")
     if grpc_target is None:
         return
@@ -26,7 +26,7 @@ async def dispatch_user(user_id: int, type: str, data: Any) -> None:
         await stub.dispatch_user(Interchange(t=type, id=user_id, d=data))  # type: ignore
 
 
-async def dispatch_channel(channel_id: int, type: str, data: Any) -> None:
+async def dispatch_channel(channel_id: str, type: str, data: Any) -> None:
     grpc_target = os.getenv("GRPC_TARGET")
     if grpc_target is None:
         return

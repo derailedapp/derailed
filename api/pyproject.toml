@@ -17,8 +17,8 @@ dependencies = [
     "mjml>=0.11.1",
     "python-datauri>=3.0.2",
     "python-dotenv>=1.1.0",
+    "python-ulid[pydantic]>=3.0.0",
     "pyvips[binary]>=3.0.0",
-    "snowflake-id>=1.0.2",
 ]
 
 [dependency-groups]
