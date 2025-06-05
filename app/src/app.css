@@ -93,21 +93,6 @@ body {
 	@apply text-white;
 }
 
-.tiptap p.is-editor-empty:first-child::before {
-	@apply text-weep-gray/50;
-	content: attr(data-placeholder);
-	float: left;
-	height: 0;
-	pointer-events: none;
-}
-
-.ProseMirror {
-	@apply overflow-y-auto max-h-[240px];
-}
-.ProseMirror-focused {
-	@apply outline-0;
-}
-
 button {
 	@apply cursor-pointer;
 }
