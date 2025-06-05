@@ -28,39 +28,41 @@ body {
 	--color-pops: #36393f;
 }
 
-blockquote {
-	@apply italic text-sexy-gray ml-4;
-}
+.Markdown {
+	blockquote {
+		@apply italic text-sexy-gray ml-4;
+	}
 
-p {
-	@apply text-pretty whitespace-pre-wrap my-2 max-sm:text-lg;
-}
+	p {
+		@apply text-pretty whitespace-pre-wrap my-2 max-sm:text-lg;
+	}
 
-h1 {
-	@apply text-4xl font-bold my-4;
-}
+	h1 {
+		@apply text-4xl font-bold my-4;
+	}
 
-h2 {
-	@apply text-3xl font-bold my-4;
-}
+	h2 {
+		@apply text-3xl font-bold my-4;
+	}
 
-h3 {
-	@apply text-2xl font-bold my-2.5;
-}
+	h3 {
+		@apply text-2xl font-bold my-2.5;
+	}
 
-h4 {
-	@apply text-xl font-bold my-2.5;
-}
+	h4 {
+		@apply text-xl font-bold my-2.5;
+	}
 
-ul {
-	list-style: disc;
-	@apply pl-8;
-}
+	ul {
+		list-style: disc;
+		@apply pl-8;
+	}
 
-code {
-	@apply bg-sexy-lighter-black/80 p-0.5 rounded-md;
-}
+	code {
+		@apply bg-sexy-lighter-black/80 p-0.5 rounded-md;
+	}
 
-a {
-	@apply text-blurple hover:text-blurple/75;
+	a {
+		@apply text-blurple hover:text-blurple/75;
+	}
 }
