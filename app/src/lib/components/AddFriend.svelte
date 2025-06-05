@@ -2,31 +2,20 @@
 import { Plus } from "phosphor-svelte";
 import { Dialog } from "bits-ui";
 import { addToast } from "$lib/state";
+import { useConvexClient } from "convex-svelte";
+import { api } from "$lib/convex/_generated/api";
 let username: string | undefined = $state();
 let open: boolean | undefined = $state(false);
 
+const client = useConvexClient();
+
 async function onSubmit(e: SubmitEvent) {
 	e.preventDefault();
-	console.log(localStorage.getItem("token"));
 
-	const resp = await fetch(
-		import.meta.env.VITE_API_URL + "/users/" + username + "/follow",
-		{
-			method: "POST",
-			headers: {
-				Authorization: localStorage.getItem("token")!,
-			},
-		},
-	);
-
-	if (resp.status === 201) {
-		open = false;
-	} else {
-		const detail = (await resp.json()).detail;
-
-		console.error(detail);
-		addToast("error", detail, 4000);
-	}
+	client.mutation(api.users.follow, { username: username! }).catch((reason) => {
+		console.error(reason);
+		addToast("error", reason, 4000);
+	});
 }
 </script>
 

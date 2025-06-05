@@ -1,34 +1,41 @@
 <script lang="ts">
 import { page } from "$app/state";
-import "$lib/gateway";
-import type { PrivateChannel, Profile } from "$lib/models";
-import {
-	currentPrivateChannel,
-	getChannelName,
-	privateChannels,
-	currentUser,
-} from "$lib/state";
 import { Hash } from "phosphor-svelte";
 import MessageInput from "./MessageInput.svelte";
 import MessageList from "./MessageList.svelte";
 import moment from "moment-timezone";
-import { decodeTime } from "ulidx";
+import { useQuery } from "convex-svelte";
+import { api } from "$lib/convex/_generated/api";
+import type { Id } from "$lib/convex/_generated/dataModel";
 
 const { id } = page.params;
 
-const channelId = id;
-
-let currentChannel: PrivateChannel | undefined = $state(undefined);
-let otherUser: Profile | null = $state(null);
-privateChannels.subscribe((v) => {
-	currentChannel = v.find((channel) => channel.id == channelId)!;
-	if (currentChannel?.members?.length === 2 && $currentUser != null) {
-		otherUser = currentChannel.members.find(
-			(v) => v.user_id != $currentUser?.account.id,
-		)!;
-	}
+const currentUser = useQuery(api.users.getCurrentProfile, {});
+const channel = useQuery(api.channels.get, { id: id as Id<"channels"> });
+const channelMembers = useQuery(api.channels.getMembers, {
+	id: id as Id<"channels">,
 });
-currentPrivateChannel.set(channelId);
+const otherUser = $derived(channelMembers.data?.at(0));
+
+export function getChannelName() {
+	if (
+		!channelMembers.isLoading &&
+		channelMembers.data &&
+		!channel.isLoading &&
+		channel.data
+	) {
+		let profile = channelMembers.data.find((v) => {
+			if (currentUser.data?._id !== v._id) {
+				return true;
+			}
+			return false;
+		})!;
+		let name = profile.displayName || profile.username;
+		return name!;
+	} else {
+		return channel.data?.name || "Unknown Channel Name";
+	}
+}
 </script>
 
 <div class="w-full h-screen grid grid-rows-[58px_1fr_minmax(58px,auto)] bg-primary">
@@ -36,9 +43,7 @@ currentPrivateChannel.set(channelId);
         <div class="flex items-center gap-1.5 pl-3 select-none">
             <Hash color="#a0a0a5" height="22" width="22" />
             <div class="text-white truncate max-w-50">
-                {#if (currentChannel !== undefined)}
-                    {getChannelName(currentChannel)}
-                {/if}
+                {getChannelName()}
             </div>
             <div class="text-weep-gray/50 font-black">•</div>
             <div class="text-weep-gray text-sm">
@@ -47,26 +52,26 @@ currentPrivateChannel.set(channelId);
         </div>
     </div>
     <div class="flex flex-1 min-h-[300px] bg-primary">
-        <MessageList channelId={channelId} />
+        <MessageList channelId={id} />
     </div>
     <div class="flex items-center justify-center h-full">
-        <MessageInput />
+        <MessageInput channelId={id} channelName={""} />
     </div>
 </div>
 
-{#if otherUser !== null}
+{#if !channelMembers.isLoading && channelMembers.data && channelMembers.data.length === 2}
     <div class="h-screen flex flex-col w-[550px]">
         <div class="h-[58px] bg-primary border-b border-guild-aside p-4"></div>
         <div class="h-full w-full flex flex-col bg-mem-aside">
             <div class="bg-blurple pb-5">
                 <div class="flex flex-col w-full items-center justify-center">
-                    {#if otherUser.banner === null}
+                    {#if !otherUser?.bannerUrl}
                         <div class="bg-guild-aside w-full h-[130px]"></div>
                     {:else}
-                        <img src={import.meta.env.VITE_CDN_URL + "/banners/" + otherUser?.banner} alt="banner" class="w-full h-[130px] bg-center bg-cover">
+                        <img src={otherUser.bannerUrl} alt="banner" class="w-full h-[130px] bg-center bg-cover">
                     {/if}
                     <div class="absolute top-[9.5rem]">
-                        {#if otherUser.avatar === null}
+                        {#if otherUser?.avatarUrl === null}
                             <img
                                 class="size-[7rem] rounded-full object-cover border-[3px] border-blurple group-hover:opacity-70 transition-all"
                                 src={"/default_pfp.webp"}
@@ -75,7 +80,7 @@ currentPrivateChannel.set(channelId);
                         {:else}
                             <img
                                 class="size-[7rem] rounded-full object-cover border-[3px] border-blurple group-hover:opacity-70 transition-all"
-                                src={import.meta.env.VITE_CDN_URL + "/avatars/" + otherUser?.avatar}
+                                src={otherUser?.avatarUrl}
                                 alt="avatar"
                             />
                         {/if}
@@ -83,10 +88,10 @@ currentPrivateChannel.set(channelId);
 
                     <div class="flex flex-col justify-center items-center pt-20 select-none">
                         <div class="font-semibold text-xl">
-                            {otherUser.display_name || otherUser?.username}
+                            {otherUser?.displayName || otherUser?.username}
                         </div>
                         <div>
-                            {otherUser.username}
+                            {otherUser?.username}
                         </div>
                     </div>
                 </div>
@@ -97,7 +102,7 @@ currentPrivateChannel.set(channelId);
                         Member Since
                     </div>
                     <div class="text-sm">
-                        {moment.unix(decodeTime(otherUser.user_id) / 1000).format('MMMM Do YYYY, h:mm a')}
+                        {moment.unix(otherUser?._creationTime || 0).format('MMMM Do YYYY, h:mm a')}
                     </div>
                 </div>
             </div>

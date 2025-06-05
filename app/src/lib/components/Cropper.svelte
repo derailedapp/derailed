@@ -1,5 +1,5 @@
 <script lang="ts">
-import { CropType } from "$lib/models";
+import { CropType } from "$lib/state";
 import { addToast } from "$lib/state";
 import { Slider } from "bits-ui";
 import { X } from "phosphor-svelte";

@@ -1,26 +1,27 @@
 <script lang="ts">
-if (localStorage.getItem("token") === null) {
-	goto("/login");
-}
-
-import "$lib/gateway";
 import Sidebar from "$lib/components/Sidebar.svelte";
 import { goto } from "$app/navigation";
-import { socketOpen } from "$lib/gateway";
+import { useAuth } from "@mmailaender/convex-auth-svelte/sveltekit";
 
 let { children } = $props();
+
+const isAuth = $derived(useAuth().isAuthenticated);
+const isLoading = $derived(useAuth().isLoading);
+
+$effect(() => {
+	if (!isLoading && !isAuth) {
+		goto("/login");
+	}
+});
 </script>
 
 <div class="h-screen w-full overflow-hidden">
     <div class="flex h-full w-full flex-row">
-        {#if $socketOpen}
+        {#if isLoading}
+            <div>Derailed is loading</div>
+        {:else if isAuth}
             <Sidebar />
-
             {@render children()}
-        {:else}
-            <div>
-                Derailed is loading
-            </div>
         {/if}
     </div>
 </div>

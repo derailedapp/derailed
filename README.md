@@ -5,36 +5,9 @@
 This is the source code and various resources of Derailed's services.
 This is not a Derailed wiki but rather a technical overview.
 
-## Internal Components
 
-### Gateway
+## Licensing
 
-The Gateway serves to provide events and other critical information to users in real-time. It is built in the resilient and fault tolerant Elixir.
+Derailed is licensed under the Elastic License 2.0. This gives you the right to develop and test with Derailed, but does not give you the right to host Derailed as a hosted or managed service for any purpose.
 
-### API
-
-Derailed's API is built in Python using FastAPI.
-
-### (Web) App
-
-Derailed's web app built with Svelte, primarily using custom-made components paired with `bits-ui`.
-
-### Site
-
-This is Derailed's marketing, newsroom, and miscellaneous website, found at [derailed.top](https://derailed.top/)
-
-## External Components
-
-### PostgreSQL
-
-Our API and Gateway both utilize Postgres to centralize data upon.
-
-### gRPC
-
-The API communicates events (alongside fetching active guild information) to the Gateway using gRPC.
-
-## Licensing and Freedom
-
-Derailed is freely licensed under the GNU Affero General Public License v3. A copy of which can be found [here](https://github.com/derailedapp/derailed/blob/9c5fb13c625f93d5bf787d719ce1ed7ab042fea4/LICENSE.md).
-
-This license however does not give you the right to use Derailed's brand materials or name, so you must make sure to replace all materials before publicly deploying Derailed.
+The exact legal terms of the license can be found in [LICENSE.md](./LICENSE.md).

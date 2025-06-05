@@ -1,18 +1,24 @@
 <script lang="ts">
-import "$lib/gateway";
 import { Dialog, Tabs } from "bits-ui";
 
 import { NotePencil, SignOut, Gear } from "phosphor-svelte";
 
-import { addToast, currentUser } from "$lib/state";
+import { addToast } from "$lib/state";
 
-import { CropType } from "$lib/models";
+import { CropType } from "$lib/state";
 import Cropper from "./Cropper.svelte";
 import { goto } from "$app/navigation";
+import { useQuery } from "convex-svelte";
+import { api } from "$lib/convex/_generated/api";
 
 let banner: File | undefined = $state();
 let avatar: File | undefined = $state();
 
+const currentUserQuery = useQuery(api.users.getCurrentProfile, {});
+const currentUser = $derived(currentUserQuery.data);
+const emailQuery = useQuery(api.users.getEmail, {});
+
+let settingsSet: boolean = $state(false);
 let newUsername: string = $state("");
 let newDisplayName: string = $state("");
 let newEmail: string = $state("");
@@ -21,11 +27,17 @@ let currentPassword: string | undefined = $state();
 let bannerInput: HTMLInputElement | undefined = $state();
 let avatarInput: HTMLInputElement | undefined = $state();
 
-currentUser.subscribe((data) => {
-	if (data) {
-		newUsername = data!.profile.username;
-		newDisplayName = data!.profile.display_name || "";
-		newEmail = data!.account.email;
+$effect(() => {
+	if (
+		!settingsSet &&
+		!currentUserQuery.isLoading &&
+		currentUser &&
+		!emailQuery.isLoading &&
+		emailQuery.data
+	) {
+		newUsername = currentUser.username;
+		newDisplayName = currentUser.displayName || "";
+		newEmail = emailQuery.data;
 	}
 });
 
@@ -34,10 +46,8 @@ let crop: { type: CropType; image: string } | null = $state(null);
 const getBanner = () => {
 	if (banner) {
 		return URL.createObjectURL(banner);
-	} else if ($currentUser?.profile.banner) {
-		return (
-			import.meta.env.VITE_CDN_URL + "/banners/" + $currentUser?.profile.banner
-		);
+	} else if (currentUser?.bannerId) {
+		return currentUser.bannerUrl;
 	}
 
 	return null;
@@ -46,10 +56,8 @@ const getBanner = () => {
 const getAvatar = () => {
 	if (avatar) {
 		return URL.createObjectURL(avatar);
-	} else if ($currentUser?.profile.avatar) {
-		return (
-			import.meta.env.VITE_CDN_URL + "/avatars/" + $currentUser?.profile.avatar
-		);
+	} else if (currentUser?.avatarId) {
+		return currentUser.avatarUrl;
 	}
 
 	return "/default_pfp.webp";
@@ -73,16 +81,13 @@ const onSubmit = async (e: Event) => {
 		assetsPayload.banner = await fileToDataURI(banner);
 	}
 
-	if (newUsername != $currentUser?.profile.username) {
+	if (newUsername != currentUser?.username) {
 		mePayload.username = newUsername;
 	}
 
-	if (newEmail != $currentUser?.account.email && currentPassword) {
+	if (newEmail != emailQuery.data && currentPassword) {
 		mePayload.email = newEmail;
-	} else if (
-		newEmail != $currentUser?.account.email &&
-		currentPassword === undefined
-	) {
+	} else if (newEmail != emailQuery.data && currentPassword === undefined) {
 		return addToast(
 			"error",
 			"To change your email, you need to type your password.",
@@ -90,7 +95,7 @@ const onSubmit = async (e: Event) => {
 		);
 	}
 
-	if (newDisplayName != ($currentUser?.profile.display_name || "")) {
+	if (newDisplayName != (currentUser?.displayName || "")) {
 		mePayload.display_name = newDisplayName;
 	}
 
@@ -156,9 +161,9 @@ const reset = (reset: boolean) => {
 		banner = undefined;
 		avatar = undefined;
 
-		newUsername = $currentUser!.profile.username;
-		newDisplayName = $currentUser!.profile.display_name || "";
-		newEmail = $currentUser!.account.email;
+		newUsername = currentUser!.username;
+		newDisplayName = currentUser!.displayName || "";
+		newEmail = emailQuery!.data!;
 	}
 };
 
@@ -300,7 +305,7 @@ const logout = async () => {
                         </div>
 
                         <div class="h-[10%] w-full bg-sexy-red-black rounded-br-lg flex items-center justify-end">
-                            {#if newEmail != $currentUser?.account.email}
+                            {#if newEmail != emailQuery?.data}
                                 <div class="mr-auto ml-8 w-1/2">
                                     <input
                                         required

@@ -1,25 +1,18 @@
-import { get, writable } from "svelte/store";
-import {
-	type Profile,
-	type Account,
-	type PrivateChannel,
-	type Toast,
-	type Message,
-} from "$lib/models";
+import { writable } from "svelte/store";
 
-export const currentUser = writable<{
-	profile: Profile;
-	account: Account;
-} | null>(null);
-export const users = writable<Profile[]>([]);
-export const privateChannels = writable<PrivateChannel[]>([]);
-export const currentPrivateChannel = writable<string | null>(null);
-export const currentGuild = writable<string | null>(null);
-export const currentSidebarType = writable<"guild" | "dms">("dms");
-export const channelMessages = writable<Map<string, Message[]>>(new Map());
-export const waitingForMessages = writable<string[]>([]);
-export const savedChannels = writable<string[]>([]);
+export interface Toast {
+	id: number;
+	type: "info" | "error" | "success";
+	message: string;
+	timeout: number;
+}
 
+export enum CropType {
+	Banner,
+	Avatar,
+}
+
+export const currentPrivateChannelId = writable<string | undefined>(undefined);
 export const toasts = writable<Toast[]>([]);
 
 export const addToast = (
@@ -43,33 +36,4 @@ export const addToast = (
 
 export const dismissToast = (id: number) => {
 	toasts.update((all) => all.filter((t) => t.id !== id));
-};
-
-export function getChannelName(channel: PrivateChannel) {
-	const currentUserData = get(currentUser);
-
-	if (channel.members !== undefined && channel.type === 0) {
-		let profile = channel.members.find((v) => {
-			if (currentUserData?.profile.user_id.valueOf() !== v.user_id.valueOf()) {
-				return true;
-			}
-			return false;
-		})!;
-		let name = profile.display_name || profile.username;
-		return name!;
-	} else {
-		return channel.name || "Some Channel";
-	}
-}
-
-export const getAvatar = () => {
-	const data = get(currentUser);
-
-	if (data) {
-		if (data.profile.avatar) {
-			return import.meta.env.VITE_CDN_URL + "/avatars/" + data.profile.avatar;
-		}
-	} else {
-		return "/default_pfp.webp";
-	}
 };

@@ -13,9 +13,9 @@ import {
 } from "phosphor-svelte";
 import emojis from "./emojis-by-group.json";
 import emojiData from "./data-by-emoji.json";
-import type { Editor } from "@tiptap/core";
+import type { Composer } from "svelte-lexical";
 
-const { editor }: { editor: Editor | undefined } = $props();
+const { composer }: { composer: Composer | undefined } = $props();
 
 let hoveredEmoji: string | null = $state(null);
 
@@ -85,7 +85,7 @@ const scrollToGroup = (groupName: string) => {
                                     }} class='select-none'>
                                         <button  onclick={(e) => {
                                         e.preventDefault();
-                                        editor!.commands.insertContent(emoji.emoji)
+                                        // editor!.commands.insertContent(emoji.emoji)
                                     }}>
                                             <img loading="lazy" alt={emoji.name} src={`/twemoji/${emoji.emoji.codePointAt(0)!.toString(16)}.svg`} class="h-13 text-xs w-auto hover:bg-inps px-1 py-1.5 transition rounded-md duration-300 ease-in-out" />
                                         </button>
