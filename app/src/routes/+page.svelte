@@ -1,8 +1,8 @@
 <script>
     import Header from "$lib/components/branding/Header.svelte";
-</script>
 
-<div class="bg-[url(/saturn.webp)] inset-0 absolute blur-2xl bg-center bg-cover -z-10"></div>
+    document.body.style.backgroundColor = "#5B77DC";
+</script>
 
 <Header />
 
