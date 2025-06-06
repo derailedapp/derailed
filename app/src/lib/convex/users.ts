@@ -18,7 +18,7 @@ export const getProfile = query({
 			account: Id<"users">;
 			username: string;
 			flags: bigint;
-			avatarUrl: string | undefined;
+			avatarUrl: string;
 			bannerUrl: string | undefined;
 		} | null;
 		if (!user) {
@@ -27,7 +27,9 @@ export const getProfile = query({
 		if (user.avatarId) {
 			user.avatarUrl = (await ctx.storage.getUrl(
 				user.avatarId as Id<"_storage">,
-			)) as string | undefined;
+			)) as string;
+		} else {
+			user.avatarUrl = "/default_pfp.webp";
 		}
 		if (user.bannerId) {
 			user.bannerUrl = (await ctx.storage.getUrl(
@@ -59,13 +61,15 @@ export const getCurrentProfile = query({
 			account: Id<"users">;
 			username: string;
 			flags: bigint;
-			avatarUrl: string | undefined;
+			avatarUrl: string;
 			bannerUrl: string | undefined;
 		};
 		if (user.avatarId) {
 			user.avatarUrl = (await ctx.storage.getUrl(
 				user.avatarId as Id<"_storage">,
-			)) as string | undefined;
+			)) as string;
+		} else {
+			user.avatarUrl = "/default_pfp.webp";
 		}
 		if (user.bannerId) {
 			user.bannerUrl = (await ctx.storage.getUrl(
@@ -106,7 +110,7 @@ export const follow = mutation({
 			account: Id<"users">;
 			username: string;
 			flags: bigint;
-			avatarUrl: string | undefined;
+			avatarUrl: string;
 			bannerUrl: string | undefined;
 		} | null;
 
@@ -121,7 +125,9 @@ export const follow = mutation({
 		if (user.avatarId) {
 			user.avatarUrl = (await ctx.storage.getUrl(
 				user.avatarId as Id<"_storage">,
-			)) as string | undefined;
+			)) as string;
+		} else {
+			user.avatarUrl = "/default_pfp.webp";
 		}
 		if (user.bannerId) {
 			user.bannerUrl = (await ctx.storage.getUrl(
@@ -140,10 +146,52 @@ export const follow = mutation({
 
 		if (relation?.type == "followedBy") {
 			await ctx.db.patch(relation._id, { type: "friends" });
+			const chats = await ctx.db
+				.query("channelMembers")
+				.filter((q) =>
+					q.or(
+						q.eq(q.field("userId"), identity),
+						q.eq(q.field("userId"), user.account),
+					),
+				)
+				.collect();
+			const channel = await ctx.db
+				.query("channels")
+				.filter((q) =>
+					q.and(
+						q.eq(q.field("type"), "DM"),
+						q.or(...chats.map((v) => q.eq(q.field("_id"), v.channelId))),
+					),
+				)
+				.first();
+			if (!channel) {
+				const channel = await ctx.db.insert("channels", {
+					type: "DM",
+				});
+				await ctx.db.insert("channelMembers", {
+					userId: identity,
+					channelId: channel,
+				});
+				await ctx.db.insert("channelMembers", {
+					userId: user.account,
+					channelId: channel,
+				});
+			}
 		} else if (relation?.type == "blocked" || relation?.type == "blockedBy") {
 			throw new Error("User has blocked is blocked by you");
-		} else {
+		} else if (relation?.type == "following" || relation?.type == "friends") {
 			throw new Error("You already follow or are friends with this user");
+		} else {
+			await ctx.db.insert("relationships", {
+				type: "following",
+				userId: identity,
+				referencedUserId: user.account,
+			});
+			await ctx.db.insert("relationships", {
+				type: "followedBy",
+				userId: user.account,
+				referencedUserId: identity,
+			});
 		}
 
 		return user;

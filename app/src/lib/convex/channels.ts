@@ -96,7 +96,7 @@ export const getMembers = query({
 				displayName?: string | undefined;
 				avatarId?: string | undefined;
 				bannerId?: string | undefined;
-				avatarUrl?: string | undefined;
+				avatarUrl: string;
 				bannerUrl?: string | undefined;
 				account: Id<"users">;
 				username: string;
@@ -109,7 +109,9 @@ export const getMembers = query({
 				if (user.avatarId) {
 					user.avatarUrl = (await ctx.storage.getUrl(
 						user.avatarId as Id<"_storage">,
-					)) as string | undefined;
+					)) as string;
+				} else {
+					user.avatarUrl = "/default_pfp.webp";
 				}
 				if (user.bannerId) {
 					user.bannerUrl = (await ctx.storage.getUrl(

@@ -47,15 +47,15 @@ export function getChannelName() {
             </div>
             <div class="text-weep-gray/50 font-black">•</div>
             <div class="text-weep-gray text-sm">
-                This is a text chat with another user
+                Mutual Chat
             </div>
         </div>
     </div>
     <div class="flex flex-1 min-h-[300px] bg-primary">
-        <MessageList channelId={id} />
+        <MessageList channelId={id} username={otherUser?.displayName || otherUser?.username || ""} />
     </div>
     <div class="flex items-center justify-center h-full">
-        <MessageInput channelId={id} channelName={""} />
+        <MessageInput channelId={id} channelName={getChannelName()} />
     </div>
 </div>
 
@@ -102,7 +102,7 @@ export function getChannelName() {
                         Member Since
                     </div>
                     <div class="text-sm">
-                        {moment.unix(otherUser?._creationTime || 0).format('MMMM Do YYYY, h:mm a')}
+                        {moment.unix(Number(otherUser?._creationTime || 0) / 1000).format('MMMM Do YYYY, h:mm a')}
                     </div>
                 </div>
             </div>

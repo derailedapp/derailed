@@ -45,6 +45,29 @@ export function getChannelName(id: string) {
 		return channel.data?.name || "Unknown Channel Name";
 	}
 }
+
+export function getAvatarUrl(id: string) {
+	const channel = useQuery(api.channels.get, { id: id as Id<"channels"> });
+	const channelMembers = useQuery(api.channels.getMembers, {
+		id: id as Id<"channels">,
+	});
+	if (
+		!channelMembers.isLoading &&
+		channelMembers.data &&
+		!channel.isLoading &&
+		channel.data
+	) {
+		let profile = channelMembers.data.find((v) => {
+			if (currentUser?._id !== v._id) {
+				return true;
+			}
+			return false;
+		})!;
+		return profile.avatarUrl;
+	} else {
+		return "/default_pfp.web";
+	}
+}
 </script>
 <div class="flex flex-col select-none">
     <div class="flex h-full w-full">
@@ -62,7 +85,7 @@ export function getChannelName(id: string) {
                 <div class="overflow-y-auto mt-3">
                     {#if (type === "dms")}
                         {#each channels as channel}
-                            <User channelId={channel._id} selected={currentPrivateChannelId == channel._id} username={getChannelName(channel._id)} avatarUrl="https://avatars.githubusercontent.com/u/132799819" />
+                            <User channelId={channel._id} selected={currentPrivateChannelId == channel._id} username={getChannelName(channel._id)} avatarUrl={getAvatarUrl(channel._id)} />
                         {/each}
                     {/if}
                 </div>

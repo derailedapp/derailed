@@ -7,7 +7,7 @@ import { useQuery } from "convex-svelte";
 import { api } from "$lib/convex/_generated/api";
 import type { Id } from "$lib/convex/_generated/dataModel";
 
-let { channelId }: { channelId: string } = $props();
+let { channelId, username }: { channelId: string; username: string } = $props();
 
 // @ts-ignore
 let container: Element = $state();
@@ -27,13 +27,20 @@ $effect(() => {
 async function scrollToBottom() {
 	await tick();
 	if (container) {
-		container.scrollTop = container.scrollHeight;
 	}
 }
 </script>
 
 <ul bind:this={container} class="flex flex-col overflow-y-scroll m-auto h-full w-full rounded-b-xl">
+	<div class="h-full w-full flex flex-col pb-4 select-none items-start justify-end pl-6 text-sm">
+		<div class="font-bold text-xl">
+			{username}
+		</div>
+		<div class="text-center pl-2">
+			This is the start of your mutual chat with {username}
+		</div>
+	</div>
     {#each messages as message, index}
-        <MessageComp channelId={channelId} message={message} messages={messages} index={index} />
+        <MessageComp message={message} messages={messages} index={index} />
     {/each}
 </ul>

@@ -3,17 +3,25 @@ import {
 	Composer,
 	ContentEditable,
 	convertToMarkdownString,
+	RichTextPlugin,
+	$getRoot as getRoot,
+	HistoryPlugin,
+	PlaceHolder,
 } from "svelte-lexical";
 import { theme } from "svelte-lexical/dist/themes/default";
 import EmojiPicker from "./EmojiPicker.svelte";
+import { useConvexClient } from "convex-svelte";
+import { api } from "$lib/convex/_generated/api";
+import type { Id } from "$lib/convex/_generated/dataModel";
 
 let { channelId, channelName }: { channelId: string; channelName: string } =
 	$props();
 
-let element: Element | undefined = $state();
 let composer: Composer | undefined = $state();
+const client = useConvexClient();
 
 async function onKey(event: KeyboardEvent) {
+	event.preventDefault();
 	const editor = composer!.getEditor();
 	if (event.key == "Enter" && !event.shiftKey) {
 		let content = editor
@@ -24,6 +32,14 @@ async function onKey(event: KeyboardEvent) {
 		if (content == "") {
 			return;
 		}
+		editor.update(() => {
+			getRoot().clear();
+		});
+
+		await client.mutation(api.messages.createInPrivateChannel, {
+			channelId: channelId as Id<"channels">,
+			content,
+		});
 	}
 }
 </script>
@@ -36,17 +52,21 @@ async function onKey(event: KeyboardEvent) {
       throw error;
     }
 }} bind:this={composer}>
-	<div class="flex flex-row justify-center px-4 py-3 font-light w-full m-6 max-h-[800px] text-white rounded-md bg-inps">
+	<div class="flex flex-row relative justify-center px-4 py-3 font-light w-full m-6 max-h-[800px] text-white rounded-md bg-inps">
 		<div 
 			onkeyup={onKey} 
 			role="textbox" 
 			tabindex="0" 
 			aria-keyshortcuts="Enter" 
 			aria-multiline="true" 
-			class="w-full text-white"
+			class="w-full text-white m-0 relative max-w-full flex-auto resize-y"
 		>
-			<ContentEditable />
+			<ContentEditable className="h-auto outline-0 focus:ring-0 block relative" />
+			<PlaceHolder className="text-weep-gray overflow-hidden top-1/13 absolute select-none whitespace-nowrap inline-block pointer-events-none">Message #{channelName}</PlaceHolder>
 		</div>
+		<RichTextPlugin />
+		<HistoryPlugin />
+
 		<div class="flex justify-center items-end pb-0.5">
 			<EmojiPicker composer={composer} />
 		</div>

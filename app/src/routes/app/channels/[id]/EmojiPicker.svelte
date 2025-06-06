@@ -13,7 +13,9 @@ import {
 } from "phosphor-svelte";
 import emojis from "./emojis-by-group.json";
 import emojiData from "./data-by-emoji.json";
+import { $getSelection as getSelection } from "svelte-lexical";
 import type { Composer } from "svelte-lexical";
+import { $isRangeSelection as isRangeSelection } from "lexical";
 
 const { composer }: { composer: Composer | undefined } = $props();
 
@@ -85,7 +87,15 @@ const scrollToGroup = (groupName: string) => {
                                     }} class='select-none'>
                                         <button  onclick={(e) => {
                                         e.preventDefault();
-                                        // editor!.commands.insertContent(emoji.emoji)
+                                        const editor = composer?.getEditor();
+                                        if (editor) {
+                                            editor.update(() => {
+                                                const selection = getSelection();
+                                                if (isRangeSelection(selection)) {
+                                                    selection.insertText(emoji.emoji)
+                                                }
+                                            });
+                                        }
                                     }}>
                                             <img loading="lazy" alt={emoji.name} src={`/twemoji/${emoji.emoji.codePointAt(0)!.toString(16)}.svg`} class="h-13 text-xs w-auto hover:bg-inps px-1 py-1.5 transition rounded-md duration-300 ease-in-out" />
                                         </button>
