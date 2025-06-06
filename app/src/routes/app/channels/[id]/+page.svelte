@@ -15,7 +15,7 @@ const channel = useQuery(api.channels.get, { id: id as Id<"channels"> });
 const channelMembers = useQuery(api.channels.getMembers, {
 	id: id as Id<"channels">,
 });
-const otherUser = $derived(channelMembers.data?.at(0));
+const otherUser = $derived(channelMembers.data?.find((v) => v._id != currentUser.data?._id));
 
 export function getChannelName() {
 	if (
