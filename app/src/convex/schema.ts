@@ -29,6 +29,7 @@ export default defineSchema({
 		type: v.union(v.literal("DM")),
 		name: v.optional(v.string()),
 		ownerId: v.optional(v.id("users")),
+		lastMessageId: v.optional(v.string())
 	}).searchIndex("channelName", {
 		searchField: "name",
 		filterFields: ["type", "ownerId"],
@@ -45,6 +46,11 @@ export default defineSchema({
 		content: v.optional(v.string()),
 		lastModified: v.number(),
 	}).index("messagesAndChannels", ["channelId"]),
+	messageMentions: defineTable({
+		channelId: v.id("channels"),
+		messageId: v.id("messages"),
+		mentionedUserId: v.id("users"),
+	}),
 	readStates: defineTable({
 		channelId: v.id("channels"),
 		lastMessageId: v.id("messages"),

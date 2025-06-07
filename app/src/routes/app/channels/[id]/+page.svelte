@@ -3,10 +3,12 @@ import { page } from "$app/state";
 import { Hash } from "phosphor-svelte";
 import MessageInput from "./MessageInput.svelte";
 import MessageList from "./MessageList.svelte";
-import moment from "moment-timezone";
 import { useQuery } from "convex-svelte";
 import { api } from "$convex/_generated/api";
 import type { Id } from "$convex/_generated/dataModel";
+    import { currentPrivateChannelId } from "$lib/state";
+    // @ts-ignore
+    import UserPop from "$lib/components/UserPop.svelte";
 
 const { id } = page.params;
 
@@ -16,6 +18,7 @@ const channelMembers = useQuery(api.channels.getMembers, {
 	id: id as Id<"channels">,
 });
 const otherUser = $derived(channelMembers.data?.find((v) => v._id != currentUser.data?._id));
+currentPrivateChannelId.set(id);
 
 export function getChannelName() {
 	if (
@@ -60,52 +63,5 @@ export function getChannelName() {
 </div>
 
 {#if !channelMembers.isLoading && channelMembers.data && channelMembers.data.length === 2}
-    <div class="h-screen flex flex-col w-[550px]">
-        <div class="h-[58px] bg-primary border-b border-guild-aside p-4"></div>
-        <div class="h-full w-full flex flex-col bg-mem-aside">
-            <div class="bg-blurple pb-5">
-                <div class="flex flex-col w-full items-center justify-center">
-                    {#if !otherUser?.bannerUrl}
-                        <div class="bg-guild-aside w-full h-[130px]"></div>
-                    {:else}
-                        <img src={otherUser.bannerUrl} alt="banner" class="w-full h-[130px] object-cover">
-                    {/if}
-                    <div class="absolute top-[9.5rem]">
-                        {#if otherUser?.avatarUrl === null}
-                            <img
-                                class="size-[7rem] rounded-full object-cover border-[3px] border-blurple group-hover:opacity-70 transition-all"
-                                src={"/default_pfp.webp"}
-                                alt="avatar"
-                            />
-                        {:else}
-                            <img
-                                class="size-[7rem] rounded-full object-cover border-[3px] border-blurple group-hover:opacity-70 transition-all"
-                                src={otherUser?.avatarUrl}
-                                alt="avatar"
-                            />
-                        {/if}
-                    </div>
-
-                    <div class="flex flex-col justify-center items-center pt-20 select-none">
-                        <div class="font-semibold text-xl">
-                            {otherUser?.displayName || otherUser?.username}
-                        </div>
-                        <div>
-                            {otherUser?.username}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="flex flex-col w-full pt-2 gap-4">
-                <div class="w-full py-3 px-6 rounded-xl select-none">
-                    <div class="font-semibold text-sm">
-                        Member Since
-                    </div>
-                    <div class="text-sm">
-                        {moment.unix(Number(otherUser?._creationTime || 0) / 1000).format('MMMM Do YYYY, h:mm a')}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <UserPop user={otherUser} />
 {/if}

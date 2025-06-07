@@ -21,7 +21,9 @@ async function onSubmit(e: SubmitEvent) {
 
 <Dialog.Root bind:open={open}>
     <Dialog.Trigger class="cursor-pointer">
-        <Plus color="#a0a0a5" class="h-4 w-4" />
+        <button type="button" class="px-4 py-0.5 rounded-full bg-blurple">
+            Add Friend
+        </button>
     </Dialog.Trigger>
     <Dialog.Portal>
         <Dialog.Overlay

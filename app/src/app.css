@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @plugin '@tailwindcss/forms';
-@plugin '@tailwindcss/typography';
 @plugin 'tailwindcss-animate';
 
 @font-face {
@@ -88,7 +87,7 @@
 }
 
 body {
-	background-color: #1b1b1e;
+	background-color: #36393e;
 	font-family: "Nebula Sans";
 	@apply text-white;
 }
