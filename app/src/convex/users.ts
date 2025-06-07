@@ -2,6 +2,9 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { Password } from "@convex-dev/auth/providers/Password";
+
+import { type Profile } from "./types";
 
 export const getProfile = query({
 	args: { userId: v.id("users") },
@@ -9,18 +12,8 @@ export const getProfile = query({
 		let user = (await ctx.db
 			.query("profiles")
 			.filter((q) => q.eq(q.field("account"), args.userId))
-			.first()) as {
-			_id: Id<"profiles">;
-			_creationTime: number;
-			displayName?: string | undefined;
-			avatarId?: string | undefined;
-			bannerId?: string | undefined;
-			account: Id<"users">;
-			username: string;
-			flags: bigint;
-			avatarUrl: string;
-			bannerUrl: string | undefined;
-		} | null;
+			.first()) as Profile | null;
+
 		if (!user) {
 			throw new Error("User does not exist");
 		}
@@ -52,18 +45,8 @@ export const getCurrentProfile = query({
 		let user = (await ctx.db
 			.query("profiles")
 			.filter((q) => q.eq(q.field("account"), identity))
-			.first()!) as {
-			_id: Id<"profiles">;
-			_creationTime: number;
-			displayName?: string | undefined;
-			avatarId?: string | undefined;
-			bannerId?: string | undefined;
-			account: Id<"users">;
-			username: string;
-			flags: bigint;
-			avatarUrl: string;
-			bannerUrl: string | undefined;
-		};
+			.first()!) as Profile;
+
 		if (user.avatarId) {
 			user.avatarUrl = (await ctx.storage.getUrl(
 				user.avatarId as Id<"_storage">,
@@ -83,11 +66,14 @@ export const getCurrentProfile = query({
 export const getEmail = query({
 	args: {},
 	handler: async (ctx, _) => {
-		const identity = await ctx.auth.getUserIdentity();
+		const identity = await getAuthUserId(ctx);
 		if (!identity) {
 			throw new Error("Route requires authentication");
 		}
-		return identity.email!;
+		const user = await ctx.db
+			.get(identity);
+
+		return user!.email;
 	},
 });
 
@@ -101,18 +87,7 @@ export const follow = mutation({
 		let user = (await ctx.db
 			.query("profiles")
 			.filter((q) => q.eq(q.field("username"), args.username))
-			.first()) as {
-			_id: Id<"profiles">;
-			_creationTime: number;
-			displayName?: string | undefined;
-			avatarId?: string | undefined;
-			bannerId?: string | undefined;
-			account: Id<"users">;
-			username: string;
-			flags: bigint;
-			avatarUrl: string;
-			bannerUrl: string | undefined;
-		} | null;
+			.first()) as Profile | null;
 
 		if (!user) {
 			throw new Error("User does not exist");
@@ -197,3 +172,85 @@ export const follow = mutation({
 		return user;
 	},
 });
+
+export const modifyProfile = mutation({
+	args: { 
+		displayName: v.optional(v.string()), 
+		username: v.optional(v.string()), 
+	},
+	handler: async (ctx, args) => {
+		const identity = await getAuthUserId(ctx);
+		if (!identity) {
+			throw new Error("Route requires authentication");
+		}
+		let user = (await ctx.db
+			.query("profiles")
+			.filter((q) => q.eq(q.field("account"), identity))
+			.first()!) as Profile;
+
+		if (args.displayName) {
+			await ctx.db.patch(user._id, {
+				displayName: args.displayName
+			});
+		}
+
+		// TODO: current password check
+		if (args.username) {
+			await ctx.db.patch(user._id, {
+				username: args.username
+			});
+		}
+	}
+})
+
+export const getUploadURL = mutation({
+	handler: async (ctx, _) => {
+		return ctx.storage.generateUploadUrl();
+	}
+})
+
+export const setAvatarID = mutation({
+	args: { id: v.string() },
+	handler: async (ctx, args) => {
+		const identity = await getAuthUserId(ctx);
+		if (!identity) {
+			throw new Error("Route requires authentication");
+		}
+
+		let user = (await ctx.db
+			.query("profiles")
+			.filter((q) => q.eq(q.field("account"), identity))
+			.first()!) as Profile;
+		
+		if (user.avatarId) {
+			await ctx.storage.delete(user.avatarId)
+		}
+		
+		await ctx.db.patch(user._id, {
+			avatarId: args.id
+		})
+	}
+})
+
+export const setBannerID = mutation({
+	args: { id: v.string() },
+	handler: async (ctx, args) => {
+		const identity = await getAuthUserId(ctx);
+		if (!identity) {
+			throw new Error("Route requires authentication");
+		}
+
+		let user = (await ctx.db
+			.query("profiles")
+			.filter((q) => q.eq(q.field("account"), identity))
+			.first()!) as Profile;
+
+		if (user.bannerId) {
+			await ctx.storage.delete(user.bannerId)
+		}
+
+		await ctx.db.patch(user._id, {
+			bannerId: args.id
+		})
+	}
+})

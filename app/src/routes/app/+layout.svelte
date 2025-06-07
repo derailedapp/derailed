@@ -2,6 +2,7 @@
 import Sidebar from "$lib/components/Sidebar.svelte";
 import { goto } from "$app/navigation";
 import { useAuth } from "@mmailaender/convex-auth-svelte/sveltekit";
+import { onMount } from "svelte";
 
 let { children } = $props();
 
@@ -13,6 +14,10 @@ $effect(() => {
 		goto("/login");
 	}
 });
+
+onMount(() => {
+    document.body.style.backgroundColor = "#1b1b1e";
+})
 </script>
 
 <div class="h-screen w-full overflow-hidden">

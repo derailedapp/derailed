@@ -1,15 +1,21 @@
 <script lang="ts">
 import { Dialog, Tabs } from "bits-ui";
 
-import { NotePencil, SignOut, Gear } from "phosphor-svelte";
+import { NotePencil, SignOut, Gear, Spinner } from "phosphor-svelte";
+import { readAndCompressImage } from 'browser-image-resizer';
 
 import { addToast } from "$lib/state";
 
 import { CropType } from "$lib/state";
 import Cropper from "./Cropper.svelte";
 import { goto } from "$app/navigation";
-import { useQuery } from "convex-svelte";
-import { api } from "$lib/convex/_generated/api";
+import { useConvexClient, useQuery } from "convex-svelte";
+import { api } from "$convex/_generated/api";
+import { useAuth } from "@mmailaender/convex-auth-svelte/svelte";
+
+const client = useConvexClient();
+const { signOut } = useAuth();
+
 
 let banner: File | undefined = $state();
 let avatar: File | undefined = $state();
@@ -17,29 +23,16 @@ let avatar: File | undefined = $state();
 const currentUserQuery = useQuery(api.users.getCurrentProfile, {});
 const currentUser = $derived(currentUserQuery.data);
 const emailQuery = useQuery(api.users.getEmail, {});
+const currentEmail = $derived(emailQuery.data);
 
-let settingsSet: boolean = $state(false);
-let newUsername: string = $state("");
-let newDisplayName: string = $state("");
-let newEmail: string = $state("");
+let newUsername: string = $derived(currentUser!.username);
+let newDisplayName: string = $derived(currentUser!.displayName || "");
+let newEmail: string = $derived(currentEmail!);
+
 let currentPassword: string | undefined = $state();
 
 let bannerInput: HTMLInputElement | undefined = $state();
 let avatarInput: HTMLInputElement | undefined = $state();
-
-$effect(() => {
-	if (
-		!settingsSet &&
-		!currentUserQuery.isLoading &&
-		currentUser &&
-		!emailQuery.isLoading &&
-		emailQuery.data
-	) {
-		newUsername = currentUser.username;
-		newDisplayName = currentUser.displayName || "";
-		newEmail = emailQuery.data;
-	}
-});
 
 let crop: { type: CropType; image: string } | null = $state(null);
 
@@ -66,83 +59,60 @@ const getAvatar = () => {
 const onSubmit = async (e: Event) => {
 	e.preventDefault();
 
-	const assetsPayload: { avatar?: string; banner?: string } = {};
-	const mePayload: {
-		email?: string;
-		username?: string;
-		display_name?: string;
-	} = {};
+    client.mutation(api.users.modifyProfile, {
+        username: newUsername !== currentUser!.username ? newUsername : undefined,
+        displayName: newDisplayName !== (currentUser!.displayName || "") ? newDisplayName : undefined,
+    })
 
-	if (avatar) {
-		assetsPayload.avatar = await fileToDataURI(avatar);
-	}
+    if (avatar) {
+        const uploadUrl = await client.mutation(api.users.getUploadURL, {});
+        const compressed = await readAndCompressImage(avatar, { quality: 0.9, maxWidth: 400, maxHeight: 400, mimeType: "image/webp" })
 
-	if (banner) {
-		assetsPayload.banner = await fileToDataURI(banner);
-	}
+        const result = await fetch(uploadUrl, {
+            method: "POST",
+            headers: { "Content-Type": "image/webp" },
+            body: compressed,
+        });
 
-	if (newUsername != currentUser?.username) {
-		mePayload.username = newUsername;
-	}
+        const { storageId } = await result.json();
 
-	if (newEmail != emailQuery.data && currentPassword) {
-		mePayload.email = newEmail;
-	} else if (newEmail != emailQuery.data && currentPassword === undefined) {
-		return addToast(
-			"error",
-			"To change your email, you need to type your password.",
-			3000,
-		);
-	}
+        await client.mutation(api.users.setAvatarID, { id: storageId })
+    }
 
-	if (newDisplayName != (currentUser?.displayName || "")) {
-		mePayload.display_name = newDisplayName;
-	}
+    if (banner) {
+        const uploadUrl = await client.mutation(api.users.getUploadURL, {});
+        const compressed = await readAndCompressImage(banner, { quality: 0.9, maxWidth: 980, maxHeight: 400, mimeType: "image/webp" })
 
-	if (assetsPayload) {
-		const resp = await fetch(
-			import.meta.env.VITE_API_URL + "/users/@me/assets",
-			{
-				method: "PATCH",
-				body: JSON.stringify(assetsPayload),
-				headers: {
-					Authorization: localStorage.getItem("token")!,
-					"Content-Type": "application/json",
-				},
-			},
-		);
-	}
+        const result = await fetch(uploadUrl, {
+            method: "POST",
+            headers: { "Content-Type": "image/webp" },
+            body: compressed,
+        });
 
-	if (mePayload) {
-		const resp = await fetch(import.meta.env.VITE_API_URL + "/users/@me", {
-			method: "PATCH",
-			body: JSON.stringify(mePayload),
-			headers: {
-				Authorization: localStorage.getItem("token")!,
-				"Content-Type": "application/json",
-			},
-		});
-	}
-};
+        const { storageId } = await result.json();
 
-const fileToDataURI = (file: File): Promise<string> => {
-	return new Promise((resolve, reject) => {
-		const reader = new FileReader();
-		reader.onload = () => resolve(reader.result as string);
-		reader.onerror = reject;
-		reader.readAsDataURL(file);
-	});
+        await client.mutation(api.users.setBannerID, { id: storageId })
+    }
+
+    reset(true);
+    addToast("success", "Profile updated", 3000);
 };
 
 const setCrop = async (
 	e: Event & { currentTarget: EventTarget & HTMLInputElement },
 	type: CropType,
 ) => {
-	const file = URL.createObjectURL(e.currentTarget.files![0]);
+    const file = e.currentTarget.files![0];
+    if (!["image/jpeg", "image/webp", "image/png"].includes(file.type)) {
+        addToast("error", "Given file is not a image.", 3000);
+        return;
+    }
+
+	const imageUrl = URL.createObjectURL(file);
 
 	crop = {
 		type: type,
-		image: file,
+		image: imageUrl,
 	};
 };
 
@@ -168,17 +138,9 @@ const reset = (reset: boolean) => {
 };
 
 const logout = async () => {
-	const resp = await fetch(import.meta.env.VITE_API_URL + "/logout", {
-		method: "POST",
-		headers: {
-			Authorization: localStorage.getItem("token")!,
-		},
-	});
+    await signOut();
 
-	if (resp.status === 204) {
-		localStorage.removeItem("token");
-		await goto("/login");
-	}
+    await goto("/login")
 };
 </script>
 
@@ -196,24 +158,24 @@ const logout = async () => {
         <Dialog.Content class="bg-aside rounded-lg fixed left-[50%] top-[50%] z-50 w-[1000px] h-[800px] translate-x-[-50%] translate-y-[-50%] 
         data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
             <Tabs.Root value="myaccount" class="flex h-full w-full flex-row">
-                <Tabs.List class="w-[290px] h-full bg-guild-aside rounded-l-lg flex justify-end">
-                    <div class="flex flex-col gap-1 mr-2 mt-6 ml-auto">
-                        <div class="flex flex-row font-bold">
+                <Tabs.List class="w-[180px] h-full bg-guild-aside rounded-l-lg flex justify-end">
+                    <div class="flex flex-col gap-1 mt-6 ml-auto w-[180px]">
+                        <div class="flex flex-row justify-center items-center font-bold">
                             USER SETTINGS
                         </div>
                         <Tabs.Trigger 
                             value="myaccount"
                             class="py-4 w-[200px] flex mt-5 relative rounded-sm
-                            before:absolute before:-left-4 before:top-0 before:h-full before:w-1 
+                            before:absolute before:left-0 before:top-0 before:h-full before:w-1 
                             before:bg-transparent text-[15px] data-[state=active]:before:bg-blurple">
 
-                            <h1 class="ml-2">My Account</h1>
+                            <h1 class="ml-6 text-sm">My Account</h1>
                         </Tabs.Trigger>
 
                         <button onclick={logout} class="data-[state=active]:bg-aside/40 transition-colors duration-800 rounded-sm
-                        py-1.5 p-3 w-[200px] flex items-center text-red-300 hover:text-white text-sm hover:bg-red-600/20 mt-auto mb-4 mr-1">
-                            <h1 class="text-[15px]">Log Out</h1>
-                            <SignOut weight="bold" class="ml-auto mr-2 h-[17px] w-[17px]"/>
+                        py-1 x-3 flex m-2 mb-4 items-center text-red-300 hover:text-white text-sm hover:bg-red-600/20 mt-auto group">
+                            <h1 class="text-[15px] ml-2">Log Out</h1>
+                            <SignOut weight="bold" class="ml-auto mr-2 size-[17px] group-hover:mr-1 transition-all duration-800"/>
                         </button>
                     </div>
                 </Tabs.List>
@@ -229,7 +191,7 @@ const logout = async () => {
 
                                     <input 
                                         style="box-shadow: none;" 
-                                        placeholder="No Display Name" 
+                                        placeholder="No Display Name"
                                         bind:value={newDisplayName} 
                                         class="bg-transparent appearance-none w-full border-0 border-b border-b-sexy-red-gray" 
                                     />
@@ -255,8 +217,6 @@ const logout = async () => {
                                     </div>
 
                                     <input
-                                        required
-                                        type="email"
                                         style="box-shadow: none;"
                                         bind:value={newEmail}
                                         class="bg-transparent appearance-none w-full border-0 border-b border-b-sexy-red-gray"
@@ -274,7 +234,7 @@ const logout = async () => {
                                 <div class="font-bold text-sm text-weep-gray tracking-tighter text-center">
                                     PROFILE PICTURE
                                 </div>
-                                <button class="relative group" onclick={() => avatarInput?.click()}>
+                                <button type="button" class="relative group" onclick={() => avatarInput?.click()}>
                                     <img src={getAvatar()} class="size-[12rem] rounded-full opacity-100 group-hover:opacity-70 mx-auto transition-all duration-200" alt="me">
 
                                     <span class="opacity-0 group-hover:opacity-200
@@ -286,7 +246,7 @@ const logout = async () => {
                                 <div class="font-bold text-sm text-weep-gray tracking-tighter text-center">
                                     BANNER
                                 </div>
-                                <button class="relative group flex" onclick={() => bannerInput?.click()}>
+                                <button type="button" class="relative group" onclick={() => bannerInput?.click()}>
                                     {#await getBanner() then url}
                                         {#if url == null}
                                             <div class="w-[350px] h-[130px] bg-guild-aside"></div>
@@ -317,6 +277,7 @@ const logout = async () => {
                                     />
                                 </div>
                             {/if}
+
                             <button type="submit" class="mr-8 bg-blurple py-1 px-8 rounded-sm">
                                 Save
                             </button>

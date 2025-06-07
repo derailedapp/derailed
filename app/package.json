@@ -38,6 +38,7 @@
 		"@simplewebauthn/browser": "9.0.1",
 		"@simplewebauthn/server": "9.0.1",
 		"bits-ui": "^1.8.0",
+		"browser-image-resizer": "^2.4.1",
 		"convex": "^1.24.8",
 		"convex-helpers": "^0.1.90",
 		"convex-svelte": "^0.0.11",

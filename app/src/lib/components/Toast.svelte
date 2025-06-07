@@ -6,9 +6,9 @@ let { type, children, kill } = $props();
 </script>
 
 <article class="flex flex-row justify-center items-center py-4 w-full rounded-lg" 
-    class:bg-green-400={type == "success"}
-    class:bg-blue-400={type == "info"}
-    class:bg-red-400={type == "error"}
+    class:bg-green-700={type == "success"}
+    class:bg-blue-700={type == "info"}
+    class:bg-red-700={type == "error"}
     transition:fly={{ y: -200, duration: 150 }}
     >
     <i class="ml-4">
@@ -21,7 +21,7 @@ let { type, children, kill } = $props();
         {/if}
     </i>
 
-    <h1 class="flex-1 ml-4">
+    <h1 class="flex-1 ml-3">
         {@render children()}
     </h1>
 

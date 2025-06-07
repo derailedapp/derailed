@@ -5,8 +5,8 @@ import MessageInput from "./MessageInput.svelte";
 import MessageList from "./MessageList.svelte";
 import moment from "moment-timezone";
 import { useQuery } from "convex-svelte";
-import { api } from "$lib/convex/_generated/api";
-import type { Id } from "$lib/convex/_generated/dataModel";
+import { api } from "$convex/_generated/api";
+import type { Id } from "$convex/_generated/dataModel";
 
 const { id } = page.params;
 
@@ -68,7 +68,7 @@ export function getChannelName() {
                     {#if !otherUser?.bannerUrl}
                         <div class="bg-guild-aside w-full h-[130px]"></div>
                     {:else}
-                        <img src={otherUser.bannerUrl} alt="banner" class="w-full h-[130px] bg-center bg-cover">
+                        <img src={otherUser.bannerUrl} alt="banner" class="w-full h-[130px] object-cover">
                     {/if}
                     <div class="absolute top-[9.5rem]">
                         {#if otherUser?.avatarUrl === null}

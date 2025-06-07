@@ -3,7 +3,7 @@ import { Plus } from "phosphor-svelte";
 import { Dialog } from "bits-ui";
 import { addToast } from "$lib/state";
 import { useConvexClient } from "convex-svelte";
-import { api } from "$lib/convex/_generated/api";
+import { api } from "$convex/_generated/api";
 let username: string | undefined = $state();
 let open: boolean | undefined = $state(false);
 

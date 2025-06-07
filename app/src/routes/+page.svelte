@@ -1,7 +1,10 @@
 <script>
     import Header from "$lib/components/branding/Header.svelte";
+    import { onMount } from "svelte";
 
-    document.body.style.backgroundColor = "#5B77DC";
+    onMount(() => {
+        document.body.style.backgroundColor = "#5B77DC";
+    })
 </script>
 
 <Header />

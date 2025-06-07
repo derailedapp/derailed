@@ -3,9 +3,9 @@ import { Avatar, ContextMenu } from "bits-ui";
 import moment from "moment-timezone";
 import { processor } from "$lib/markdown";
 import { unScrewHtml } from "$lib/markdown";
-import type { Id } from "$lib/convex/_generated/dataModel";
+import type { Id } from "$convex/_generated/dataModel";
 import { useConvexClient, useQuery } from "convex-svelte";
-import { api } from "$lib/convex/_generated/api";
+import { api } from "$convex/_generated/api";
 import { IdentificationCard, Pen, Pencil, Trash } from "phosphor-svelte";
 
 type Message = {

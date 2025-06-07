@@ -2,7 +2,7 @@
 import { CropType } from "$lib/state";
 import { addToast } from "$lib/state";
 import { Slider } from "bits-ui";
-import { X } from "phosphor-svelte";
+import { Spinner, X } from "phosphor-svelte";
 import Cropper, {
 	type CropArea,
 	type OnCropCompleteEvent,
@@ -59,11 +59,11 @@ const getCroppedImage = (): Promise<File | null> => {
 				}
 
 				resolve(
-					new File([blob], "cropped.png", {
-						type: "image/png",
+					new File([blob], "cropped.jpeg", {
+						type: "image/jpeg",
 					}),
 				);
-			});
+			}, "image/jpeg", 0.90);
 		};
 	});
 };
@@ -112,7 +112,7 @@ let {
                 {image}
                 bind:crop
                 bind:zoom
-                aspect={400 / 400}
+                aspect={1 / 1}
                 maxZoom={5}
                 oncropcomplete={handleCropComplete}
             />
@@ -133,6 +133,8 @@ let {
         <Slider.Thumb index={0} class="bg-white size-[25px] rounded-full border-2 border-black" />
     </Slider.Root>
 
-    <button onclick={Crop} class="bg-blurple/85 hover:bg-blurple/65 text-white px-4 rounded-4xl 
-    transition-all duration-150 items-center gap-2 py-1">Submit</button>
+    <button onclick={Crop} class="bg-blurple hover:bg-blurple/65 text-white px-4 rounded-4xl 
+    transition-all duration-150 items-center gap-2 py-1">
+		Submit
+	</button>
 </div>
