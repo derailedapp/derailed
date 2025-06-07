@@ -65,7 +65,7 @@ export function getAvatarUrl() {
 <a href={`/app/channels/${channelId}`} class="flex flex-row border-blurple items-center gap-3 hover:bg-sexy-lighter-black/70 hover:backdrop-blur-3xl p-4 py-1.5 my-0.5 transition-all duration-100 w-full" class:bg-gradient-to-r={selected} class:from-primary={selected} class:from-70%={selected} class:to-95%={selected} class:to-aside={selected} class:border-l-2={selected}>
     <img class="rounded-full h-9 w-9" src={getAvatarUrl()} alt={`@${getChannelName()}`} />
 
-    <div class="text-weep-gray truncate" class:text-white={readState?.lastMessageId != channel.data?.lastMessageId || selected}>
+    <div class="text-weep-gray truncate" class:font-bold={readState?.lastMessageId != channel.data?.lastMessageId || selected} class:text-white={readState?.lastMessageId != channel.data?.lastMessageId || selected}>
         {getChannelName()}
     </div>
 </a>
