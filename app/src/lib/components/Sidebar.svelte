@@ -6,8 +6,8 @@ import AddFriend from "$lib/components/AddFriend.svelte";
 import User from "$lib/components/User.svelte";
 import Settings from "./Settings.svelte";
 import { useQuery } from "convex-svelte";
-import { api } from "$lib/convex/_generated/api";
-import type { Id } from "$lib/convex/_generated/dataModel";
+import { api } from "$convex/_generated/api";
+import type { Id } from "$convex/_generated/dataModel";
 
 let channelQuery = useQuery(api.channels.getJoined, {});
 let channels = $derived(channelQuery.data || []);
@@ -19,8 +19,6 @@ currentPrivateChannel.subscribe((v) => (currentPrivateChannelId = v));
 
 const currentUserQuery = useQuery(api.users.getCurrentProfile, {});
 const currentUser = $derived(currentUserQuery.data);
-
-let showSettings = $state(false);
 
 export function getChannelName(id: string) {
 	const channel = useQuery(api.channels.get, { id: id as Id<"channels"> });
@@ -65,7 +63,7 @@ export function getAvatarUrl(id: string) {
 		})!;
 		return profile.avatarUrl;
 	} else {
-		return "/default_pfp.web";
+		return "/default_pfp.webp";
 	}
 }
 </script>

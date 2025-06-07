@@ -1,5 +1,6 @@
 <script>
 import Header from "$lib/components/branding/Header.svelte";
+import { onMount } from "svelte";
 
 const featureItems = [
     { header: "Comfort", content: "We have a sleek, modern, more intuitively designed UI made specifically to get you chatting as much as you'd like" },
@@ -7,6 +8,10 @@ const featureItems = [
     { header: "Secure", content: "Our open nature allows security folks to detect vulnerabilities before they even get to you" },
     { header: "Open and Free", content: "We are an open platform. You can check Derailed from top to bottom and assure yourself that we don’t steal or use your data maliciously" }
 ]
+
+onMount(() => {
+    document.body.style.backgroundColor = "#5B77DC";
+})
 </script>
 
 <Header />

@@ -4,8 +4,8 @@ import MessageComp from "./Message.svelte";
 import { tick } from "svelte";
 import { goto } from "$app/navigation";
 import { useQuery } from "convex-svelte";
-import { api } from "$lib/convex/_generated/api";
-import type { Id } from "$lib/convex/_generated/dataModel";
+import { api } from "$convex/_generated/api";
+import type { Id } from "$convex/_generated/dataModel";
 
 let { channelId, username }: { channelId: string; username: string } = $props();
 
@@ -33,7 +33,7 @@ async function scrollToBottom() {
 
 <ul bind:this={container} class="flex flex-col overflow-y-scroll m-auto h-full w-full rounded-b-xl">
 	<div class="h-full w-full flex flex-col pb-4 select-none items-start justify-end pl-6 text-sm">
-		<div class="font-bold text-xl">
+		<div class="font-bold text-xl pl-2">
 			{username}
 		</div>
 		<div class="text-center pl-2">
