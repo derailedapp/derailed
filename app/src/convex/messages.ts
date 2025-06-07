@@ -30,6 +30,7 @@ export const createInPrivateChannel = mutation({
 			authorId: identity,
 			lastModified: Date.now(),
 		});
+		await ctx.db.patch(args.channelId, { lastMessageId: message })
 		const readState = await ctx.db
 			.query("readStates")
 			.filter((q) =>

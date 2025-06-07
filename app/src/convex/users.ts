@@ -2,7 +2,6 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { Password } from "@convex-dev/auth/providers/Password";
 
 import { type Profile } from "./types";
 
@@ -41,7 +40,7 @@ export const getCurrentProfile = query({
 		if (!identity) {
 			throw new Error("Route requires authentication");
 		}
-		console.log(identity);
+
 		let user = (await ctx.db
 			.query("profiles")
 			.filter((q) => q.eq(q.field("account"), identity))
@@ -142,6 +141,7 @@ export const follow = mutation({
 			if (!channel) {
 				const channel = await ctx.db.insert("channels", {
 					type: "DM",
+					lastMessageId: ""
 				});
 				await ctx.db.insert("channelMembers", {
 					userId: identity,
@@ -252,5 +252,44 @@ export const setBannerID = mutation({
 		await ctx.db.patch(user._id, {
 			bannerId: args.id
 		})
+	}
+});
+
+
+export const getFriends = query({
+	args: {},
+	handler: async (ctx, args) => {
+		const identity = await getAuthUserId(ctx);
+		if (!identity) {
+			throw new Error("Route requires authentication");
+		}
+
+		let relationships = (await ctx.db
+			.query("relationships")
+			.filter((q) => q.and(q.eq(q.field("userId"), identity), q.eq(q.field("type"), "friends")))
+			.collect()
+		)
+
+		const users = relationships.map(async (u) => {
+			let user = (await ctx.db
+				.query("profiles")
+				.filter((q) => q.eq(q.field("account"), u.referencedUserId))
+				.first()!) as Profile;
+
+			if (user.avatarId) {
+				user.avatarUrl = (await ctx.storage.getUrl(
+					user.avatarId as Id<"_storage">,
+				)) as string;
+			} else {
+				user.avatarUrl = "/default_pfp.webp";
+			}
+			if (user.bannerId) {
+				user.bannerUrl = (await ctx.storage.getUrl(
+					user.bannerId as Id<"_storage">,
+				)) as string | undefined;
+			}
+			return user;
+		});
+		return await Promise.all(users);
 	}
 })
