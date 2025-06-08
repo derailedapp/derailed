@@ -137,6 +137,31 @@ export const deleteFromPrivateChannel = mutation({
 	},
 });
 
+export const get = query({
+	args: { channelId: v.id("channels"), id: v.id("messages") },
+	handler: async (ctx, args) => {
+		const identity = await getAuthUserId(ctx);
+		if (!identity) {
+			throw new Error("Route requires authentication");
+		}
+
+		const membership = await ctx.db
+			.query("channelMembers")
+			.filter((q) =>
+				q.and(
+					q.eq(q.field("userId"), identity),
+					q.eq(q.field("channelId"), args.channelId),
+				),
+			)
+			.first();
+
+		if (!membership) {
+			throw new Error("Channel does not exist or you are not a member");
+		}
+		return await ctx.db.get(args.id);
+	}
+});
+
 export const newest = query({
 	args: { paginationOpts: paginationOptsValidator, channelId: v.id("channels") },
 	handler: async (ctx, args) => {

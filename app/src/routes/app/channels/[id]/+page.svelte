@@ -19,6 +19,8 @@ const channelMembers = useQuery(api.channels.getMembers, {
 });
 const otherUser = $derived(channelMembers.data?.find((v) => v._id != currentUser.data?._id));
 currentPrivateChannelId.set(id);
+const readStateQuery = useQuery(api.readstates.getReadState, { id: id as Id<"channels"> });
+const readState = $derived(readStateQuery.data)
 
 export function getChannelName() {
 	if (
@@ -55,7 +57,9 @@ export function getChannelName() {
         </div>
     </div>
     <div class="flex flex-1 min-h-[300px] bg-primary">
-        <MessageList channelId={id} username={otherUser?.displayName || otherUser?.username || ""} />
+        {#if channel.data && readState}
+            <MessageList channelId={id} username={otherUser?.displayName || otherUser?.username || ""} lastMessageId={channel.data?.lastMessageId} around={readState.lastMessageId} />
+        {/if}
     </div>
     <div class="flex items-center justify-center h-full">
         <MessageInput channelId={id} channelName={getChannelName()} />

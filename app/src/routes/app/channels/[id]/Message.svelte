@@ -88,7 +88,7 @@ async function processContent(content: string | undefined | null) {
 
 <ContextMenu.Root bind:open={ctxOpen}>
 	<ContextMenu.Trigger>
-		<li class="flex flex-row w-full group gap-3 hover:bg-sexy-lighter-black/30 pl-6 p-1 py-0.5" class:my-2={!cascade && !nextMessageWillCascade} class:pl-7={cascade} class:hover:pl-5={cascade} class:mt-2={!cascade && nextMessageWillCascade} class:items-center={cascade} class:pb-0={nextMessageWillCascade}>
+		<li id={message._id} class="flex flex-row w-full group gap-3 hover:bg-sexy-lighter-black/30 pl-6 p-1 py-0.5" class:my-2={!cascade && !nextMessageWillCascade} class:pl-7={cascade} class:hover:pl-5={cascade} class:mt-2={!cascade && nextMessageWillCascade} class:items-center={cascade} class:pb-0={nextMessageWillCascade}>
 			{#if !cascade}
 				<Avatar.Root class="select-none shrink-0 mt-[1px]">
 					<Avatar.Image class="rounded-full h-11 w-11" src={authorProfile?.data?.avatarUrl} alt={`User Profile Picture`} />
