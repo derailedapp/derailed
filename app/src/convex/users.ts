@@ -177,7 +177,6 @@ export const modifyProfile = mutation({
 	args: { 
 		displayName: v.optional(v.string()), 
 		username: v.optional(v.string()),
-		status: v.optional(v.string())
 	},
 	handler: async (ctx, args) => {
 		const identity = await getAuthUserId(ctx);
