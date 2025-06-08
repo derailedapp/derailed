@@ -8,6 +8,7 @@ export default defineSchema({
 		account: v.id("users"),
 		username: v.string(),
 		displayName: v.optional(v.string()),
+		status: v.optional(v.string()),
 		avatarId: v.optional(v.string()),
 		bannerId: v.optional(v.string()),
 		flags: v.int64(),

@@ -176,7 +176,8 @@ export const follow = mutation({
 export const modifyProfile = mutation({
 	args: { 
 		displayName: v.optional(v.string()), 
-		username: v.optional(v.string()), 
+		username: v.optional(v.string()),
+		status: v.optional(v.string())
 	},
 	handler: async (ctx, args) => {
 		const identity = await getAuthUserId(ctx);
@@ -188,11 +189,9 @@ export const modifyProfile = mutation({
 			.filter((q) => q.eq(q.field("account"), identity))
 			.first()!) as Profile;
 
-		if (args.displayName) {
-			await ctx.db.patch(user._id, {
-				displayName: args.displayName
-			});
-		}
+		await ctx.db.patch(user._id, {
+			displayName: args.displayName
+		});
 
 		// TODO: current password check
 		if (args.username) {
@@ -200,6 +199,28 @@ export const modifyProfile = mutation({
 				username: args.username
 			});
 		}
+	}
+})
+
+export const modifyStatus = mutation({
+	args: { status: v.optional(v.string()) },
+	handler: async (ctx, args) => {
+		const identity = await getAuthUserId(ctx);
+		if (!identity) {
+			throw new Error("Route requires authentication");
+		}
+		let user = (await ctx.db
+			.query("profiles")
+			.filter((q) => q.eq(q.field("account"), identity))
+			.first()!) as Profile;
+
+		if (args.status && args.status.length > 100) {
+			throw new Error("Status is too long, max 100 characters.");
+		}
+
+		await ctx.db.patch(user._id, {
+			status: args.status
+		});
 	}
 })
 

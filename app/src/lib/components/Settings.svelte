@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Dialog, Tabs } from "bits-ui";
 
-import { NotePencil, SignOut, Gear, Spinner } from "phosphor-svelte";
+import { NotePencil, SignOut, Gear, Spinner, X } from "phosphor-svelte";
 import { readAndCompressImage } from 'browser-image-resizer';
 
 import { addToast } from "$lib/state";
@@ -189,12 +189,15 @@ const logout = async () => {
                                         DISPLAY NAME
                                     </div>
 
-                                    <input 
-                                        style="box-shadow: none;" 
-                                        placeholder="No Display Name"
-                                        bind:value={newDisplayName} 
-                                        class="bg-transparent appearance-none w-full border-0 border-b border-b-sexy-red-gray" 
-                                    />
+                                    
+                                    <div class="flex flex-row justify-center items-center gap-3">
+                                        <input 
+                                            style="box-shadow: none;" 
+                                            placeholder="No Display Name"
+                                            bind:value={newDisplayName} 
+                                            class="bg-transparent appearance-none w-full border-0 border-b border-b-sexy-red-gray" 
+                                        />
+                                    </div>
                                 </section>
 
                                 <section>
