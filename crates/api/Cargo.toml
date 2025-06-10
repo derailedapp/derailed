@@ -1,0 +1,27 @@
+[package]
+name = "api"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+
+axum.workspace = true
+tokio.workspace = true
+dotenvy.workspace = true
+axum_thiserror.workspace = true
+argon2.workspace = true
+regex.workspace = true
+serde_valid.workspace = true
+sqlx.workspace = true
+thiserror.workspace = true
+serde.workspace = true
+models.workspace = true
+email_address.workspace = true
+aws-config.workspace = true
+aws-sdk-s3.workspace = true
+tower-http.workspace = true
+ulid.workspace = true
+sha2.workspace = true
+hex.workspace = true
+rand.workspace = true
+base64.workspace = true
