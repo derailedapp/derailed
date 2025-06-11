@@ -31,6 +31,11 @@ pub async fn route(
         return Err(crate::Error::InvalidEmail);
     }
 
+    let username_re = regex::Regex::new("^[a-z0-9_]+$").unwrap();
+    if !username_re.is_match(&model.username) {
+        return Err(crate::Error::UsernameTestFail);
+    }
+
     let email = model.email.to_lowercase();
     let check_exist = sqlx::query!("SELECT id FROM accounts WHERE email = $1;", email)
         .fetch_optional(&state.pg)
@@ -57,7 +62,15 @@ pub async fn route(
     )
     .fetch_one(&mut *txn)
     .await?;
-    // TODO: return specialized error if username is taken
+
+    let check_exist = sqlx::query!("SELECT id FROM actors WHERE username = $1;", &model.username)
+        .fetch_optional(&state.pg)
+        .await?;
+
+    if check_exist.is_some() {
+        return Err(crate::Error::UsernameAlreadyUsed);
+    }
+    
     sqlx::query!(
         "INSERT INTO actors (id, username, flags) VALUES ($1, $2, $3);",
         account.id,

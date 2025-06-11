@@ -42,7 +42,7 @@ pub async fn route(
             return Err(crate::Error::InvalidLoginDetails);
         }
 
-        let token = BASE64_STANDARD.encode(rand::rng().random::<[u8; 16]>());
+        let token = BASE64_STANDARD.encode(rand::rng().random::<[u8; 32]>());
         let session_id = hex::encode(sha2::Sha256::digest(token.as_bytes()));
         let start = SystemTime::now();
         let now = start.duration_since(UNIX_EPOCH).unwrap().as_secs() as i64;
