@@ -1,13 +1,15 @@
-
-use axum::{extract::{Multipart, State}, Extension, Json};
+use axum::{
+    Extension, Json,
+    extract::{Multipart, State},
+};
 use ulid::Ulid;
 
 use minio::s3::types::S3Api;
 
-use zune_image::image::Image;
-use zune_image::codecs::ImageFormat;
-use zune_image::traits::OperationsTrait;
 use zune_core::options::DecoderOptions;
+use zune_image::codecs::ImageFormat;
+use zune_image::image::Image;
+use zune_image::traits::OperationsTrait;
 use zune_imageprocs::crop::Crop;
 
 use caesium::parameters::CSParameters;
@@ -15,10 +17,14 @@ use caesium::parameters::CSParameters;
 pub async fn route(
     State(state): State<crate::State>,
     Extension(account_id): Extension<String>,
-    
-    mut multipart: Multipart
+
+    mut multipart: Multipart,
 ) -> Result<Json<models::users::UserActor>, crate::Error> {
-    while let Some(field) = multipart.next_field().await.map_err(|_| crate::Error::FieldIncorrect)? {
+    while let Some(field) = multipart
+        .next_field()
+        .await
+        .map_err(|_| crate::Error::FieldIncorrect)?
+    {
         match field.name().ok_or(crate::Error::FieldIncorrect)? {
             "avatar" => {
                 let bytes = field
@@ -29,9 +35,9 @@ pub async fn route(
 
                 let mut image = Image::read(bytes, DecoderOptions::default())?;
 
-                let (w,h) = image.dimensions();
-                let start_x = (w/2) - 200;
-                let start_y = (h/2) - 200;
+                let (w, h) = image.dimensions();
+                let start_x = (w / 2) - 200;
+                let start_y = (h / 2) - 200;
 
                 Crop::new(400, 400, start_x, start_y).execute(&mut image)?;
                 let image = image.write_to_vec(ImageFormat::JPEG)?;
@@ -41,20 +47,19 @@ pub async fn route(
                 let image = caesium::compress_in_memory(image, &parameters).unwrap();
 
                 let id = Ulid::new().to_string();
-                state.s3_client
+                state
+                    .s3_client
                     .put_object_content("avatars", &id, image)
                     .send()
                     .await?;
 
-                let actor = sqlx::query!(
-                    "SELECT avatar_id FROM actors WHERE id = $1",
-                    account_id
-                )
-                .fetch_one(&state.pg)
-                .await?;
+                let actor = sqlx::query!("SELECT avatar_id FROM actors WHERE id = $1", account_id)
+                    .fetch_one(&state.pg)
+                    .await?;
 
                 if let Some(avatar_id) = actor.avatar_id {
-                    state.s3_client
+                    state
+                        .s3_client
                         .delete_object("avatars", avatar_id)
                         .send()
                         .await?;
@@ -67,7 +72,7 @@ pub async fn route(
                 )
                 .execute(&state.pg)
                 .await?;
-            },
+            }
             "banner" => {
                 let bytes = field
                     .bytes()
@@ -77,9 +82,9 @@ pub async fn route(
 
                 let mut image = Image::read(bytes, DecoderOptions::default())?;
 
-                let (w,h) = image.dimensions();
-                let start_x = (w/2) - 490;
-                let start_y = (h/2) - 200;
+                let (w, h) = image.dimensions();
+                let start_x = (w / 2) - 490;
+                let start_y = (h / 2) - 200;
 
                 Crop::new(980, 400, start_x, start_y).execute(&mut image)?;
                 let image = image.write_to_vec(ImageFormat::JPEG)?;
@@ -90,20 +95,19 @@ pub async fn route(
                 let image = caesium::compress_in_memory(image, &parameters).unwrap();
 
                 let id = Ulid::new().to_string();
-                state.s3_client
+                state
+                    .s3_client
                     .put_object_content("banners", &id, image)
                     .send()
                     .await?;
 
-                let actor = sqlx::query!(
-                    "SELECT banner_id FROM actors WHERE id = $1",
-                    account_id
-                )
-                .fetch_one(&state.pg)
-                .await?;
+                let actor = sqlx::query!("SELECT banner_id FROM actors WHERE id = $1", account_id)
+                    .fetch_one(&state.pg)
+                    .await?;
 
                 if let Some(banner_id) = actor.banner_id {
-                    state.s3_client
+                    state
+                        .s3_client
                         .delete_object("banners", banner_id)
                         .send()
                         .await?;
@@ -116,7 +120,7 @@ pub async fn route(
                 )
                 .execute(&state.pg)
                 .await?;
-            },
+            }
             _ => {
                 return Err(crate::Error::FieldIncorrect);
             }

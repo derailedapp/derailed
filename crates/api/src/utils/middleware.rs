@@ -1,6 +1,7 @@
 use axum::{
-    extract::{Request, State}, 
-    middleware::Next, response::Response
+    extract::{Request, State},
+    middleware::Next,
+    response::Response,
 };
 
 use sha2::Digest;
@@ -8,12 +9,13 @@ use sha2::Digest;
 pub async fn auth_middleware(
     State(state): State<crate::State>,
 
-    req: Request, 
-    next: Next
+    req: Request,
+    next: Next,
 ) -> Result<Response, crate::Error> {
     let (mut parts, body) = req.into_parts();
 
-    let token = parts.headers
+    let token = parts
+        .headers
         .get("Authorization")
         .ok_or(crate::Error::RequiresAuth)?
         .to_str()
@@ -30,7 +32,5 @@ pub async fn auth_middleware(
     parts.extensions.insert(record.account_id);
 
     let request = Request::from_parts(parts, body);
-    Ok(
-        next.run(request).await
-    )
+    Ok(next.run(request).await)
 }

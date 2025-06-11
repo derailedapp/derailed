@@ -1,5 +1,4 @@
-
-use axum::{extract::State, Extension, Json};
+use axum::{Extension, Json, extract::State};
 use serde::Deserialize;
 use serde_valid::Validate;
 
@@ -29,10 +28,10 @@ pub async fn route(
     }
 
     if let Some(username) = model.username {
-        if let Some(_) = sqlx::query!(
-            "SELECT id FROM actors WHERE username = $1",
-            &username
-        ).fetch_optional(&state.pg).await? {
+        if let Some(_) = sqlx::query!("SELECT id FROM actors WHERE username = $1", &username)
+            .fetch_optional(&state.pg)
+            .await?
+        {
             return Err(crate::Error::UsernameAlreadyUsed);
         }
 

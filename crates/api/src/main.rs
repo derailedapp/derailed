@@ -1,12 +1,12 @@
-use std::{time::Duration, vec};
+use std::time::Duration;
 
 use minio::s3::{self, creds::StaticProvider, http::BaseUrl};
 
 use axum::http::{HeaderValue, Method};
 use sqlx::{PgPool, postgres::PgPoolOptions};
+use sqlxmq::JobRegistry;
 use tokio::net::TcpListener;
 use tower_http::cors::{Any, CorsLayer};
-use sqlxmq::JobRegistry;
 
 mod routes;
 mod utils;
@@ -62,7 +62,7 @@ pub enum Error {
     ArgonError,
     #[status(500)]
     #[error("Internal Service Error")]
-    S3Error(#[from] minio::s3::error::Error)
+    S3Error(#[from] minio::s3::error::Error),
 }
 
 #[tokio::main]
@@ -101,11 +101,8 @@ async fn main() {
         .allow_origin(origins);
 
     let mut registry = JobRegistry::new(&[]);
-    let runner = registry
-        .runner(&pool)
-        .run()
-        .await?;
-    
+    let runner = registry.runner(&pool).run().await?;
+
     let state = State {
         pg: pool,
         s3_client,

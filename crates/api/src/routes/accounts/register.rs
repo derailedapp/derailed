@@ -63,14 +63,17 @@ pub async fn route(
     .fetch_one(&mut *txn)
     .await?;
 
-    let check_exist = sqlx::query!("SELECT id FROM actors WHERE username = $1;", &model.username)
-        .fetch_optional(&state.pg)
-        .await?;
+    let check_exist = sqlx::query!(
+        "SELECT id FROM actors WHERE username = $1;",
+        &model.username
+    )
+    .fetch_optional(&state.pg)
+    .await?;
 
     if check_exist.is_some() {
         return Err(crate::Error::UsernameAlreadyUsed);
     }
-    
+
     sqlx::query!(
         "INSERT INTO actors (id, username, flags) VALUES ($1, $2, $3);",
         account.id,
