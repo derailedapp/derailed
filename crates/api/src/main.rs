@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{time::Duration, vec};
 
 use minio::s3::{self, creds::StaticProvider, http::BaseUrl};
 
@@ -6,7 +6,7 @@ use axum::http::{HeaderValue, Method};
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use tokio::net::TcpListener;
 use tower_http::cors::{Any, CorsLayer};
-
+use sqlxmq::JobRegistry;
 
 mod routes;
 mod utils;
@@ -100,6 +100,12 @@ async fn main() {
         .allow_headers(Any)
         .allow_origin(origins);
 
+    let mut registry = JobRegistry::new(&[]);
+    let runner = registry
+        .runner(&pool)
+        .run()
+        .await?;
+    
     let state = State {
         pg: pool,
         s3_client,

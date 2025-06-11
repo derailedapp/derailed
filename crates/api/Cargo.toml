@@ -28,3 +28,4 @@ zune-image.workspace = true
 zune-core.workspace = true
 zune-imageprocs.workspace = true
 libcaesium.workspace = true
+sqlxmq.workspace = true

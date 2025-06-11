@@ -29,6 +29,7 @@ zune-image = { version = "0.4.15", features = ["image_formats"] }
 zune-core = "0.4.12"
 zune-imageprocs = "0.4.15"
 libcaesium = "0.17.4"
+sqlxmq = "0.6.0"
 
 models = { path = "./crates/models" }
 rt-actors = { path = "./crates/rt-actors" }
