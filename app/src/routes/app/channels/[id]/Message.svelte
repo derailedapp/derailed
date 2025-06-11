@@ -3,19 +3,9 @@ import { Avatar, ContextMenu } from "bits-ui";
 import moment from "moment-timezone";
 import { processor } from "$lib/markdown";
 import { unScrewHtml } from "$lib/markdown";
-import type { Id } from "$convex/_generated/dataModel";
-import { useConvexClient, useQuery } from "convex-svelte";
-import { api } from "$convex/_generated/api";
 import { IdentificationCard, Pen, Pencil, Trash } from "phosphor-svelte";
-
-type Message = {
-	_id: Id<"messages">;
-	_creationTime: number;
-	content?: string | undefined;
-	channelId: Id<"channels">;
-	authorId: Id<"users">;
-	lastModified: number;
-};
+import Client, { type Message } from "$lib/api";
+import { currentActor, users } from "$lib/state";
 
 let {
 	message,
@@ -24,12 +14,7 @@ let {
 }: { message: Message; index: number; messages: Message[] } = $props();
 
 let ctxOpen = $state(false);
-let authorProfile = useQuery(api.users.getProfile, {
-	userId: message.authorId,
-});
-let currentUserQuery = useQuery(api.users.getCurrentProfile, {});
-let currentUser = $derived(currentUserQuery?.data);
-const client = useConvexClient();
+let author = $derived($users.find((v) => v.id == message.author_id));
 
 function getDate(ts: number) {
 	ts = Number(ts / 1000);
@@ -51,8 +36,8 @@ function shouldCascade(message: Message, index: number) {
 			return false;
 		}
 		if (
-			msg!.authorId == message.authorId &&
-			Number(message._creationTime - msg!._creationTime) < 480_000
+			msg!.author_id == message.author_id &&
+			Number(message.created_at - msg!.created_at) < 480_000
 		) {
 			return true;
 		}
@@ -69,8 +54,8 @@ function willCascade(index: number) {
 		return false;
 	}
 	if (
-		msg.authorId == otherMsg.authorId &&
-		Number(otherMsg._creationTime - msg!._creationTime) < 480_000
+		msg.author_id == otherMsg.author_id &&
+		Number(otherMsg.created_at - msg!.created_at) < 480_000
 	) {
 		return true;
 	}
@@ -88,24 +73,24 @@ async function processContent(content: string | undefined | null) {
 
 <ContextMenu.Root bind:open={ctxOpen}>
 	<ContextMenu.Trigger>
-		<li id={message._id} class="flex flex-row w-full group gap-3 hover:bg-sexy-lighter-black/30 pl-6 p-1 py-0.5" class:my-2={!cascade && !nextMessageWillCascade} class:pl-7={cascade} class:hover:pl-5={cascade} class:mt-2={!cascade && nextMessageWillCascade} class:items-center={cascade} class:pb-0={nextMessageWillCascade}>
+		<li id={message.id} class="flex flex-row w-full group gap-3 hover:bg-sexy-lighter-black/30 pl-6 p-1 py-0.5" class:my-2={!cascade && !nextMessageWillCascade} class:pl-7={cascade} class:hover:pl-5={cascade} class:mt-2={!cascade && nextMessageWillCascade} class:items-center={cascade} class:pb-0={nextMessageWillCascade}>
 			{#if !cascade}
 				<Avatar.Root class="select-none shrink-0 mt-[1px]">
-					<Avatar.Image class="rounded-full h-11 w-11" src={authorProfile?.data?.avatarUrl} alt={`User Profile Picture`} />
+					<Avatar.Image class="rounded-full h-11 w-11" src={Client.getCDNUrl("avatars", author?.avatar_id!)} alt={`User Profile Picture`} />
 					<Avatar.Fallback><img class="rounded-full h-11 w-11" alt="Fallback Avatar" src={"https://avatars.githubusercontent.com/u/132799819"} /></Avatar.Fallback>
 				</Avatar.Root>
 			{:else}
 				<div class="text-weep-gray select-none w-12 tracking-tighter text-xs font-semibold hidden group-hover:block" style="font-variant-numeric:tabular-nums">
-					{getDate(message.lastModified)}
+					{getDate(message.last_modified_at)}
 				</div>
 			{/if}
 			<div class="flex flex-col">
 				<div class="flex gap-2 items-center" class:hidden={cascade}>
 					<div class="hover:underline text-white font-semibold">
-						{authorProfile?.data?.displayName || authorProfile?.data?.username || "Unknown User"}
+						{author?.display_name || author?.username || "Deleted User"}
 					</div>
 					<div class="text-weep-gray tracking-tighter text-xs">
-						{getDate(message.lastModified)}
+						{getDate(message.created_at)}
 					</div>
 				</div>
 				<div class="text-white font-light text-[16px] Markdown" class:pl-13={cascade} class:group-hover:pl-0={cascade}>
@@ -118,7 +103,7 @@ async function processContent(content: string | undefined | null) {
 	</ContextMenu.Trigger>
 	<ContextMenu.Portal>
 		<ContextMenu.Content class="flex flex-col items-center text-white/85 tracking-tight text-sm gap-1 w-[200px] p-1.5 rounded-md bg-guild-aside select-none border-2 border-mem-aside">
-			{#if authorProfile.data?._id == currentUser?._id}
+			{#if author?.id == $currentActor?.id}
 				<button type="button" class="p-2 flex flex-row items-center justify-between w-full hover:bg-mem-aside rounded-sm" onclick={async (e) => {
 					e.preventDefault();
 					ctxOpen = false;
@@ -130,7 +115,7 @@ async function processContent(content: string | undefined | null) {
 				</button>
 				<button type="button" class="p-2 flex flex-row items-center justify-between w-full hover:bg-mem-aside rounded-sm" onclick={async (e) => {
 					e.preventDefault();
-					await client.mutation(api.messages.deleteFromPrivateChannel, { channelId: message.channelId, id: message._id })
+					// await client.mutation(api.messages.deleteFromPrivateChannel, { channelId: message.channelId, id: message._id })
 					ctxOpen = false;
 				}}>
 					<div>
@@ -142,7 +127,7 @@ async function processContent(content: string | undefined | null) {
 			{/if}
 			<button type="button" class="p-2 flex flex-row items-center justify-between w-full hover:bg-mem-aside rounded-sm" onclick={(e) => {
 				e.preventDefault();
-				navigator.clipboard.writeText(message._id);
+				navigator.clipboard.writeText(message.id);
 				ctxOpen = false;
 			}}>
 				<div>

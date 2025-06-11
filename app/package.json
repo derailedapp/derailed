@@ -58,6 +58,7 @@
 		"remark-rehype": "^11.1.2",
 		"svelte-easy-crop": "^4.0.1",
 		"svelte-lexical": "^0.6.0",
+		"ulidx": "^2.4.1",
 		"unified": "^11.0.5"
 	}
 }

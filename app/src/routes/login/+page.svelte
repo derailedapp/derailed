@@ -4,14 +4,13 @@ import Icon from "@iconify/svelte";
 import { fly } from "svelte/transition";
 import { goto } from "$app/navigation";
 import { onMount } from "svelte";
-import { useAuth } from "@mmailaender/convex-auth-svelte/svelte";
 
 let username: string | undefined = $state();
 let email: string | undefined = $state();
 let password: string | undefined = $state();
 let checked = $state(false);
 
-const { signIn, isAuthenticated, isLoading } = useAuth();
+
 
 async function onRegister(e: SubmitEvent) {
 	e.preventDefault();
@@ -21,11 +20,11 @@ async function onRegister(e: SubmitEvent) {
 		return;
 	}
 
-	await signIn("password", {
-		email: email,
-		password: password,
-		flow: "signUp",
-	});
+	//await signIn("password", {
+	//	email: email,
+	//	password: password,
+	//	flow: "signUp",
+	//});
 
 	goto("/app");
 }
@@ -33,17 +32,17 @@ async function onRegister(e: SubmitEvent) {
 async function onLogin(e: SubmitEvent) {
 	e.preventDefault();
 
-	await signIn("password", {
-		email: email,
-		password: password,
-		flow: "signIn",
-	});
+	//await signIn("password", {
+	//	email: email,
+	//	password: password,
+	//	flow: "signIn",
+	//});
 
 	goto("/app");
 }
 
-$effect(() => {
-	if (isAuthenticated && !isLoading) {
+onMount(() => {
+	if (localStorage.getItem("token")) {
 		goto("/app");
 	}
 });

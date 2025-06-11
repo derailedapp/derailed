@@ -10,15 +10,11 @@ import {
 } from "svelte-lexical";
 import { theme } from "svelte-lexical/dist/themes/default";
 import EmojiPicker from "./EmojiPicker.svelte";
-import { useConvexClient } from "convex-svelte";
-import { api } from "$convex/_generated/api";
-import type { Id } from "$convex/_generated/dataModel";
 
 let { channelId, channelName }: { channelId: string; channelName: string; } =
 	$props();
 
 let composer: Composer | undefined = $state();
-const client = useConvexClient();
 
 async function onKey(event: KeyboardEvent) {
 	event.preventDefault();
@@ -36,10 +32,10 @@ async function onKey(event: KeyboardEvent) {
 			getRoot().clear();
 		});
 
-		await client.mutation(api.messages.createInPrivateChannel, {
-			channelId: channelId as Id<"channels">,
-			content,
-		});
+		//await client.mutation(api.messages.createInPrivateChannel, {
+		//	channelId: channelId as Id<"channels">,
+		//	content,
+		//});
 	}
 }
 </script>
