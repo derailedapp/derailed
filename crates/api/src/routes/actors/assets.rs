@@ -2,11 +2,15 @@
 use axum::{extract::{Multipart, State}, Extension, Json};
 use ulid::Ulid;
 
+use minio::s3::types::S3Api;
+
 use zune_image::image::Image;
 use zune_image::codecs::ImageFormat;
 use zune_image::traits::OperationsTrait;
 use zune_core::options::DecoderOptions;
 use zune_imageprocs::crop::Crop;
+
+use caesium::parameters::CSParameters;
 
 pub async fn route(
     State(state): State<crate::State>,
@@ -31,6 +35,10 @@ pub async fn route(
 
                 Crop::new(400, 400, start_x, start_y).execute(&mut image)?;
                 let image = image.write_to_vec(ImageFormat::JPEG)?;
+                let mut parameters = CSParameters::new();
+                parameters.jpeg.quality = 60;
+
+                let image = caesium::compress_in_memory(image, &parameters).unwrap();
 
                 let id = Ulid::new().to_string();
                 state.s3_client
@@ -49,8 +57,7 @@ pub async fn route(
                     state.s3_client
                         .delete_object("avatars", avatar_id)
                         .send()
-                        .await
-                        .map_err(|_| crate::Error::S3Error)?;
+                        .await?;
                 }
 
                 sqlx::query!(
@@ -76,6 +83,11 @@ pub async fn route(
 
                 Crop::new(980, 400, start_x, start_y).execute(&mut image)?;
                 let image = image.write_to_vec(ImageFormat::JPEG)?;
+
+                let mut parameters = CSParameters::new();
+                parameters.webp.quality = 60;
+
+                let image = caesium::compress_in_memory(image, &parameters).unwrap();
 
                 let id = Ulid::new().to_string();
                 state.s3_client
