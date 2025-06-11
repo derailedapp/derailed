@@ -32,6 +32,7 @@
 	"dependencies": {
 		"@auth/core": "^0.39.1",
 		"@convex-dev/auth": "^0.0.87",
+		"@fontsource/inter": "^5.2.6",
 		"@iconify/svelte": "^5.0.0",
 		"@mmailaender/convex-auth-svelte": "^0.0.2",
 		"@scaleway/random-name": "^5.1.1",

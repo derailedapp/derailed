@@ -2,93 +2,9 @@
 @plugin '@tailwindcss/forms';
 @plugin 'tailwindcss-animate';
 
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: normal;
-	font-weight: 900;
-	src: url("/NebulaSans/NebulaSans-Black.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: normal;
-	font-weight: 800;
-	src: url("/NebulaSans/NebulaSans-Bold.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: normal;
-	font-weight: 700;
-	src: url("/NebulaSans/NebulaSans-Semibold.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: normal;
-	font-weight: 400;
-	src: url("/NebulaSans/NebulaSans-Medium.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: normal;
-	font-weight: 300;
-	src: url("/NebulaSans/NebulaSans-Book.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: normal;
-	font-weight: 200;
-	src: url("/NebulaSans/NebulaSans-Light.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: italic;
-	font-weight: 900;
-	src: url("/NebulaSans/NebulaSans-BlackItalic.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: italic;
-	font-weight: 800;
-	src: url("/NebulaSans/NebulaSans-BoldItalic.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: italic;
-	font-weight: 700;
-	src: url("/NebulaSans/NebulaSans-SemiboldItalic.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: italic;
-	font-weight: 400;
-	src: url("/NebulaSans/NebulaSans-MediumItalic.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: italic;
-	font-weight: 300;
-	src: url("/NebulaSans/NebulaSans-BookItalic.woff2") format("woff"),;
-}
-
-@font-face {
-	font-family: "Nebula Sans";
-	font-style: italic;
-	font-weight: 200;
-	src: url("/NebulaSans/NebulaSans-LightItalic.woff2") format("woff"),;
-}
-
 body {
 	background-color: #36393e;
-	font-family: "Nebula Sans";
+	font-family: "Inter";
 	@apply text-white;
 }
 
@@ -128,45 +44,45 @@ button {
 }
 
 .glass-wrapper {
-  position: relative;
-  display: flex;
-  font-weight: 600;
-  overflow: hidden;
+	position: relative;
+	display: flex;
+	font-weight: 600;
+	overflow: hidden;
 
-  color: black;
+	color: black;
 
-  box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
 
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+	transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
 }
 
 .glass-effect {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
+	position: absolute;
+	z-index: 0;
+	inset: 0;
 
-  backdrop-filter: blur(3px);
-  filter: url(#glass-distortion);
-  overflow: hidden;
-  isolation: isolate;
+	backdrop-filter: blur(3px);
+	filter: url(#glass-distortion);
+	overflow: hidden;
+	isolation: isolate;
 }
 
 .glass-tint {
-  z-index: 1;
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.25);
+	z-index: 1;
+	position: absolute;
+	inset: 0;
+	background: rgba(255, 255, 255, 0.25);
 }
 
 .glass-shine {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
+	position: absolute;
+	inset: 0;
+	z-index: 2;
 
-  overflow: hidden;
+	overflow: hidden;
 
-  box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5),
-    inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5);
+	box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 1px
+		1px rgba(255, 255, 255, 0.5);
 }
 
 .round-corners {
@@ -197,7 +113,7 @@ button {
 
 @theme {
 	--color-thingy: rgba(255, 255, 255, 0.5);
-	--color-blurple: #5B77DC;
+	--color-blurple: #5b77dc;
 	--color-sexy-lighter-black: #2a2a2e;
 	--color-sexy-red-black: #141417;
 	--color-sexy-gray: #a0a0a5;

@@ -10,8 +10,6 @@ let email: string | undefined = $state();
 let password: string | undefined = $state();
 let checked = $state(false);
 
-
-
 async function onRegister(e: SubmitEvent) {
 	e.preventDefault();
 

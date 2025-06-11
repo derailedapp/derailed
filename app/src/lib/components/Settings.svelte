@@ -2,7 +2,7 @@
 import { Dialog, Tabs } from "bits-ui";
 
 import { NotePencil, SignOut, Gear, Spinner, X } from "phosphor-svelte";
-import { readAndCompressImage } from 'browser-image-resizer';
+import { readAndCompressImage } from "browser-image-resizer";
 
 import { addToast } from "$lib/state";
 
@@ -30,7 +30,7 @@ const getBanner = (currentBannerId: string | null) => {
 	if (banner) {
 		return URL.createObjectURL(banner);
 	} else if (currentBannerId) {
-		return Client.getCDNUrl("banners", currentBannerId)
+		return Client.getCDNUrl("banners", currentBannerId);
 	}
 
 	return null;
@@ -49,54 +49,64 @@ const getAvatar = (currentAvatarId: string | null) => {
 const onSubmit = async (e: Event) => {
 	e.preventDefault();
 
-    //client.mutation(api.users.modifyProfile, {
-    //    username: newUsername !== currentUser!.username ? newUsername : undefined,
-    //    displayName: newDisplayName !== (currentUser!.displayName || "") ? newDisplayName : undefined,
-    //})
+	//client.mutation(api.users.modifyProfile, {
+	//    username: newUsername !== currentUser!.username ? newUsername : undefined,
+	//    displayName: newDisplayName !== (currentUser!.displayName || "") ? newDisplayName : undefined,
+	//})
 
-    if (avatar) {
-        //const uploadUrl = await client.mutation(api.users.getUploadURL, {});
-        const compressed = await readAndCompressImage(avatar, { quality: 0.9, maxWidth: 400, maxHeight: 400, mimeType: "image/webp" })
+	if (avatar) {
+		//const uploadUrl = await client.mutation(api.users.getUploadURL, {});
+		const compressed = await readAndCompressImage(avatar, {
+			quality: 0.9,
+			maxWidth: 400,
+			maxHeight: 400,
+			mimeType: "image/webp",
+		});
 
-        //const result = await fetch(uploadUrl, {
-        //    method: "POST",
-        //    headers: { "Content-Type": "image/webp" },
-        //    body: compressed,
-        //});
+		//const result = await fetch(uploadUrl, {
+		//    method: "POST",
+		//    headers: { "Content-Type": "image/webp" },
+		//    body: compressed,
+		//});
 
-        //const { storageId } = await result.json();
+		//const { storageId } = await result.json();
 
-        //await client.mutation(api.users.setAvatarID, { id: storageId })
-    }
+		//await client.mutation(api.users.setAvatarID, { id: storageId })
+	}
 
-    if (banner) {
-        //const uploadUrl = await client.mutation(api.users.getUploadURL, {});
-        const compressed = await readAndCompressImage(banner, { quality: 0.9, maxWidth: 980, maxHeight: 400, mimeType: "image/webp" })
+	if (banner) {
+		//const uploadUrl = await client.mutation(api.users.getUploadURL, {});
+		const compressed = await readAndCompressImage(banner, {
+			quality: 0.9,
+			maxWidth: 980,
+			maxHeight: 400,
+			mimeType: "image/webp",
+		});
 
-        //const result = await fetch(uploadUrl, {
-        //    method: "POST",
-        //    headers: { "Content-Type": "image/webp" },
-        //    body: compressed,
-        //});
+		//const result = await fetch(uploadUrl, {
+		//    method: "POST",
+		//    headers: { "Content-Type": "image/webp" },
+		//    body: compressed,
+		//});
 
-        //const { storageId } = await result.json();
+		//const { storageId } = await result.json();
 
-        //await client.mutation(api.users.setBannerID, { id: storageId })
-    }
+		//await client.mutation(api.users.setBannerID, { id: storageId })
+	}
 
-    reset(true);
-    addToast("success", "Profile updated", 3000);
+	reset(true);
+	addToast("success", "Profile updated", 3000);
 };
 
 const setCrop = async (
 	e: Event & { currentTarget: EventTarget & HTMLInputElement },
 	type: CropType,
 ) => {
-    const file = e.currentTarget.files![0];
-    if (!["image/jpeg", "image/webp", "image/png"].includes(file.type)) {
-        addToast("error", "Given file is not a image.", 3000);
-        return;
-    }
+	const file = e.currentTarget.files![0];
+	if (!["image/jpeg", "image/webp", "image/png"].includes(file.type)) {
+		addToast("error", "Given file is not a image.", 3000);
+		return;
+	}
 
 	const imageUrl = URL.createObjectURL(file);
 
@@ -128,9 +138,9 @@ const reset = (reset: boolean) => {
 };
 
 const logout = async () => {
-    localStorage.removeItem("token");
+	localStorage.removeItem("token");
 
-    await goto("/login")
+	await goto("/login");
 };
 </script>
 

@@ -3,7 +3,17 @@ import MessageComp from "./Message.svelte";
 import { onMount, tick } from "svelte";
 import { useConvexClient, useQuery } from "convex-svelte";
 
-let { channelId, username, around, lastMessageId }: { channelId: string; username: string; around?: string | undefined, lastMessageId?: string | null } = $props();
+let {
+	channelId,
+	username,
+	around,
+	lastMessageId,
+}: {
+	channelId: string;
+	username: string;
+	around?: string | undefined;
+	lastMessageId?: string | null;
+} = $props();
 
 let container: Element | undefined = $state();
 let loadNewer: Element | undefined = $state();
@@ -12,18 +22,19 @@ let loadOlder: Element | undefined = $state();
 let loadingOlder: boolean = $state(false);
 let loadingNewer: boolean = $state(false);
 
-
 let messages = $state<any[]>([]);
 const client = useConvexClient();
 
-
 onMount(() => {
-	const observer = new IntersectionObserver((entries) => {
-		entries.forEach((v) => {})
-	}, { threshold: 0.2, root: container! })
+	const observer = new IntersectionObserver(
+		(entries) => {
+			entries.forEach((v) => {});
+		},
+		{ threshold: 0.2, root: container! },
+	);
 	observer.observe(loadOlder!);
 	observer.observe(loadNewer!);
-})
+});
 </script>
 
 <ul bind:this={container} class="flex flex-col overflow-y-scroll m-auto h-full w-full rounded-b-xl">

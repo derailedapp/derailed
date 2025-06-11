@@ -14,8 +14,8 @@ const config = {
 		adapter: adapter(),
 
 		alias: {
-			"$convex": "./src/convex"
-		}
+			$convex: "./src/convex",
+		},
 	},
 };
 

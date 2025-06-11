@@ -1,10 +1,10 @@
 <script lang="ts">
-    import AddFriend from "$lib/components/AddFriend.svelte";
+import AddFriend from "$lib/components/AddFriend.svelte";
 
 // @ts-ignore
 import UserPop from "$lib/components/UserPop.svelte";
 import { currentPrivateChannelId, currentActor } from "$lib/state";
-    import { HandWaving } from "phosphor-svelte";
+import { HandWaving } from "phosphor-svelte";
 
 currentPrivateChannelId.set(undefined);
 </script>

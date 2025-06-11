@@ -1,9 +1,13 @@
 <script lang="ts">
-    import Client, { type Actor } from "$lib/api";
-    import moment from "moment-timezone";
-    import { decodeTime } from "ulidx";
+import Client, { type Actor } from "$lib/api";
+import moment from "moment-timezone";
+import { decodeTime } from "ulidx";
 
-    let { user, round = false, padTop = false }: { user: Actor, round?: boolean, padTop?: boolean } = $props();
+let {
+	user,
+	round = false,
+	padTop = false,
+}: { user: Actor; round?: boolean; padTop?: boolean } = $props();
 </script>
 
 <div class="w-[550px] h-auto m-2 glass-wrapper round-corners">

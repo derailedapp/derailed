@@ -1,5 +1,5 @@
 <script>
-    import Header from "$lib/components/branding/Header.svelte";
+import Header from "$lib/components/branding/Header.svelte";
 </script>
 
 <div class="bg-blurple">

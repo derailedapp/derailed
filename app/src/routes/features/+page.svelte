@@ -2,11 +2,31 @@
 import Header from "$lib/components/branding/Header.svelte";
 
 const featureItems = [
-    { header: "Comfort", white: true, content: "We have a sleek, modern, more intuitively designed UI made specifically to get you chatting as much as you'd like" },
-    { header: "Stupid Fast", white: false, content: "Derailed is created with tools that are fast and efficient, never leaving you waiting on spinners" },
-    { header: "Secure", white: true, content: "Our open nature allows security folks to detect vulnerabilities before they even get to you" },
-    { header: "Open and Free", white: false, content: "We are an open platform. You can check Derailed from top to bottom and assure yourself that we don’t steal or use your data maliciously" }
-]
+	{
+		header: "Comfort",
+		white: true,
+		content:
+			"We have a sleek, modern, more intuitively designed UI made specifically to get you chatting as much as you'd like",
+	},
+	{
+		header: "Stupid Fast",
+		white: false,
+		content:
+			"Derailed is created with tools that are fast and efficient, never leaving you waiting on spinners",
+	},
+	{
+		header: "Secure",
+		white: true,
+		content:
+			"Our open nature allows security folks to detect vulnerabilities before they even get to you",
+	},
+	{
+		header: "Open and Free",
+		white: false,
+		content:
+			"We are an open platform. You can check Derailed from top to bottom and assure yourself that we don’t steal or use your data maliciously",
+	},
+];
 </script>
 
 <div class="overflow-y-auto">

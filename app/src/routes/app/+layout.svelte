@@ -12,7 +12,6 @@ $effect(() => {
 		goto("/login");
 	}
 });
-
 </script>
 
 <div class="h-screen w-full overflow-hidden bg-cover bg-[url('/app-bg.jpg')]">

@@ -1,8 +1,7 @@
 <script>
-    import { Dialog } from "bits-ui";
-    import { currentActor } from "$lib/state";
-    import Settings from "./Settings.svelte";
-
+import { Dialog } from "bits-ui";
+import { currentActor } from "$lib/state";
+import Settings from "./Settings.svelte";
 </script>
 <div class="h-[70px] backdrop-blur-3xl bg-me border-sexy-lighter-black">
     <div class="flex flex-row justify-center items-center gap-2 p-3 px-4 w-full h-full">

@@ -4,12 +4,32 @@ import { page } from "$app/state";
 import { List, X } from "phosphor-svelte";
 
 const headerItems = [
-    { href: "/about", name: "About", current: () => page.url.pathname === "/about" },
-    { href: "/features", name: "Features", current: () => page.url.pathname === "/features" },
-    { href: "/news", name: "Newsroom", current: () => page.url.pathname === "/news" },
-    { href: "/terms", name: "Terms", current: () => page.url.pathname === "/terms" },
-    { href: "/privacy", name: "Privacy", current: () => page.url.pathname === "/privacy" },
-]
+	{
+		href: "/about",
+		name: "About",
+		current: () => page.url.pathname === "/about",
+	},
+	{
+		href: "/features",
+		name: "Features",
+		current: () => page.url.pathname === "/features",
+	},
+	{
+		href: "/news",
+		name: "Newsroom",
+		current: () => page.url.pathname === "/news",
+	},
+	{
+		href: "/terms",
+		name: "Terms",
+		current: () => page.url.pathname === "/terms",
+	},
+	{
+		href: "/privacy",
+		name: "Privacy",
+		current: () => page.url.pathname === "/privacy",
+	},
+];
 
 let showMenu = false;
 </script>

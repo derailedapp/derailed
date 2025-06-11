@@ -1,6 +1,11 @@
 <script lang="ts">
-    import { channelMembers as channelMemberStore, channels, currentActor, readStates } from "$lib/state";
-	import Client from "$lib/api";
+import {
+	channelMembers as channelMemberStore,
+	channels,
+	currentActor,
+	readStates,
+} from "$lib/state";
+import Client from "$lib/api";
 
 let {
 	channelId,
@@ -10,9 +15,9 @@ let {
 	selected?: boolean;
 } = $props();
 
-const channel = $derived($channels.find((v) => v.id == channelId))
+const channel = $derived($channels.find((v) => v.id == channelId));
 const channelMembers = $derived($channelMemberStore.get(channelId));
-const readState = $derived($readStates.find((v) => v.channel_id == channelId))
+const readState = $derived($readStates.find((v) => v.channel_id == channelId));
 
 export function getChannelName() {
 	let profile = channelMembers?.find((v) => {

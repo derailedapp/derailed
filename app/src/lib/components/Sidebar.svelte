@@ -1,6 +1,11 @@
 <script lang="ts">
 import { HandWaving } from "phosphor-svelte";
-import { addToast, channels, currentActor, currentPrivateChannelId } from "$lib/state";
+import {
+	addToast,
+	channels,
+	currentActor,
+	currentPrivateChannelId,
+} from "$lib/state";
 import GuildScroll from "./GuildScroll.svelte";
 import User from "$lib/components/User.svelte";
 import Settings from "./Settings.svelte";
@@ -9,10 +14,10 @@ import { Dialog } from "bits-ui";
 let type: "guild" | "dms" = $state("dms");
 
 const changeStatus = async () => {
-    //await client.mutation(api.users.modifyStatus, { status: status });
+	//await client.mutation(api.users.modifyStatus, { status: status });
 
-    addToast("success", "Updated status", 3000);
-}
+	addToast("success", "Updated status", 3000);
+};
 </script>
 <div class="flex flex-col select-none">
     <div class="flex h-full w-full">

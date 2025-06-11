@@ -11,7 +11,7 @@ import {
 import { theme } from "svelte-lexical/dist/themes/default";
 import EmojiPicker from "./EmojiPicker.svelte";
 
-let { channelId, channelName }: { channelId: string; channelName: string; } =
+let { channelId, channelName }: { channelId: string; channelName: string } =
 	$props();
 
 let composer: Composer | undefined = $state();

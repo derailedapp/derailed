@@ -20,12 +20,12 @@ export const currentActor = writable<Actor | undefined>({
 	display_name: "VincentRPS",
 	avatar_id: null,
 	banner_id: null,
-	flags: 0
+	flags: 0,
 });
 export const currentAccount = writable<Account | undefined>({
 	id: "01JXFEWNW27KAS8D0XDE9JAGX5",
 	email: "woosh@woosh.woosh",
-	flags: 0
+	flags: 0,
 });
 export const users = writable<Actor[]>([]);
 

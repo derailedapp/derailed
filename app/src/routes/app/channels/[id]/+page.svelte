@@ -3,16 +3,24 @@ import { page } from "$app/state";
 import { Hash } from "phosphor-svelte";
 import MessageInput from "./MessageInput.svelte";
 import MessageList from "./MessageList.svelte";
-    import { currentPrivateChannelId, channels, channelMembers as channelMemberStore, currentActor, readStates } from "$lib/state";
-    import UserPop from "$lib/components/UserPop.svelte";
+import {
+	currentPrivateChannelId,
+	channels,
+	channelMembers as channelMemberStore,
+	currentActor,
+	readStates,
+} from "$lib/state";
+import UserPop from "$lib/components/UserPop.svelte";
 
 const { id } = page.params;
 
-const channel = $derived($channels.find((v) => v.id == id))
+const channel = $derived($channels.find((v) => v.id == id));
 const channelMembers = $derived($channelMemberStore.get(id));
-const otherUser = $derived(channelMembers?.find((v) => v.id != $currentActor?.id));
+const otherUser = $derived(
+	channelMembers?.find((v) => v.id != $currentActor?.id),
+);
 currentPrivateChannelId.set(id);
-const readState = $derived($readStates.find((v) => v.channel_id == id))
+const readState = $derived($readStates.find((v) => v.channel_id == id));
 
 export function getChannelName() {
 	let profile = channelMembers?.find((v) => {

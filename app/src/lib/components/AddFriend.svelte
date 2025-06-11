@@ -8,10 +8,12 @@ import Client from "$lib/api";
 async function onSubmit(e: SubmitEvent) {
 	e.preventDefault();
 
-	Client.request("POST", `/users/${username}/follow`, undefined).catch((reason) => {
-		console.error(reason);
-		addToast("error", reason, 4000);
-	});
+	Client.request("POST", `/users/${username}/follow`, undefined).catch(
+		(reason) => {
+			console.error(reason);
+			addToast("error", reason, 4000);
+		},
+	);
 }
 </script>
 
