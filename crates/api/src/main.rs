@@ -3,6 +3,7 @@ use std::time::Duration;
 use minio::s3::{self, creds::StaticProvider, http::BaseUrl};
 
 use axum::http::{HeaderValue, Method};
+use ractor::MessagingErr;
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use sqlxmq::JobRegistry;
 use tokio::net::TcpListener;
@@ -44,6 +45,15 @@ pub enum Error {
     #[status(400)]
     #[error("Error while parsing image")]
     ImageErrors(#[from] zune_image::errors::ImageErrors),
+    #[status(404)]
+    #[error("Actor not found")]
+    ActorNotFound,
+    #[status(400)]
+    #[error("Actor is blocked or has blocked you")]
+    ActorBlocked,
+    #[status(400)]
+    #[error("Actor is already followed")]
+    AlreadyFollowed,
 
     // Middleware Errors
     #[status(401)]
@@ -63,6 +73,9 @@ pub enum Error {
     #[status(500)]
     #[error("Internal Service Error")]
     S3Error(#[from] minio::s3::error::Error),
+    #[status(500)]
+    #[error("Internal Service Error")]
+    MessagingError(#[from] MessagingErr<rt_actors::message::Dispatch>),
 }
 
 #[tokio::main]
@@ -100,8 +113,8 @@ async fn main() {
         .allow_headers(Any)
         .allow_origin(origins);
 
-    let mut registry = JobRegistry::new(&[]);
-    let runner = registry.runner(&pool).run().await?;
+    let registry = JobRegistry::new(&[]);
+    registry.runner(&pool).run().await.unwrap();
 
     let state = State {
         pg: pool,

@@ -28,9 +28,9 @@ pub async fn route(
     }
 
     if let Some(username) = model.username {
-        if let Some(_) = sqlx::query!("SELECT id FROM actors WHERE username = $1", &username)
+        if sqlx::query!("SELECT id FROM actors WHERE username = $1", &username)
             .fetch_optional(&state.pg)
-            .await?
+            .await?.is_some()
         {
             return Err(crate::Error::UsernameAlreadyUsed);
         }

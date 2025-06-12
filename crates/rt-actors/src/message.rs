@@ -9,4 +9,10 @@ pub enum Message {
 
 /// Represents a communication between actors and user websockets.
 #[derive(Debug, Clone)]
-pub enum Dispatch {}
+pub enum Dispatch {
+    ChannelCreate(models::channels::Channel),
+    RelationshipUpdate {
+        r#type: i32,
+        target: models::users::UserActor,
+    },
+}
