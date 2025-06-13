@@ -16,6 +16,10 @@ pub struct RegisterData {
     #[validate(min_length = 4)]
     username: String,
     password: String,
+
+    #[validate(minimum = 6)]
+    #[validate(maximum = 6)]
+    code: i32,
 }
 
 #[derive(Serialize)]
@@ -43,6 +47,24 @@ pub async fn route(
 
     if check_exist.is_some() {
         return Err(crate::Error::EmailAlreadyUsed);
+    }
+
+    let email_ttl = state.email_ttl.read().await;
+
+    match email_ttl.get_raw(&model.email) {
+        Some(code) => {
+            if *code != model.code {
+                return Err(crate::Error::InvalidCode)
+            }
+
+            drop(email_ttl);
+
+            let mut email_ttl = state.email_ttl.write().await;
+            email_ttl.remove(&model.email);
+
+            drop(email_ttl);
+        },
+        _ => return Err(crate::Error::InvalidCode)
     }
 
     let mut txn = state.pg.begin().await?;
