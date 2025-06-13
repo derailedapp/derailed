@@ -55,6 +55,17 @@ pub enum Error {
     #[error("Actor is already followed")]
     AlreadyFollowed,
 
+    // Channel Errors
+    #[status(404)]
+    #[error("Channel not found")]
+    ChannelNotFound,
+    #[status(403)]
+    #[error("Account is not a member of this channel")]
+    NoChannelMembership,
+    #[status(400)]
+    #[error("No pagination options given")]
+    NoPaginationOptions,
+
     // Middleware Errors
     #[status(401)]
     #[error("Given token is not valid")]

@@ -11,6 +11,7 @@ pub enum Message {
 #[derive(Debug, Clone)]
 pub enum Dispatch {
     ChannelCreate(models::channels::Channel),
+    MessageCreate(models::messages::Message),
     RelationshipUpdate {
         r#type: i32,
         target: models::users::UserActor,

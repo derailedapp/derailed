@@ -2,6 +2,7 @@ use axum::{
     Extension, Json,
     extract::{Multipart, State},
 };
+use models::users::Account;
 use ulid::Ulid;
 
 use minio::s3::types::S3Api;
@@ -16,7 +17,7 @@ use caesium::parameters::CSParameters;
 
 pub async fn route(
     State(state): State<crate::State>,
-    Extension(account_id): Extension<String>,
+    Extension(account): Extension<Account>,
 
     mut multipart: Multipart,
 ) -> Result<Json<models::users::UserActor>, crate::Error> {
@@ -53,7 +54,7 @@ pub async fn route(
                     .send()
                     .await?;
 
-                let actor = sqlx::query!("SELECT avatar_id FROM actors WHERE id = $1", account_id)
+                let actor = sqlx::query!("SELECT avatar_id FROM actors WHERE id = $1", account.id)
                     .fetch_one(&state.pg)
                     .await?;
 
@@ -68,7 +69,7 @@ pub async fn route(
                 sqlx::query!(
                     "UPDATE actors SET avatar_id = $1 WHERE id = $2;",
                     id,
-                    account_id
+                    account.id
                 )
                 .execute(&state.pg)
                 .await?;
@@ -101,7 +102,7 @@ pub async fn route(
                     .send()
                     .await?;
 
-                let actor = sqlx::query!("SELECT banner_id FROM actors WHERE id = $1", account_id)
+                let actor = sqlx::query!("SELECT banner_id FROM actors WHERE id = $1", account.id)
                     .fetch_one(&state.pg)
                     .await?;
 
@@ -116,7 +117,7 @@ pub async fn route(
                 sqlx::query!(
                     "UPDATE actors SET banner_id = $1 WHERE id = $2;",
                     id,
-                    account_id
+                    account.id
                 )
                 .execute(&state.pg)
                 .await?;
@@ -131,7 +132,7 @@ pub async fn route(
     let actor = sqlx::query_as!(
         models::users::UserActor,
         "SELECT * FROM actors WHERE id = $1",
-        account_id
+        account.id
     )
     .fetch_one(&state.pg)
     .await?;
