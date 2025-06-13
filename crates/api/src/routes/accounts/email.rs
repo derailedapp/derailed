@@ -42,15 +42,22 @@ pub async fn route(
     email_ttl.insert(model.email.clone(), code);
     drop(email_ttl);
 
-    let email = Message::builder()
-        .from(from)
-        .to(to)
-        .subject("Your verification code")
-        .header(ContentType::TEXT_PLAIN)
-        .body(format!("Use this code: {} to verify your account.", code))
-        .unwrap();
+    match state.mailer {
+        Some(mailer) => {
+            let email = Message::builder()
+                .from(from)
+                .to(to)
+                .subject("Your verification code")
+                .header(ContentType::TEXT_PLAIN)
+                .body(format!("Use this code: {} to verify your account.", code))
+                .unwrap();
 
-    state.mailer.send(&email)?;
+            mailer.send(&email)?;
+        },
+        None => {
+            println!("{code}");
+        }
+    }
 
     Ok(
         Response::builder()

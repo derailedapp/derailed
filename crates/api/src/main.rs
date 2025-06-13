@@ -22,7 +22,7 @@ pub struct State {
     pub pg: PgPool,
     pub s3_client: s3::Client,
     pub password_hasher: argon2::Argon2<'static>,
-    pub mailer: SmtpTransport,
+    pub mailer: Option<SmtpTransport>,
 
     pub email_ttl: Arc<RwLock<TtlHashMap<String, i32>>>
 }
@@ -108,17 +108,24 @@ async fn main() {
     let s3_client = s3::Client::new(s3_endpoint, Some(Box::new(creds)), None, None)
         .expect("Failed to connect to S3");
 
-    let email_creds = Credentials::new(
-        std::env::var("SMTP_USERNAME").unwrap(),
-        std::env::var("SMTP_PASSWORD").unwrap()
-    );
+    let mailer = match std::env::var("SMTP_HOST") {
+        Ok(host) => {
+            let email_creds = Credentials::new(
+                std::env::var("SMTP_USERNAME").unwrap(),
+                std::env::var("SMTP_PASSWORD").unwrap()
+            );
 
-    let mailer = SmtpTransport::starttls_relay(
-        &std::env::var("SMTP_HOST").unwrap()
-    )
-    .unwrap()
-    .credentials(email_creds)
-    .build();
+            Some(
+                SmtpTransport::starttls_relay(
+                    &host
+                )
+                .unwrap()
+                .credentials(email_creds)
+                .build()
+            )
+        },
+        Err(_) => None
+    };
 
     let pool = PgPoolOptions::new()
         .max_connections(5)
