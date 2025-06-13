@@ -13,7 +13,7 @@ currentPrivateChannelId.set(undefined);
     <div class="glass-effect"></div>
     <div class="glass-tint"></div>
     <div class="glass-shine"></div>
-    <div class="w-full py-1 flex z-[3]">
+    <div class="w-full py-1 z-[3]">
         <div class="w-full h-[58px] border-b border-white flex items-center gap-3 pl-7">
             <HandWaving color="#fff" weight="fill" height="22" width="22" />
             <div class="text-white">
