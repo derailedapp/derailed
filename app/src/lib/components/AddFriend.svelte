@@ -47,7 +47,7 @@ async function onSubmit(e: SubmitEvent) {
                         <div class="glass-tint"></div>
                         <div class="glass-shine"></div>
                         <div class="flex z-[101] h-full w-full items-center justify-center">
-                            <button type="submit" class="p-1.5 text-white h-full w-full mt-2 font-semibold">
+                            <button type="submit" class="p-1.5 text-white h-full w-full mt-2 font-semibold flex justify-center">
                                 Send Friend Request
                             </button>
                         </div>
