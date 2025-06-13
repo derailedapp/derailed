@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use std::time::Duration;
 
 use minio::s3::{self, creds::StaticProvider, http::BaseUrl};
@@ -6,17 +7,24 @@ use axum::http::{HeaderValue, Method};
 use ractor::MessagingErr;
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use sqlxmq::JobRegistry;
-use tokio::net::TcpListener;
+use tokio::{sync::RwLock, net::TcpListener};
 use tower_http::cors::{Any, CorsLayer};
+
+use lettre::transport::smtp::authentication::Credentials;
+use lettre::SmtpTransport;
+use ttlhashmap::TtlHashMap;
 
 mod routes;
 mod utils;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct State {
     pub pg: PgPool,
     pub s3_client: s3::Client,
     pub password_hasher: argon2::Argon2<'static>,
+    pub mailer: SmtpTransport,
+
+    pub email_ttl: Arc<RwLock<TtlHashMap<String, i32>>>
 }
 
 #[derive(Debug, thiserror::Error, axum_thiserror::ErrorStatus)]
@@ -37,6 +45,9 @@ pub enum Error {
     #[status(422)]
     #[error("Username contains illegal characters")]
     UsernameTestFail,
+    #[status(400)]
+    #[error("Invalid verification code")]
+    InvalidCode,
 
     // Actor Errors
     #[status(400)]
@@ -76,6 +87,9 @@ pub enum Error {
     #[status(500)]
     #[error("Internal Service Error")]
     MessagingError(#[from] MessagingErr<rt_actors::message::Dispatch>),
+    #[status(500)]
+    #[error("Internal Service Error")]
+    SMTPError(#[from] lettre::transport::smtp::Error),
 }
 
 #[tokio::main]
@@ -93,6 +107,18 @@ async fn main() {
 
     let s3_client = s3::Client::new(s3_endpoint, Some(Box::new(creds)), None, None)
         .expect("Failed to connect to S3");
+
+    let email_creds = Credentials::new(
+        std::env::var("SMTP_USERNAME").unwrap(),
+        std::env::var("SMTP_PASSWORD").unwrap()
+    );
+
+    let mailer = SmtpTransport::starttls_relay(
+        &std::env::var("SMTP_HOST").unwrap()
+    )
+    .unwrap()
+    .credentials(email_creds)
+    .build();
 
     let pool = PgPoolOptions::new()
         .max_connections(5)
@@ -120,6 +146,8 @@ async fn main() {
         pg: pool,
         s3_client,
         password_hasher: argon2::Argon2::default(),
+        mailer,
+        email_ttl: Arc::new(RwLock::new(TtlHashMap::<String, i32>::new(Duration::from_secs(3600))))
     };
 
     let app = axum::Router::new()

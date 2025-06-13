@@ -31,3 +31,5 @@ libcaesium.workspace = true
 sqlxmq.workspace = true
 ractor.workspace = true
 rt-actors.workspace = true
+lettre.workspace = true
+ttlhashmap.workspace = true
