@@ -232,9 +232,7 @@ onMount(async () => {
                         </div>
 
                         {#if env.PUBLIC_SITE_KEY}
-                            <div class="">
-                                <Turnstile siteKey={env.PUBLIC_SITE_KEY!} on:callback={turnstileCallback} />
-                            </div>
+                            <Turnstile siteKey={env.PUBLIC_SITE_KEY} on:callback={turnstileCallback} />
                         {/if}
 
                         <button type="submit" disabled={!email || !password} class="w-full bg-blurple p-3 rounded-lg font-semibold disabled:bg-blurple/30">
