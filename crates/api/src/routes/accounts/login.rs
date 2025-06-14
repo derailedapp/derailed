@@ -3,6 +3,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use argon2::{PasswordHash, PasswordVerifier};
 use axum::{Json, extract::State};
 use base64::{Engine, prelude::BASE64_STANDARD};
+use cf_turnstile::SiteVerifyRequest;
 use models::users::Account;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
@@ -14,6 +15,8 @@ pub struct LoginData {
     #[validate(min_length = 5)]
     email: String,
     password: String,
+
+    cf_response: Option<String>
 }
 
 #[derive(Serialize)]
@@ -25,6 +28,22 @@ pub async fn route(
     State(state): State<crate::State>,
     Json(model): Json<LoginData>,
 ) -> Result<Json<TokenData>, crate::Error> {
+    match state.captcha {
+        Some(captcha) => {
+            let response = model.cf_response.ok_or(crate::Error::CaptchaRequired)?;
+
+            let cf = captcha.siteverify(SiteVerifyRequest {
+                response,
+                ..Default::default()
+            }).await?;
+
+            if !cf.success {
+                return Err(crate::Error::CaptchaFailed)
+            }
+        }
+        _ => {}
+    }
+
     let email = model.email.to_lowercase();
     let account = sqlx::query_as!(Account, "SELECT * FROM accounts WHERE email = $1;", email)
         .fetch_optional(&state.pg)

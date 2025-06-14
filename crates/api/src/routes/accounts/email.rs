@@ -1,4 +1,5 @@
 use axum::{extract::State, http::{StatusCode, Response}, Json};
+use cf_turnstile::SiteVerifyRequest;
 use lettre::{message::{header::ContentType, Mailbox}, Message, Transport};
 use rand::random_range;
 use serde::Deserialize;
@@ -8,6 +9,8 @@ use serde_valid::Validate;
 pub struct VerifyData {
     #[validate(min_length = 5)]
     email: String,
+
+    cf_response: Option<String>
 }
 
 pub async fn route(
@@ -16,6 +19,22 @@ pub async fn route(
 ) -> Result<Response<String>, crate::Error> {
     if !email_address::EmailAddress::is_valid(&model.email) {
         return Err(crate::Error::InvalidEmail);
+    }
+
+    match state.captcha {
+        Some(captcha) => {
+            let response = model.cf_response.ok_or(crate::Error::CaptchaRequired)?;
+
+            let cf = captcha.siteverify(SiteVerifyRequest {
+                response,
+                ..Default::default()
+            }).await?;
+
+            if !cf.success {
+                return Err(crate::Error::CaptchaFailed)
+            }
+        }
+        _ => {}
     }
 
     let email = model.email.to_lowercase();

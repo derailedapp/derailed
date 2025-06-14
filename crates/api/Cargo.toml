@@ -35,3 +35,4 @@ futures-util.workspace = true
 serde_json.workspace = true
 lettre.workspace = true
 ttlhashmap.workspace = true
+cf-turnstile.workspace = true

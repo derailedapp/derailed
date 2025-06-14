@@ -13,6 +13,7 @@ use tower_http::cors::{Any, CorsLayer};
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::SmtpTransport;
 use ttlhashmap::TtlHashMap;
+use cf_turnstile::TurnstileClient;
 
 mod routes;
 mod utils;
@@ -24,7 +25,8 @@ pub struct State {
     pub password_hasher: argon2::Argon2<'static>,
     pub mailer: Option<SmtpTransport>,
 
-    pub email_ttl: Arc<RwLock<TtlHashMap<String, i32>>>
+    pub email_ttl: Arc<RwLock<TtlHashMap<String, i32>>>,
+    pub captcha: Option<Arc<TurnstileClient>>
 }
 
 #[derive(Debug, thiserror::Error, axum_thiserror::ErrorStatus)]
@@ -90,6 +92,17 @@ pub enum Error {
     #[error("JSON data is invalid")]
     InvalidJson,
 
+    // CF Error
+    #[status(400)]
+    #[error("Captcha Response Required")]
+    CaptchaRequired,
+    #[status(400)]
+    #[error("Captcha Error")]
+    CaptchaError(#[from] cf_turnstile::error::TurnstileError),
+    #[status(400)]
+    #[error("Captcha Failed")]
+    CaptchaFailed,
+
     // Internal Errors
     #[status(500)]
     #[error("Internal Service Error")]
@@ -143,6 +156,11 @@ async fn main() {
         Err(_) => None
     };
 
+    let captcha = match std::env::var("CF_SECRET") {
+        Ok(secret) => Some(Arc::new(cf_turnstile::TurnstileClient::new(secret.into()))),
+        Err(_) => None
+    };
+
     let pool = PgPoolOptions::new()
         .max_connections(5)
         .acquire_timeout(Duration::from_secs(3))
@@ -170,7 +188,8 @@ async fn main() {
         s3_client,
         password_hasher: argon2::Argon2::default(),
         mailer,
-        email_ttl: Arc::new(RwLock::new(TtlHashMap::<String, i32>::new(Duration::from_secs(3600))))
+        email_ttl: Arc::new(RwLock::new(TtlHashMap::<String, i32>::new(Duration::from_secs(3600)))),
+        captcha
     };
 
     let app = axum::Router::new()

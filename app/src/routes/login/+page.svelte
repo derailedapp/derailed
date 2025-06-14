@@ -1,22 +1,42 @@
 <script lang="ts">
 import { Tabs, Checkbox } from "bits-ui";
 import Pin from "$lib/components/login/Pin.svelte";
+import { Turnstile } from 'svelte-turnstile';
 import Icon from "@iconify/svelte";
 import { fly } from "svelte/transition";
 import { goto } from "$app/navigation";
 import { onMount } from "svelte";
 
 import { env } from "$env/dynamic/public";
+import { addToast } from "$lib/state";
 
 let username: string | undefined = $state();
 let email: string | undefined = $state();
 let password: string | undefined = $state();
+let turnstileResponse: string | undefined = $state();
 let pinValue = $state("");
 let emailSent = $state(false);
 let checked = $state(false);
+let turnstile = $state(false);
 
-async function sendEmail(e: Event) {
-	e.preventDefault();
+const showTurnstile = async (e: Event) => {
+    e.preventDefault();
+
+    if (env.PUBLIC_SITE_KEY) {
+        turnstile = true
+    } else {
+        await sendEmail()
+    }
+}
+
+const turnstileCallback = async (e: CustomEvent<{ token: string; preClearanceObtained: boolean }>) => {
+    const { token, preClearanceObtained } = e.detail;
+
+    turnstileResponse = token;
+    sendEmail();
+}
+
+async function sendEmail() {
 	await fetch(env.PUBLIC_API_URL + "/verify-email", {
 		headers: {
 			"Content-Type": "application/json",
@@ -24,6 +44,7 @@ async function sendEmail(e: Event) {
 		method: "POST",
 		body: JSON.stringify({
 			email,
+            "cf_response": turnstileResponse
 		}),
 	});
 	emailSent = true;
@@ -50,7 +71,7 @@ async function onRegister(e: SubmitEvent) {
 			username,
 			email,
 			password,
-			code: pinValue,
+			code: Number(pinValue),
 		//	session_detail: {
 		//		operating_system: ua.os.name || "Unknown",
 		//		browser: ua.browser.name || "Unknown",
@@ -86,8 +107,7 @@ async function onLogin(e: SubmitEvent) {
 		}),
 	});
 	if (resp.status === 400) {
-		// TODO: replace with more stylistic UI warning
-		alert("Email or password incorrect");
+		addToast("error", "Email or password incorrect", 3000);
 	}
 	const data = await resp.json();
 	localStorage.setItem("token", String(data.token));
@@ -132,25 +152,29 @@ onMount(async () => {
                                 <input required minlength="4" maxlength="32" style="box-shadow: none;" bind:value={username} type="text" class="bg-transparent w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray appearance-none" />
                             </section>
                         </div>
-                        <div class="flex flex-row justify-center items-center w-full">
+                        <div class="flex flex-row justify-center items-center w-full h-[96px]">
                             {#if emailSent}
-                            <div transition:fly={{ x: 500, duration: 350 }}>
-                                <Pin bind:value={pinValue}></Pin>
-                            </div>
+                                <div transition:fly={{ x: -500, duration: 150 }}>
+                                    <Pin bind:value={pinValue}></Pin>
+                                </div>
+                            {:else if turnstile}
+                                <div transition:fly={{ x: -500, duration: 150 }}>
+                                    <Turnstile siteKey={env.PUBLIC_SITE_KEY!} on:callback={turnstileCallback} />
+                                </div>
                             {:else}
-                            <div class="flex items-center w-full" transition:fly={{ x: -500, duration: 50 }}>
-                                <section class="space-y-2 w-full">
-                                    <div class="flex flex-row items-center justify-between">
-                                        <div class="font-bold text-sm text-weep-gray tracking-tight">
-                                            EMAIL
+                                <div class="flex items-center w-full" transition:fly={{ x: -500, duration: 150 }}>
+                                    <section class="space-y-2 w-full">
+                                        <div class="flex flex-row items-center justify-between">
+                                            <div class="font-bold text-sm text-weep-gray tracking-tight">
+                                                EMAIL
+                                            </div>
+                                            <button onclick={showTurnstile} disabled={!email} class="font-bold text-sm text-blurple tracking-tight disabled:text-blurple/30">
+                                                SEND EMAIL
+                                            </button>
                                         </div>
-                                        <button onclick={sendEmail} class="font-bold text-sm text-blurple tracking-tight">
-                                            SEND EMAIL
-                                        </button>
-                                    </div>
-                                    <input required style="box-shadow: none;" bind:value={email} type="email" class="bg-transparent appearance-none w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray" />
-                                </section>
-                            </div>
+                                        <input required style="box-shadow: none;" bind:value={email} type="email" class="bg-transparent appearance-none w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray" />
+                                    </section>
+                                </div>
                             {/if}
                         </div>
                         <div class="flex items-center w-full">
@@ -177,7 +201,7 @@ onMount(async () => {
                                 I agree to Derailed's <a href="/terms" class="inline text-blurple font-semibold">Terms of Service</a> and <a href="/privacy" class="inline font-semibold text-blurple">Privacy Policy</a>.
                             </div>
                         </section>
-                        <button type="submit" class="w-full bg-blurple p-3 rounded-lg font-semibold">
+                        <button type="submit" disabled={!username || !checked || !password || !email || !pinValue} class="w-full bg-blurple p-3 rounded-lg font-semibold disabled:bg-blurple/30">
                             Create an account
                         </button>
                     </form>
@@ -206,7 +230,14 @@ onMount(async () => {
                                 <input required style="box-shadow: none;" bind:value={password} type="password" class="bg-transparent appearance-none w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray" />
                             </section>
                         </div>
-                        <button type="submit" class="w-full bg-blurple p-3 rounded-lg font-semibold">
+
+                        {#if env.PUBLIC_SITE_KEY}
+                            <div class="">
+                                <Turnstile siteKey={env.PUBLIC_SITE_KEY!} on:callback={turnstileCallback} />
+                            </div>
+                        {/if}
+
+                        <button type="submit" disabled={!email || !password} class="w-full bg-blurple p-3 rounded-lg font-semibold disabled:bg-blurple/30">
                             Login
                         </button>
                     </form>
