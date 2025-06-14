@@ -28,6 +28,7 @@
         "remark-rehype": "^11.1.2",
         "svelte-easy-crop": "^4.0.1",
         "svelte-lexical": "^0.6.0",
+        "tailwindcss-neumorphism-ui": "^1.0.4",
         "ulidx": "^2.4.1",
         "unified": "^11.0.5",
       },
@@ -758,6 +759,8 @@
     "tailwindcss": ["tailwindcss@4.1.7", "", {}, "sha512-kr1o/ErIdNhTz8uzAYL7TpaUuzKIE6QPQ4qmSdxnoX/lo+5wmUHQA6h3L5yIqEImSRnAAURDirLu/BgiXGPAhg=="],
 
     "tailwindcss-animate": ["tailwindcss-animate@1.0.7", "", { "peerDependencies": { "tailwindcss": ">=3.0.0 || insiders" } }, "sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA=="],
+
+    "tailwindcss-neumorphism-ui": ["tailwindcss-neumorphism-ui@1.0.4", "", { "peerDependencies": { "tailwindcss": ">=3.0.0 || >=4.0.0" } }, "sha512-ZyXq4rt2abMe8Skb62vuq5fzq4g8kBU83R+XdJqle138rRKnGDFqkYguGnCrRFV144YJnXQEBvrHalYn2pNCPg=="],
 
     "tapable": ["tapable@2.2.2", "", {}, "sha512-Re10+NauLTMCudc7T5WLFLAwDhQ0JWdrMK+9B2M8zR5hRExKmsRDCBA7/aV/pNJFltmBFO5BAMlQFi/vq3nKOg=="],
 
