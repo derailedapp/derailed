@@ -1,19 +1,18 @@
 <script lang="ts">
+import "@fontsource/inter/100";
+import "@fontsource/inter/200";
+import "@fontsource/inter/300";
+import "@fontsource/inter/400";
+import "@fontsource/inter/500";
+import "@fontsource/inter/600";
+import "@fontsource/inter/700";
+import "@fontsource/inter/800";
+import "@fontsource/inter/900";
 import "../app.css";
 
 import ToastManager from "$lib/components/ToastManager.svelte";
 
-import { setupConvexAuth } from "@mmailaender/convex-auth-svelte/sveltekit";
-import { PUBLIC_CONVEX_URL } from "$env/static/public";
-
-// Import data from +layout.server.ts
-let { children, data } = $props();
-
-// Set up authentication (automatically initializes Convex client)
-setupConvexAuth({
-	getServerState: () => data.authState,
-	convexUrl: PUBLIC_CONVEX_URL,
-});
+let { children } = $props();
 </script>
 
 <ToastManager />

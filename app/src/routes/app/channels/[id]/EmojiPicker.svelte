@@ -2,7 +2,6 @@
 import { DropdownMenu } from "bits-ui";
 import {
 	Bicycle,
-	Person,
 	BowlFood,
 	FlagBannerFold,
 	Heart,
@@ -12,7 +11,6 @@ import {
 	Smiley,
 } from "phosphor-svelte";
 import emojis from "./emojis-by-group.json";
-import emojiData from "./data-by-emoji.json";
 import { $getSelection as getSelection } from "svelte-lexical";
 import type { Composer } from "svelte-lexical";
 import { $isRangeSelection as isRangeSelection } from "lexical";

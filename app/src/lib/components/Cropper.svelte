@@ -53,17 +53,21 @@ const getCroppedImage = (): Promise<File | null> => {
 				croppedPixels.height,
 			);
 
-			canvas.toBlob((blob) => {
-				if (!blob) {
-					return resolve(null);
-				}
+			canvas.toBlob(
+				(blob) => {
+					if (!blob) {
+						return resolve(null);
+					}
 
-				resolve(
-					new File([blob], "cropped.jpeg", {
-						type: "image/jpeg",
-					}),
-				);
-			}, "image/jpeg", 0.90);
+					resolve(
+						new File([blob], "cropped.jpeg", {
+							type: "image/jpeg",
+						}),
+					);
+				},
+				"image/jpeg",
+				0.9,
+			);
 		};
 	});
 };
