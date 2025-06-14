@@ -74,6 +74,11 @@ pub enum Error {
     #[error("This endpoint requires authentication")]
     RequiresAuth,
 
+    // RT Errors
+    #[status(4000)]
+    #[error("JSON data is invalid")]
+    InvalidJson,
+
     // Internal Errors
     #[status(500)]
     #[error("Internal Service Error")]

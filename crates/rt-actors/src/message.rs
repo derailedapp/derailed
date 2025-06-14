@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 /// Represents a communication between actors
 pub enum Message {
     Publish(Dispatch),
@@ -8,7 +10,8 @@ pub enum Message {
 }
 
 /// Represents a communication between actors and user websockets.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
+#[serde(tag = "t", content = "d")]
 pub enum Dispatch {
     ChannelCreate(models::channels::Channel),
     MessageCreate(models::messages::Message),
@@ -16,4 +19,5 @@ pub enum Dispatch {
         r#type: i32,
         target: models::users::UserActor,
     },
+    WSClose,
 }

@@ -36,6 +36,8 @@ impl Actor for Session {
     ) -> Result<Self::State, ActorProcessingErr> {
         // subscribe to the necessary process groups
 
+        pg::monitor(args.session_id.clone(), myself.get_cell());
+
         // the current users groups
         pg::monitor(args.user_id.clone(), myself.get_cell());
         pg::monitor(args.user_id.clone() + "-updates", myself.get_cell());
