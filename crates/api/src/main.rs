@@ -48,7 +48,7 @@ pub enum Error {
     #[error("Username contains illegal characters")]
     UsernameTestFail,
     #[status(400)]
-    #[error("Invalid verification code")]
+    #[error("Invalid code")]
     InvalidCode,
 
     // Actor Errors
@@ -88,7 +88,7 @@ pub enum Error {
     RequiresAuth,
 
     // RT Errors
-    #[status(4000)]
+    #[status(400)]
     #[error("JSON data is invalid")]
     InvalidJson,
 
