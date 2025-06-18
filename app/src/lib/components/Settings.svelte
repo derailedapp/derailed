@@ -1,33 +1,23 @@
 <script lang="ts">
 import { Dialog, Tabs } from "bits-ui";
 
-import { NotePencil, SignOut, Gear, Spinner } from "phosphor-svelte";
-import { readAndCompressImage } from 'browser-image-resizer';
+import { NotePencil, SignOut, Gear, Spinner, X } from "phosphor-svelte";
+import { readAndCompressImage } from "browser-image-resizer";
 
 import { addToast } from "$lib/state";
 
 import { CropType } from "$lib/state";
 import Cropper from "./Cropper.svelte";
 import { goto } from "$app/navigation";
-import { useConvexClient, useQuery } from "convex-svelte";
-import { api } from "$convex/_generated/api";
-import { useAuth } from "@mmailaender/convex-auth-svelte/svelte";
-
-const client = useConvexClient();
-const { signOut } = useAuth();
-
+import { currentActor, currentAccount } from "$lib/state";
+import Client from "$lib/api";
 
 let banner: File | undefined = $state();
 let avatar: File | undefined = $state();
 
-const currentUserQuery = useQuery(api.users.getCurrentProfile, {});
-const currentUser = $derived(currentUserQuery.data);
-const emailQuery = useQuery(api.users.getEmail, {});
-const currentEmail = $derived(emailQuery.data);
-
-let newUsername: string = $derived(currentUser!.username);
-let newDisplayName: string = $derived(currentUser!.displayName || "");
-let newEmail: string = $derived(currentEmail!);
+let newUsername: string = $derived($currentActor!.username);
+let newDisplayName: string = $derived($currentActor!.display_name || "");
+let newEmail: string = $derived($currentAccount!.email);
 
 let currentPassword: string | undefined = $state();
 
@@ -36,21 +26,21 @@ let avatarInput: HTMLInputElement | undefined = $state();
 
 let crop: { type: CropType; image: string } | null = $state(null);
 
-const getBanner = () => {
+const getBanner = (currentBannerId: string | null) => {
 	if (banner) {
 		return URL.createObjectURL(banner);
-	} else if (currentUser?.bannerId) {
-		return currentUser.bannerUrl;
+	} else if (currentBannerId) {
+		return Client.getCDNUrl("banners", currentBannerId);
 	}
 
 	return null;
 };
 
-const getAvatar = () => {
+const getAvatar = (currentAvatarId: string | null) => {
 	if (avatar) {
 		return URL.createObjectURL(avatar);
-	} else if (currentUser?.avatarId) {
-		return currentUser.avatarUrl;
+	} else if (currentAvatarId) {
+		return Client.getCDNUrl("avatars", currentAvatarId);
 	}
 
 	return "/default_pfp.webp";
@@ -59,54 +49,64 @@ const getAvatar = () => {
 const onSubmit = async (e: Event) => {
 	e.preventDefault();
 
-    client.mutation(api.users.modifyProfile, {
-        username: newUsername !== currentUser!.username ? newUsername : undefined,
-        displayName: newDisplayName !== (currentUser!.displayName || "") ? newDisplayName : undefined,
-    })
+	//client.mutation(api.users.modifyProfile, {
+	//    username: newUsername !== currentUser!.username ? newUsername : undefined,
+	//    displayName: newDisplayName !== (currentUser!.displayName || "") ? newDisplayName : undefined,
+	//})
 
-    if (avatar) {
-        const uploadUrl = await client.mutation(api.users.getUploadURL, {});
-        const compressed = await readAndCompressImage(avatar, { quality: 0.9, maxWidth: 400, maxHeight: 400, mimeType: "image/webp" })
+	if (avatar) {
+		//const uploadUrl = await client.mutation(api.users.getUploadURL, {});
+		const compressed = await readAndCompressImage(avatar, {
+			quality: 0.9,
+			maxWidth: 400,
+			maxHeight: 400,
+			mimeType: "image/webp",
+		});
 
-        const result = await fetch(uploadUrl, {
-            method: "POST",
-            headers: { "Content-Type": "image/webp" },
-            body: compressed,
-        });
+		//const result = await fetch(uploadUrl, {
+		//    method: "POST",
+		//    headers: { "Content-Type": "image/webp" },
+		//    body: compressed,
+		//});
 
-        const { storageId } = await result.json();
+		//const { storageId } = await result.json();
 
-        await client.mutation(api.users.setAvatarID, { id: storageId })
-    }
+		//await client.mutation(api.users.setAvatarID, { id: storageId })
+	}
 
-    if (banner) {
-        const uploadUrl = await client.mutation(api.users.getUploadURL, {});
-        const compressed = await readAndCompressImage(banner, { quality: 0.9, maxWidth: 980, maxHeight: 400, mimeType: "image/webp" })
+	if (banner) {
+		//const uploadUrl = await client.mutation(api.users.getUploadURL, {});
+		const compressed = await readAndCompressImage(banner, {
+			quality: 0.9,
+			maxWidth: 980,
+			maxHeight: 400,
+			mimeType: "image/webp",
+		});
 
-        const result = await fetch(uploadUrl, {
-            method: "POST",
-            headers: { "Content-Type": "image/webp" },
-            body: compressed,
-        });
+		//const result = await fetch(uploadUrl, {
+		//    method: "POST",
+		//    headers: { "Content-Type": "image/webp" },
+		//    body: compressed,
+		//});
 
-        const { storageId } = await result.json();
+		//const { storageId } = await result.json();
 
-        await client.mutation(api.users.setBannerID, { id: storageId })
-    }
+		//await client.mutation(api.users.setBannerID, { id: storageId })
+	}
 
-    reset(true);
-    addToast("success", "Profile updated", 3000);
+	reset(true);
+	addToast("success", "Profile updated", 3000);
 };
 
 const setCrop = async (
 	e: Event & { currentTarget: EventTarget & HTMLInputElement },
 	type: CropType,
 ) => {
-    const file = e.currentTarget.files![0];
-    if (!["image/jpeg", "image/webp", "image/png"].includes(file.type)) {
-        addToast("error", "Given file is not a image.", 3000);
-        return;
-    }
+	const file = e.currentTarget.files![0];
+	if (!["image/jpeg", "image/webp", "image/png"].includes(file.type)) {
+		addToast("error", "Given file is not a image.", 3000);
+		return;
+	}
 
 	const imageUrl = URL.createObjectURL(file);
 
@@ -131,16 +131,16 @@ const reset = (reset: boolean) => {
 		banner = undefined;
 		avatar = undefined;
 
-		newUsername = currentUser!.username;
-		newDisplayName = currentUser!.displayName || "";
-		newEmail = emailQuery!.data!;
+		newUsername = $currentActor!.username;
+		newDisplayName = $currentActor!.display_name || "";
+		newEmail = $currentAccount!.email!;
 	}
 };
 
 const logout = async () => {
-    await signOut();
+	localStorage.removeItem("token");
 
-    await goto("/login")
+	await goto("/login");
 };
 </script>
 
@@ -189,12 +189,15 @@ const logout = async () => {
                                         DISPLAY NAME
                                     </div>
 
-                                    <input 
-                                        style="box-shadow: none;" 
-                                        placeholder="No Display Name"
-                                        bind:value={newDisplayName} 
-                                        class="bg-transparent appearance-none w-full border-0 border-b border-b-sexy-red-gray" 
-                                    />
+                                    
+                                    <div class="flex flex-row justify-center items-center gap-3">
+                                        <input 
+                                            style="box-shadow: none;" 
+                                            placeholder="No Display Name"
+                                            bind:value={newDisplayName} 
+                                            class="bg-transparent appearance-none w-full border-0 border-b border-b-sexy-red-gray" 
+                                        />
+                                    </div>
                                 </section>
 
                                 <section>
@@ -235,7 +238,7 @@ const logout = async () => {
                                     PROFILE PICTURE
                                 </div>
                                 <button type="button" class="relative group" onclick={() => avatarInput?.click()}>
-                                    <img src={getAvatar()} class="size-[12rem] rounded-full opacity-100 group-hover:opacity-70 mx-auto transition-all duration-200" alt="me">
+                                    <img src={getAvatar($currentActor!.avatar_id)} class="size-[12rem] rounded-full opacity-100 group-hover:opacity-70 mx-auto transition-all duration-200" alt="me">
 
                                     <span class="opacity-0 group-hover:opacity-200
                                         absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 duration-200">
@@ -247,11 +250,11 @@ const logout = async () => {
                                     BANNER
                                 </div>
                                 <button type="button" class="relative group" onclick={() => bannerInput?.click()}>
-                                    {#await getBanner() then url}
+                                    {#await getBanner($currentActor!.banner_id) then url}
                                         {#if url == null}
                                             <div class="w-[350px] h-[130px] bg-guild-aside"></div>
                                         {:else}
-                                            <img src={getBanner()} class="w-[350px] h-[130px] opacity-100 group-hover:opacity-70 mx-auto transition-all duration-200 object-cover bg-center" alt="me">
+                                            <img src={getBanner($currentActor!.banner_id)} class="w-[350px] h-[130px] opacity-100 group-hover:opacity-70 mx-auto transition-all duration-200 object-cover bg-center" alt="me">
                                         {/if}
 
                                     {/await}
@@ -265,7 +268,7 @@ const logout = async () => {
                         </div>
 
                         <div class="h-[10%] w-full bg-sexy-red-black rounded-br-lg flex items-center justify-end">
-                            {#if newEmail != emailQuery?.data}
+                            {#if newEmail != $currentAccount?.email}
                                 <div class="mr-auto ml-8 w-1/2">
                                     <input
                                         required
