@@ -1,0 +1,38 @@
+[package]
+name = "api"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+
+axum.workspace = true
+tokio.workspace = true
+dotenvy.workspace = true
+axum_thiserror.workspace = true
+argon2.workspace = true
+regex.workspace = true
+serde_valid.workspace = true
+sqlx.workspace = true
+thiserror.workspace = true
+serde.workspace = true
+models.workspace = true
+email_address.workspace = true
+minio.workspace = true
+tower-http.workspace = true
+ulid.workspace = true
+sha2.workspace = true
+hex.workspace = true
+rand.workspace = true
+base64.workspace = true
+zune-image.workspace = true
+zune-core.workspace = true
+zune-imageprocs.workspace = true
+libcaesium.workspace = true
+sqlxmq.workspace = true
+ractor.workspace = true
+rt-actors.workspace = true
+futures-util.workspace = true
+serde_json.workspace = true
+lettre.workspace = true
+ttlhashmap.workspace = true
+cf-turnstile.workspace = true

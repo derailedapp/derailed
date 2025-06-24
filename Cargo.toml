@@ -1,0 +1,40 @@
+[workspace]
+
+resolver = "2"
+members = ["crates/*"]
+
+[workspace.dependencies]
+
+ractor = { version = "0.15", features = ["async-trait"] }
+tokio = { version = "1", features = ["full"] }
+axum = { version = "0.8", features = ["macros", "multipart", "ws"] }
+axum_thiserror = "0.1.0"
+argon2 = "0.5"
+regex = "1.11"
+serde_valid = "0.25"
+sqlx = { version = "0.8", features = ["runtime-tokio", "tls-native-tls", "postgres", "macros", "chrono"] }
+thiserror = "2"
+serde = { version = "1", features = ["derive"] }
+dotenvy = "0.15"
+queues = "1.1"
+email_address = "0.2"
+minio = "0.3.0"
+tower-http = {version = "0.6.2", features = ["cors"]}
+ulid = "1.2.1"
+hex = "0.4"
+rand = "0.9"
+base64 = "0.22"
+sha2 = "0.10"
+zune-image = { version = "0.4.15", features = ["image_formats"] }
+zune-core = "0.4.12"
+zune-imageprocs = "0.4.15"
+libcaesium = "0.17.4"
+sqlxmq = "0.6.0"
+futures-util = "*"
+serde_json = "1"
+lettre = "0.11"
+ttlhashmap = "0.1"
+cf-turnstile = "0.2"
+
+models = { path = "./crates/models" }
+rt-actors = { path = "./crates/rt-actors" }

@@ -1,0 +1,1 @@
+ALTER TABLE channels ADD last_message_id TEXT;

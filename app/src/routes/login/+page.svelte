@@ -1,17 +1,54 @@
 <script lang="ts">
 import { Tabs, Checkbox } from "bits-ui";
+import Pin from "$lib/components/login/Pin.svelte";
+import { Turnstile } from 'svelte-turnstile';
 import Icon from "@iconify/svelte";
 import { fly } from "svelte/transition";
 import { goto } from "$app/navigation";
 import { onMount } from "svelte";
-import { useAuth } from "@mmailaender/convex-auth-svelte/svelte";
+
+import { env } from "$env/dynamic/public";
+import { addToast } from "$lib/state";
 
 let username: string | undefined = $state();
 let email: string | undefined = $state();
 let password: string | undefined = $state();
+let turnstileResponse: string | undefined = $state();
+let pinValue = $state("");
+let emailSent = $state(false);
 let checked = $state(false);
+let turnstile = $state(false);
 
-const { signIn, isAuthenticated, isLoading } = useAuth();
+const showTurnstile = async (e: Event) => {
+    e.preventDefault();
+
+    if (env.PUBLIC_SITE_KEY) {
+        turnstile = true
+    } else {
+        await sendEmail()
+    }
+}
+
+const turnstileCallback = async (e: CustomEvent<{ token: string; preClearanceObtained: boolean }>) => {
+    const { token, preClearanceObtained } = e.detail;
+
+    turnstileResponse = token;
+    sendEmail();
+}
+
+async function sendEmail() {
+	await fetch(env.PUBLIC_API_URL + "/verify-email", {
+		headers: {
+			"Content-Type": "application/json",
+		},
+		method: "POST",
+		body: JSON.stringify({
+			email,
+            "cf_response": turnstileResponse
+		}),
+	});
+	emailSent = true;
+}
 
 async function onRegister(e: SubmitEvent) {
 	e.preventDefault();
@@ -21,30 +58,66 @@ async function onRegister(e: SubmitEvent) {
 		return;
 	}
 
-	await signIn("password", {
-		email: email,
-		password: password,
-		flow: "signUp",
-	});
+	let location: string = "Unknown";
 
+	// let ua = UAParser(window.navigator.userAgent);
+
+	const resp = await fetch(env.PUBLIC_API_URL + "/register", {
+		headers: {
+			"Content-Type": "application/json",
+		},
+		method: "POST",
+		body: JSON.stringify({
+			username,
+			email,
+			password,
+			code: Number(pinValue),
+		//	session_detail: {
+		//		operating_system: ua.os.name || "Unknown",
+		//		browser: ua.browser.name || "Unknown",
+		//		location: location,
+		//	},
+		}),
+	});
+	const data = await resp.json();
+	localStorage.setItem("token", String(data.token));
 	goto("/app");
 }
 
 async function onLogin(e: SubmitEvent) {
 	e.preventDefault();
 
-	await signIn("password", {
-		email: email,
-		password: password,
-		flow: "signIn",
-	});
+	let location: string = "Unknown";
 
+	// let ua = UAParser(window.navigator.userAgent);
+
+	const resp = await fetch(env.PUBLIC_API_URL + "/login", {
+		headers: {
+			"Content-Type": "application/json",
+		},
+		method: "POST",
+		body: JSON.stringify({
+			email,
+			password,
+		//	session_detail: {
+		//		operating_system: ua.os.name || "Unknown",
+		//		browser: ua.browser.name || "Unknown",
+		//		location: location,
+		//	},
+		}),
+	});
+	if (resp.status === 400) {
+		addToast("error", "Email or password incorrect", 3000);
+	}
+	const data = await resp.json();
+	localStorage.setItem("token", String(data.token));
 	goto("/app");
 }
 
-$effect(() => {
-	if (isAuthenticated && !isLoading) {
-		goto("/app");
+onMount(async () => {
+	const token = localStorage.getItem("token");
+	if (token !== null) {
+		await goto("/app");
 	}
 });
 </script>
@@ -64,20 +137,45 @@ $effect(() => {
                 <Tabs.Content value="register" class="w-full h-full">
                     <form onsubmit={onRegister} class="w-full h-full flex flex-col items-center justify-center gap-6 bg-sexy-red-black/80 backdrop-blur-3xl p-6 rounded-2xl">
                         <div class="flex items-center gap-2">
-                            <img src="/twemoji/1f44b.svg" width="24" height="24" alt="wave" />
+                            <img src="/twemoji/1f44b.svg" width="24" height="24" alt="wave"/>
                             <div class="font-bold text-2xl">
                                 Welcome To Derailed!
                             </div>
                         </div>
-                        <div class="flex flex-row justify-center items-center w-full">
-                            <div class="flex items-center w-full" transition:fly={{ x: -500, duration: 50 }}>
-                                <section class="space-y-2 w-full">
+                        <div class="flex items-center w-full">
+                            <section class="space-y-2 w-full">
+                                <div>
                                     <div class="font-bold text-sm text-weep-gray tracking-tight">
-                                        EMAIL
+                                        USERNAME
                                     </div>
-                                    <input required style="box-shadow: none;" bind:value={email} type="email" class="bg-transparent appearance-none w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray" />
-                                </section>
-                            </div>
+                                </div>
+                                <input required minlength="4" maxlength="32" style="box-shadow: none;" bind:value={username} type="text" class="bg-transparent w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray appearance-none" />
+                            </section>
+                        </div>
+                        <div class="flex flex-row justify-center items-center w-full h-[96px]">
+                            {#if emailSent}
+                                <div transition:fly={{ x: -500, duration: 150 }}>
+                                    <Pin bind:value={pinValue}></Pin>
+                                </div>
+                            {:else if turnstile}
+                                <div transition:fly={{ x: -500, duration: 150 }}>
+                                    <Turnstile siteKey={env.PUBLIC_SITE_KEY!} on:callback={turnstileCallback} />
+                                </div>
+                            {:else}
+                                <div class="flex items-center w-full" transition:fly={{ x: -500, duration: 150 }}>
+                                    <section class="space-y-2 w-full">
+                                        <div class="flex flex-row items-center justify-between">
+                                            <div class="font-bold text-sm text-weep-gray tracking-tight">
+                                                EMAIL
+                                            </div>
+                                            <button onclick={showTurnstile} disabled={!email} class="font-bold text-sm text-blurple tracking-tight disabled:text-blurple/30">
+                                                SEND EMAIL
+                                            </button>
+                                        </div>
+                                        <input required style="box-shadow: none;" bind:value={email} type="email" class="bg-transparent appearance-none w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray" />
+                                    </section>
+                                </div>
+                            {/if}
                         </div>
                         <div class="flex items-center w-full">
                             <section class="space-y-2 w-full">
@@ -103,7 +201,7 @@ $effect(() => {
                                 I agree to Derailed's <a href="/terms" class="inline text-blurple font-semibold">Terms of Service</a> and <a href="/privacy" class="inline font-semibold text-blurple">Privacy Policy</a>.
                             </div>
                         </section>
-                        <button type="submit" class="w-full bg-blurple p-3 rounded-lg font-semibold">
+                        <button type="submit" disabled={!username || !checked || !password || !email || !pinValue} class="w-full bg-blurple p-3 rounded-lg font-semibold disabled:bg-blurple/30">
                             Create an account
                         </button>
                     </form>
@@ -111,7 +209,7 @@ $effect(() => {
                 <Tabs.Content value="login" class="w-full h-full">
                     <form onsubmit={onLogin} class="w-full h-full flex flex-col items-center justify-center gap-6 bg-sexy-red-black/80 backdrop-blur-3xl p-6 rounded-2xl">
                         <div class="flex items-center gap-2">
-                            <img src="/twemoji/1f44b.svg" width="24" height="24" alt="Wave" />
+                            <img src="/twemoji/1f44b.svg" width="24" height="24" alt="wave" />
                             <div class="font-bold text-2xl">
                                 Welcome Back!
                             </div>
@@ -132,7 +230,12 @@ $effect(() => {
                                 <input required style="box-shadow: none;" bind:value={password} type="password" class="bg-transparent appearance-none w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray" />
                             </section>
                         </div>
-                        <button type="submit" class="w-full bg-blurple p-3 rounded-lg font-semibold">
+
+                        {#if env.PUBLIC_SITE_KEY}
+                            <Turnstile siteKey={env.PUBLIC_SITE_KEY} on:callback={turnstileCallback} />
+                        {/if}
+
+                        <button type="submit" disabled={!email || !password} class="w-full bg-blurple p-3 rounded-lg font-semibold disabled:bg-blurple/30">
                             Login
                         </button>
                     </form>

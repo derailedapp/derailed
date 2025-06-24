@@ -4,30 +4,52 @@ import { page } from "$app/state";
 import { List, X } from "phosphor-svelte";
 
 const headerItems = [
-    { href: "/about", name: "About", current: () => page.url.pathname === "/about" },
-    { href: "/features", name: "Features", current: () => page.url.pathname === "/features" },
-    { href: "/news", name: "Newsroom", current: () => page.url.pathname === "/news" },
-    { href: "/terms", name: "Terms", current: () => page.url.pathname === "/terms" },
-    { href: "/privacy", name: "Privacy", current: () => page.url.pathname === "/privacy" },
-]
+	{
+		href: "/about",
+		name: "About",
+		current: () => page.url.pathname === "/about",
+	},
+	{
+		href: "/features",
+		name: "Features",
+		current: () => page.url.pathname === "/features",
+	},
+	{
+		href: "/news",
+		name: "Newsroom",
+		current: () => page.url.pathname === "/news",
+	},
+	{
+		href: "/terms",
+		name: "Terms",
+		current: () => page.url.pathname === "/terms",
+	},
+	{
+		href: "/privacy",
+		name: "Privacy",
+		current: () => page.url.pathname === "/privacy",
+	},
+];
 
 let showMenu = false;
 </script>
 
-<div class="hidden md:fixed md:flex flex-row justify-center items-center h-24 w-full">
-    <div class="flex flex-row justify-center items-center gap-18 p-8">
-        <a href="/" class="w-full">
-            <img src="/derailed-text.svg" class="w-48" alt="logo">
-        </a>
+<div class="hidden md:fixed md:flex flex-row text-sm justify-center bg-blurple items-center h-24 w-full">
+    <div class="flex flex-row justify-between items-center w-full gap-18 p-8 font-light">
+        <div class="flex flex-row gap-3 items-center">
+            <a href="/" class="w-full">
+                <img src="/derailed-text.svg" class="w-44" alt="logo">
+            </a>
 
-        <div class="flex flex-row justify-center items-center gap-2">
-            {#each headerItems as item}
-                <a href={item.href} class:current={item.current}
-                class="hover:bg-black/30 duration-200 px-3 py-0.5 rounded-full">{item.name}</a>
-            {/each}
+            <div class="flex flex-row justify-center items-center gap-1">
+                {#each headerItems as item}
+                    <a href={item.href} class:current={item.current}
+                    class="hover:text-white duration-200 px-2 py-0.5 text-white/70">{item.name}</a>
+                {/each}
+            </div>
         </div>
 
-        <a href="/app" class="py-2 px-8 hover:bg-white hover:text-black border-2 border-white transition-all duration-150 rounded-full">
+        <a href="/login" class="py-1 px-4 hover:bg-primary border hover:border-primary border-white transition-all duration-150 rounded-full">
             Login
         </a>
     </div>
