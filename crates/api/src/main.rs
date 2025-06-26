@@ -26,7 +26,8 @@ pub struct State {
     pub mailer: Option<SmtpTransport>,
 
     pub email_ttl: Arc<RwLock<TtlHashMap<String, i32>>>,
-    pub captcha: Option<Arc<TurnstileClient>>
+    pub captcha: Option<Arc<TurnstileClient>>,
+    pub alpha_code: String
 }
 
 #[derive(Debug, thiserror::Error, axum_thiserror::ErrorStatus)]
@@ -161,6 +162,8 @@ async fn main() {
         Err(_) => None
     };
 
+    let alpha_code = std::env::var("ALPHA_CODE").unwrap();
+
     let pool = PgPoolOptions::new()
         .max_connections(5)
         .acquire_timeout(Duration::from_secs(3))
@@ -189,7 +192,8 @@ async fn main() {
         password_hasher: argon2::Argon2::default(),
         mailer,
         email_ttl: Arc::new(RwLock::new(TtlHashMap::<String, i32>::new(Duration::from_secs(3600)))),
-        captcha
+        captcha,
+        alpha_code
     };
 
     let app = axum::Router::new()
