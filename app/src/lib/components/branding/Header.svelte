@@ -5,11 +5,6 @@ import { List, X } from "phosphor-svelte";
 
 const headerItems = [
 	{
-		href: "/about",
-		name: "About",
-		current: () => page.url.pathname === "/about",
-	},
-	{
 		href: "/features",
 		name: "Features",
 		current: () => page.url.pathname === "/features",
@@ -35,10 +30,10 @@ let showMenu = false;
 </script>
 
 <div class="hidden md:fixed md:flex flex-row text-sm justify-center bg-blurple items-center h-24 w-full">
-    <div class="flex flex-row justify-between items-center w-full gap-18 p-8 font-light">
+    <div class="flex flex-row justify-between items-center w-full gap-18 p-8 px-10 font-light">
         <div class="flex flex-row gap-3 items-center">
             <a href="/" class="w-full">
-                <img src="/derailed-text.svg" class="w-44" alt="logo">
+                <img src="/derailed-icon-white.svg" class="h-8" alt="logo">
             </a>
 
             <div class="flex flex-row justify-center items-center gap-1">

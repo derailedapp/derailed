@@ -3,13 +3,17 @@ import { Dialog } from "bits-ui";
 import { currentActor } from "$lib/state";
 import Settings from "./Settings.svelte";
 </script>
-<div class="h-[70px] backdrop-blur-3xl bg-me border-sexy-lighter-black">
-    <div class="flex flex-row justify-center items-center gap-2 p-3 px-4 w-full h-full">
+<div class="m-1 backdrop-blur-3xl bg-dark-bg border rounded-2xl border-tertiary-bg">
+    <div class="flex flex-row justify-center items-center gap-2 w-full h-full">
         <Dialog.Root>
             <Dialog.Trigger>
-                <button class="hover:bg-primary flex flex-row items-center gap-2 rounded-md rounded-l-4xl w-[190px]">
+                <button class="hover:bg-light-bg p-2 px-4 flex flex-row items-center gap-2 rounded-l-2xl w-[190px]">
                     {#if ($currentActor !== null)}
-                        <img src={$currentActor?.avatar_id} class="rounded-full h-10" alt="me">
+                        {#if $currentActor?.avatar_id === null}
+                            <div class="bg-blurple w-10 h-10 rounded-full"></div>
+                        {:else}
+                            <img src={$currentActor?.avatar_id} class="rounded-full w-10 h-10 bg-light-bg" alt="">
+                        {/if}
                     {/if}
                     <div class="flex flex-col items-start">
                         <h1 class="text-sm text-white font-bold">{$currentActor?.display_name || $currentActor?.username}</h1>
