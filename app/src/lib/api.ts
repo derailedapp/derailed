@@ -1,4 +1,4 @@
-import { PUBLIC_API_URL, PUBLIC_CDN_URL } from "$env/static/public";
+import { env } from "$env/dynamic/public";
 import { browser } from "$app/environment";
 
 export class APIClient {
@@ -12,7 +12,7 @@ export class APIClient {
 	}
 
 	request(method: string, route: string, body: any) {
-		return fetch(PUBLIC_API_URL + route, {
+		return fetch(env.PUBLIC_API_URL + route, {
 			body: JSON.stringify(body),
 			method,
 			headers: {
@@ -23,7 +23,7 @@ export class APIClient {
 	}
 
 	getCDNUrl(scope: string, id: string) {
-		return PUBLIC_CDN_URL + `/${scope}/` + id;
+		return env.PUBLIC_CDN_URL + `/${scope}/` + id;
 	}
 }
 
