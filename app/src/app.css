@@ -54,7 +54,7 @@ button {
 		@apply font-bold;
 	}
 	h5 {
-		@apply text-md font-bold;
+		@apply text-base font-bold;
 	}
 	h6 {
 		@apply text-sm font-semibold;
