@@ -30,12 +30,10 @@
 		"vite": "^6.3.5"
 	},
 	"dependencies": {
-		"@auth/core": "^0.39.1",
 		"@fontsource/inter": "^5.2.6",
 		"@iconify/svelte": "^5.0.0",
 		"@scaleway/random-name": "^5.1.1",
 		"@simplewebauthn/browser": "9.0.1",
-		"@simplewebauthn/server": "9.0.1",
 		"bits-ui": "^1.8.0",
 		"browser-image-resizer": "^2.4.1",
 		"emojilib": "^4.0.2",
