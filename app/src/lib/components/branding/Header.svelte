@@ -34,7 +34,7 @@ const headerItems = [
 let showMenu = false;
 </script>
 
-<div class="hidden md:fixed md:flex flex-row text-sm justify-center bg-blurple items-center max-lg:py-2 lg:h-24 w-full">
+<div class="hidden md:fixed md:flex flex-row text-sm justify-center bg-blurple items-center max-lg:h-4 lg:h-24 w-full">
     <div class="flex flex-row justify-between items-center w-full gap-18 p-8 px-10 font-light">
         <div class="flex flex-row gap-3 items-center">
             <a href="/" class="w-full">
