@@ -33,7 +33,6 @@ async function onSubmit(e: SubmitEvent) {
                 <form onsubmit={onSubmit} class="flex flex-col items-center justify-start z-[3] text-white gap-2">
                     <h1 class="font-semibold text-xl">Add a Friend</h1>
                     <p class="text-sm mb-2">You can use your friends username to add them on Derailed.</p>
-
                     <input type="text" bind:value={username} placeholder="username" name="username" autocomplete="off" required minlength="4" maxlength="32" class="rounded-xl w-full placeholder:text-fifth-bg bg-transparent border border-tertiary-bg outline-none focus:ring-0 my-3">
 
                     <button type="submit" class="p-1.5 text-white hover:bg-blurple transition duration-500 ease-in-out hover:scale-105 border border-tertiary-bg rounded-4xl h-full w-full mt-2 flex justify-center">
