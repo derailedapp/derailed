@@ -40,6 +40,33 @@ button {
 	}
 }
 
+.markdown-branding {
+	h1 {
+		@apply text-3xl font-bold mb-4;
+	}
+	h2 {
+		@apply text-2xl font-bold;
+	}
+	h3 {
+		@apply text-xl font-bold;
+	}
+	h4 {
+		@apply font-bold;
+	}
+	h5 {
+		@apply text-base font-bold;
+	}
+	h6 {
+		@apply text-sm font-semibold;
+	}
+	b {
+		@apply font-bold;
+	}
+	i {
+		@apply italic;
+	}
+}
+
 .pop-in-trans {
 	transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
 }
