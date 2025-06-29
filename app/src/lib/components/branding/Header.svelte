@@ -29,6 +29,11 @@ const headerItems = [
 		name: "Privacy",
 		current: () => page.url.pathname === "/privacy",
 	},
+    {
+		href: "/guidelines",
+		name: "Guidelines",
+		current: () => page.url.pathname === "/guidelines",
+	},
 ];
 
 let showMenu = false;

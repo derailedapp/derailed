@@ -32,7 +32,7 @@ const featureItems = [
 <div class="overflow-y-auto">
     <Header />
 
-    <div class="flex flex-col w-full h-screen pt-80 md:pt-[100px] bg-white">
+    <div class="flex flex-col w-full h-screen min-h-[calc(100vh-75px)] mt-[75px] md:min-h-[calc(100vh-96px)] md:mt-[96px] bg-white">
         {#each featureItems as item}
             <div class="bg-gray-200" class:bg-white={item.white}>
                 <div class="flex flex-row items-center justify-evenly w-full p-48 rounded-2xl">
