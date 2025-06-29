@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE relationships SET type = $1 WHERE user_id = $2 AND target_user_id = $3;",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "9b9beb71ce1db670682ceba991b8880dc8ea2cbb6311a96d1d11480e3136ec5f"
+}
