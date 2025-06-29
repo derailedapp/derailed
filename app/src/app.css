@@ -4,7 +4,7 @@
 @plugin "tailwindcss-neumorphism-ui";
 
 body {
-	background-color: #36393e;
+	background-color: hsl(210, 3%, 13%);
 	font-family: "Inter";
 	@apply text-white;
 }
@@ -114,7 +114,7 @@ button {
 
 @theme {
 	--color-thingy: rgba(255, 255, 255, 0.5);
-	--color-blurple: #5b77dc;
+	--color-blurple: #3e6bff;
 	--color-sexy-lighter-black: #2a2a2e;
 	--color-sexy-red-black: #141417;
 	--color-sexy-gray: #a0a0a5;
@@ -129,6 +129,14 @@ button {
 
 	--color-foots: #292b2f;
 	--color-pops: #36393f;
+
+	--color-lighter-bg: hsl(210, 3%, 13%);
+	--color-light-bg: hsl(210, 3%, 11%);
+	--color-dark-bg: hsl(210, 3%, 8%);
+	--color-secondary-bg: hsl(210, 3%, 9%);
+	--color-tertiary-bg: hsl(210, 3%, 20%);
+	--color-fourth-bg: hsl(210, 3%, 25%);
+	--color-fifth-bg: hsl(210, 3%, 35%);
 }
 
 @layer utilities {

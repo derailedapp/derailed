@@ -10,6 +10,7 @@ import GuildScroll from "./GuildScroll.svelte";
 import User from "$lib/components/User.svelte";
 import Settings from "./Settings.svelte";
 import { Dialog } from "bits-ui";
+import CurrentUserDialog from "./CurrentUserDialog.svelte";
 
 let type: "guild" | "dms" = $state("dms");
 
@@ -22,14 +23,11 @@ const changeStatus = async () => {
 <div class="flex flex-col select-none">
     <div class="flex h-full w-full">
         <GuildScroll />
-        <div class="w-[280px] select-none glass-wrapper round-corners m-2 py-1 flex flex-col justify-between">
-            <div class="glass-effect"></div>
-            <div class="glass-tint"></div>
-            <div class="glass-shine"></div>
+        <div class="w-[280px] bg-dark-bg border border-tertiary-bg rounded-4xl select-none round-corners m-1 py-1 flex flex-col justify-between">
             <div class="z-[3]">
-				<div class="border-b border-white h-[58px]">
+				<div class="border-b border-tertiary-bg h-[58px]">
 					<a href="/app">
-						<div class="p-4 text-white space-x-2 group">
+						<div class="p-4 text-white flex items-center gap-2 group">
 							<HandWaving weight="fill" class="inline w-5 h-5" />
 							<div class="inline">
 								Friends
@@ -54,4 +52,5 @@ const changeStatus = async () => {
             </div>
         </div>
     </div>
+    <CurrentUserDialog />
 </div>

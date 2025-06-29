@@ -14,7 +14,7 @@ $effect(() => {
 });
 </script>
 
-<div class="h-screen w-full overflow-hidden bg-cover bg-[url('/app-bg.jpg')]">
+<div class="h-screen w-full overflow-hidden bg-cover bg-secondary-bg">
     <div class="flex h-full w-full flex-row">
         {#if isLoading}
             <div>Derailed is loading</div>

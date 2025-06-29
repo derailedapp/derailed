@@ -10,36 +10,33 @@ let {
 }: { user: Actor; round?: boolean; padTop?: boolean } = $props();
 </script>
 
-<div class="w-[550px] h-auto m-2 glass-wrapper round-corners">
-    <div class="glass-effect"></div>
-    <div class="glass-tint"></div>
-    <div class="glass-shine"></div>
-    <div class="flex flex-col items-center gap-2 z-[3] h-auto text-white w-[550px]" class:rounded-xl={round}>
-        <div class="w-full flex flex-col pb-1">
-            <div class="pb-5">
+<div class="w-[600px] h-auto m-1 rounded-4xl">
+    <div class="flex flex-col items-center gap-2 z-[3] h-auto text-white w-full" class:rounded-xl={round}>
+        <div class="w-full flex border bg-dark-bg border-tertiary-bg rounded-4xl flex-col pb-1">
+            <div>
                 <div class="flex flex-col w-full items-center justify-center">
                     {#if !user?.banner_id}
-                        <div class="bg-primary/30 w-full h-[130px] rounded-t-4xl z-[5]"></div>
+                        <div class="bg-secondary-bg w-full h-[130px] rounded-t-4xl z-[5]"></div>
                     {:else}
-                        <img src={Client.getCDNUrl("banners", user.banner_id)} alt="banner" class="w-full z-[5] h-[130px] object-cover rounded-t-4xl">
+                        <img src={Client.getCDNUrl("banners", user.banner_id)} alt="banner" class="w-full z-[5] h-[130px] object-cover bg-secondary-bg rounded-t-4xl">
                     {/if}
-                    <div class="absolute top-[3.5rem] z-[6]">
+                    <div class="absolute top-[4.7rem] z-[6]">
                         {#if user?.avatar_id === null}
                             <img
-                                class="size-[7rem] rounded-full object-cover border-[3px] border-white/10 group-hover:opacity-70 transition-all"
+                                class="size-[7rem] rounded-full object-cover border-[2px] border-tertiary-bg group-hover:opacity-70 transition-all"
                                 src={"/default_pfp.webp"}
                                 alt="avatar"
                             />
                         {:else}
                             <img
-                                class="size-[7rem] rounded-full object-cover border-[3px] border-white/20 group-hover:opacity-70 transition-all"
+                                class="size-[7rem] rounded-full object-cover border-[2px] border-tertiary-bg group-hover:opacity-70 transition-all"
                                 src={Client.getCDNUrl("avatars", user.avatar_id)}
                                 alt="avatar"
                             />
                         {/if}
                     </div>
 
-                    <div class="flex flex-col justify-center items-center pt-14 select-none">
+                    <div class="flex flex-col justify-center border-tertiary-bg border-t border-b w-full items-center pt-14 pb-4 select-none">
                         {#if user?.display_name}
                             <div class="font-semibold text-xl">
                                 {user?.display_name}
@@ -55,8 +52,11 @@ let {
                     </div>
                 </div>
             </div>
-            <div class="flex flex-col w-full pt-1 gap-4">
-                <div class="w-full py-3 px-6 rounded-xl select-none">
+            <div class="flex flex-col w-full rounded-b-4xl px-6 py-4 gap-4">
+                <div class="w-full select-none font-semibold">
+                    About
+                </div>
+                <div class="w-full select-none">
                     <div class="font-semibold text-sm">
                         Member Since
                     </div>

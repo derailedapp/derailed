@@ -148,8 +148,8 @@ const logout = async () => {
     <input type="file" accept="image/png, image/jpeg, image/webp, image/gif" class="hidden" onchange={(e) => {setCrop(e, CropType.Banner)}} bind:this={bannerInput}>
     <input type="file" accept="image/png, image/jpeg, image/webp, image/gif" class="hidden" onchange={(e) => {setCrop(e, CropType.Avatar)}} bind:this={avatarInput}>
 
-    <Dialog.Trigger class="ml-auto p-2 rounded-sm bg-aside group border border-guild-aside hover:bg-primary transition duration-400 ease-in-out">
-        <Gear weight="fill" class="w-5 h-5 text-weep-gray group-hover:text-white transition-colors duration-100" />
+    <Dialog.Trigger class="ml-auto p-2 rounded-xl group hover:bg-lighter-bg transition duration-400 mr-2 ease-in-out">
+        <Gear weight="fill" class="w-[22px] h-[22px] text-weep-gray group-hover:text-white transition-colors duration-100" />
     </Dialog.Trigger>
     <Dialog.Portal>
         <Dialog.Overlay

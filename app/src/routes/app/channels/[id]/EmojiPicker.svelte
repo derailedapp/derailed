@@ -36,13 +36,13 @@ const scrollToGroup = (groupName: string) => {
         <Smiley weight="fill" class="h-5 w-5 text-weep-gray hover:text-weep-gray/85 hover:scale-110 transition duration-300 ease-in-out" />
     </DropdownMenu.Trigger>
 
-    <DropdownMenu.Content side="left" class="w-[500px] border-inps border mb-20 rounded-md bg-mem-aside">
+    <DropdownMenu.Content side="left" class="w-[500px] border-tertiary-bg border mb-20 rounded-4xl bg-secondary-bg">
         <div class="flex flex-col w-full">
-            <div class="font-semibold border-b pb-2 p-4 text-weep-gray border-guild-aside select-none">
+            <div class="font-semibold border-b pb-2 p-4 text-weep-gray border-tertiary-bg select-none">
                 Emojis
             </div>
             <div class="flex items-center flex-row h-full max-h-[293px]">
-                <div class="flex items-center h-full p-4 border-guild-aside flex-col gap-2.5 border-r select-none">
+                <div class="flex items-center h-full p-4 border-tertiary-bg flex-col gap-2.5 border-r select-none">
                     <button onclick={() => scrollToGroup("Smileys & Emotion")}>
                         <Smiley weight="fill" class="h-6 w-6 text-weep-gray hover:text-weep-gray/70 hover:shadow-3xl transition duration-300 ease-in-out" />
                     </button>
@@ -68,7 +68,7 @@ const scrollToGroup = (groupName: string) => {
                         <FlagBannerFold weight="fill" class="h-6 w-6 text-weep-gray hover:text-weep-gray/70 hover:shadow-3xl transition duration-300 ease-in-out" />
                     </button>
                 </div>
-                <div class="flex flex-col gap-6 py-8 overflow-y-auto max-h-[293px] w-full">
+                <div class="flex flex-col gap-6 py-4 overflow-y-auto max-h-[293px] w-full">
                     {#each emojis as group}
                         <div class="space-y-3" id={group.name}>
                             <div class="tracking-tight ml-3 select-none text-weep-gray font-semibold">

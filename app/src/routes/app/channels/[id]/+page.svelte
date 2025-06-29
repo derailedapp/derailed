@@ -29,13 +29,13 @@ export function getChannelName() {
 		}
 		return false;
 	})!;
-	let name = profile.display_name || profile.username;
+	let name = profile?.display_name || profile?.username;
 	return name!;
 }
 </script>
 
-<div class="w-full h-screen grid grid-rows-[58px_1fr_minmax(58px,auto)] bg-primary">
-    <div class="flex flex-1 flex-row items-center p-4 bg-primary border-b border-guild-aside">
+<div class="w-full grid grid-rows-[58px_1fr_minmax(58px,auto)] bg-dark-bg border m-1 border-tertiary-bg rounded-4xl">
+    <div class="flex flex-1 flex-row items-center p-4 h-[58px] border-b border-tertiary-bg">
         <div class="flex items-center gap-1.5 pl-3 select-none">
             <Hash color="#a0a0a5" height="22" width="22" />
             <div class="text-white truncate max-w-50">
@@ -47,12 +47,12 @@ export function getChannelName() {
             </div>
         </div>
     </div>
-    <div class="flex flex-1 min-h-[300px] bg-primary">
+    <div class="flex flex-1 min-h-[300px]">
         {#if channel && readState}
             <MessageList channelId={id} username={otherUser?.display_name || otherUser?.username || ""} lastMessageId={channel.last_message_id} around={readState.last_message_id} />
         {/if}
     </div>
-    <div class="flex items-center justify-center h-full">
+    <div class="flex items-center justify-center">
         <MessageInput channelId={id} channelName={getChannelName()} />
     </div>
 </div>

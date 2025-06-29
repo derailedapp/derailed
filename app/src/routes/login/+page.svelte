@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Tabs, Checkbox } from "bits-ui";
 import Pin from "$lib/components/login/Pin.svelte";
-import { Turnstile } from 'svelte-turnstile';
+import { Turnstile } from "svelte-turnstile";
 import Icon from "@iconify/svelte";
 import { fly } from "svelte/transition";
 import { goto } from "$app/navigation";
@@ -20,21 +20,23 @@ let checked = $state(false);
 let turnstile = $state(false);
 
 const showTurnstile = async (e: Event) => {
-    e.preventDefault();
+	e.preventDefault();
 
-    if (env.PUBLIC_SITE_KEY) {
-        turnstile = true
-    } else {
-        await sendEmail()
-    }
-}
+	if (env.PUBLIC_SITE_KEY) {
+		turnstile = true;
+	} else {
+		await sendEmail();
+	}
+};
 
-const turnstileCallback = async (e: CustomEvent<{ token: string; preClearanceObtained: boolean }>) => {
-    const { token, preClearanceObtained } = e.detail;
+const turnstileCallback = async (
+	e: CustomEvent<{ token: string; preClearanceObtained: boolean }>,
+) => {
+	const { token, preClearanceObtained } = e.detail;
 
-    turnstileResponse = token;
-    sendEmail();
-}
+	turnstileResponse = token;
+	sendEmail();
+};
 
 async function sendEmail() {
 	await fetch(env.PUBLIC_API_URL + "/verify-email", {
@@ -44,7 +46,7 @@ async function sendEmail() {
 		method: "POST",
 		body: JSON.stringify({
 			email,
-            "cf_response": turnstileResponse
+			cf_response: turnstileResponse,
 		}),
 	});
 	emailSent = true;
@@ -72,11 +74,11 @@ async function onRegister(e: SubmitEvent) {
 			email,
 			password,
 			code: Number(pinValue),
-		//	session_detail: {
-		//		operating_system: ua.os.name || "Unknown",
-		//		browser: ua.browser.name || "Unknown",
-		//		location: location,
-		//	},
+			//	session_detail: {
+			//		operating_system: ua.os.name || "Unknown",
+			//		browser: ua.browser.name || "Unknown",
+			//		location: location,
+			//	},
 		}),
 	});
 	const data = await resp.json();
@@ -99,11 +101,11 @@ async function onLogin(e: SubmitEvent) {
 		body: JSON.stringify({
 			email,
 			password,
-		//	session_detail: {
-		//		operating_system: ua.os.name || "Unknown",
-		//		browser: ua.browser.name || "Unknown",
-		//		location: location,
-		//	},
+			//	session_detail: {
+			//		operating_system: ua.os.name || "Unknown",
+			//		browser: ua.browser.name || "Unknown",
+			//		location: location,
+			//	},
 		}),
 	});
 	if (resp.status === 400) {
