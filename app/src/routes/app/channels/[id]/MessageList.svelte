@@ -1,7 +1,6 @@
 <script lang="ts">
 import MessageComp from "./Message.svelte";
 import { onMount, tick } from "svelte";
-import { useConvexClient, useQuery } from "convex-svelte";
 
 let {
 	channelId,
@@ -23,7 +22,6 @@ let loadingOlder: boolean = $state(false);
 let loadingNewer: boolean = $state(false);
 
 let messages = $state<any[]>([]);
-const client = useConvexClient();
 
 onMount(() => {
 	const observer = new IntersectionObserver(
