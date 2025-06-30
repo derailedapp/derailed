@@ -6,7 +6,7 @@ use models::{
     channels::Channel,
     users::{Account, UserActor},
 };
-use rt_actors::message::Dispatch;
+use rt_actors::message::{Dispatch, Relationship};
 use ulid::Ulid;
 
 use crate::utils::publishing::publish_to;
@@ -52,18 +52,18 @@ pub async fn route(
 
                 publish_to(
                     &account.id,
-                    Dispatch::RelationshipUpdate {
+                    Dispatch::RelationshipUpdate(Relationship {
                         r#type: 2,
                         target: other_user.clone(),
-                    },
+                    }),
                 )
                 .await?;
                 publish_to(
                     &other_user.id,
-                    Dispatch::RelationshipUpdate {
+                    Dispatch::RelationshipUpdate(Relationship {
                         r#type: 2,
                         target: current_actor,
-                    },
+                    }),
                 )
                 .await?;
 
@@ -115,18 +115,18 @@ pub async fn route(
             .await?;
             publish_to(
                 &account.id,
-                Dispatch::RelationshipUpdate {
+                Dispatch::RelationshipUpdate(Relationship {
                     r#type: 2,
                     target: other_user.clone(),
-                },
+                }),
             )
             .await?;
             publish_to(
                 &other_user.id,
-                Dispatch::RelationshipUpdate {
+                Dispatch::RelationshipUpdate(Relationship {
                     r#type: 2,
                     target: current_actor,
-                },
+                }),
             )
             .await?;
         }

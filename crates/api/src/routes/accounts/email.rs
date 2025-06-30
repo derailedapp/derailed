@@ -1,6 +1,13 @@
-use axum::{extract::State, http::{StatusCode, Response}, Json};
+use axum::{
+    Json,
+    extract::State,
+    http::{Response, StatusCode},
+};
 use cf_turnstile::SiteVerifyRequest;
-use lettre::{message::{header::ContentType, Mailbox}, Message, Transport};
+use lettre::{
+    Message, Transport,
+    message::{Mailbox, header::ContentType},
+};
 use rand::random_range;
 use serde::Deserialize;
 use serde_valid::Validate;
@@ -10,7 +17,7 @@ pub struct VerifyData {
     #[validate(min_length = 5)]
     email: String,
 
-    cf_response: Option<String>
+    cf_response: Option<String>,
 }
 
 pub async fn route(
@@ -21,20 +28,19 @@ pub async fn route(
         return Err(crate::Error::InvalidEmail);
     }
 
-    match state.captcha {
-        Some(captcha) => {
-            let response = model.cf_response.ok_or(crate::Error::CaptchaRequired)?;
+    if let Some(captcha) = state.captcha {
+        let response = model.cf_response.ok_or(crate::Error::CaptchaRequired)?;
 
-            let cf = captcha.siteverify(SiteVerifyRequest {
+        let cf = captcha
+            .siteverify(SiteVerifyRequest {
                 response,
                 ..Default::default()
-            }).await?;
+            })
+            .await?;
 
-            if !cf.success {
-                return Err(crate::Error::CaptchaFailed)
-            }
+        if !cf.success {
+            return Err(crate::Error::CaptchaFailed);
         }
-        _ => {}
     }
 
     let email = model.email.to_lowercase();
@@ -47,13 +53,10 @@ pub async fn route(
     }
 
     let from = Mailbox::new(
-        Some("Derailed".to_owned()), 
-        "no-reply@derailed.top".parse().unwrap()
+        Some("Derailed".to_owned()),
+        "no-reply@derailed.top".parse().unwrap(),
     );
-    let to = Mailbox::new(
-        None, 
-        model.email.parse().unwrap()
-    );
+    let to = Mailbox::new(None, model.email.parse().unwrap());
 
     let code = random_range(111111..999999);
 
@@ -68,20 +71,18 @@ pub async fn route(
                 .to(to)
                 .subject("Your verification code")
                 .header(ContentType::TEXT_PLAIN)
-                .body(format!("Use this code: {} to verify your account.", code))
+                .body(format!("Use this code: {code} to verify your account."))
                 .unwrap();
 
             mailer.send(&email)?;
-        },
+        }
         None => {
             println!("{code}");
         }
     }
 
-    Ok(
-        Response::builder()
-            .status(StatusCode::NO_CONTENT)
-            .body("".to_string())
-            .unwrap()
-    )
+    Ok(Response::builder()
+        .status(StatusCode::NO_CONTENT)
+        .body("".to_string())
+        .unwrap())
 }

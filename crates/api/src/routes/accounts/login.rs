@@ -16,7 +16,7 @@ pub struct LoginData {
     email: String,
     password: String,
 
-    cf_response: Option<String>
+    cf_response: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -28,20 +28,19 @@ pub async fn route(
     State(state): State<crate::State>,
     Json(model): Json<LoginData>,
 ) -> Result<Json<TokenData>, crate::Error> {
-    match state.captcha {
-        Some(captcha) => {
-            let response = model.cf_response.ok_or(crate::Error::CaptchaRequired)?;
+    if let Some(captcha) = state.captcha {
+        let response = model.cf_response.ok_or(crate::Error::CaptchaRequired)?;
 
-            let cf = captcha.siteverify(SiteVerifyRequest {
+        let cf = captcha
+            .siteverify(SiteVerifyRequest {
                 response,
                 ..Default::default()
-            }).await?;
+            })
+            .await?;
 
-            if !cf.success {
-                return Err(crate::Error::CaptchaFailed)
-            }
+        if !cf.success {
+            return Err(crate::Error::CaptchaFailed);
         }
-        _ => {}
     }
 
     let email = model.email.to_lowercase();

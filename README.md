@@ -1,4 +1,4 @@
-![Derailed](./app/static/derailed-text.svg)
+![Derailed](./derailed-logo.png)
 
 # The People's Social Media.
 

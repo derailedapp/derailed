@@ -5,6 +5,7 @@ pub struct Account {
     pub id: String,
     pub email: String,
     pub flags: i64,
+    #[serde(skip_serializing)]
     pub password: String,
 }
 

@@ -126,6 +126,7 @@ dependencies = [
  "cf-turnstile",
  "dotenvy",
  "email_address",
+ "futures",
  "futures-util",
  "hex",
  "lettre",

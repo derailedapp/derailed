@@ -7,13 +7,13 @@ use axum::http::{HeaderValue, Method};
 use ractor::MessagingErr;
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use sqlxmq::JobRegistry;
-use tokio::{sync::RwLock, net::TcpListener};
+use tokio::{net::TcpListener, sync::RwLock};
 use tower_http::cors::{Any, CorsLayer};
 
-use lettre::transport::smtp::authentication::Credentials;
-use lettre::SmtpTransport;
-use ttlhashmap::TtlHashMap;
 use cf_turnstile::TurnstileClient;
+use lettre::SmtpTransport;
+use lettre::transport::smtp::authentication::Credentials;
+use ttlhashmap::TtlHashMap;
 
 mod routes;
 mod utils;
@@ -27,7 +27,7 @@ pub struct State {
 
     pub email_ttl: Arc<RwLock<TtlHashMap<String, i32>>>,
     pub captcha: Option<Arc<TurnstileClient>>,
-    pub alpha_code: String
+    pub alpha_code: String,
 }
 
 #[derive(Debug, thiserror::Error, axum_thiserror::ErrorStatus)]
@@ -92,6 +92,12 @@ pub enum Error {
     #[status(400)]
     #[error("JSON data is invalid")]
     InvalidJson,
+    #[status(400)]
+    #[error("Session already identified")]
+    AlreadyIdentified,
+    #[status(500)]
+    #[error("Internal Server Error")]
+    ActorError,
 
     // CF Error
     #[status(400)]
@@ -142,24 +148,22 @@ async fn main() {
         Ok(host) => {
             let email_creds = Credentials::new(
                 std::env::var("SMTP_USERNAME").unwrap(),
-                std::env::var("SMTP_PASSWORD").unwrap()
+                std::env::var("SMTP_PASSWORD").unwrap(),
             );
 
             Some(
-                SmtpTransport::starttls_relay(
-                    &host
-                )
-                .unwrap()
-                .credentials(email_creds)
-                .build()
+                SmtpTransport::starttls_relay(&host)
+                    .unwrap()
+                    .credentials(email_creds)
+                    .build(),
             )
-        },
-        Err(_) => None
+        }
+        Err(_) => None,
     };
 
     let captcha = match std::env::var("CF_SECRET") {
         Ok(secret) => Some(Arc::new(cf_turnstile::TurnstileClient::new(secret.into()))),
-        Err(_) => None
+        Err(_) => None,
     };
 
     let alpha_code = std::env::var("ALPHA_CODE").unwrap();
@@ -191,9 +195,11 @@ async fn main() {
         s3_client,
         password_hasher: argon2::Argon2::default(),
         mailer,
-        email_ttl: Arc::new(RwLock::new(TtlHashMap::<String, i32>::new(Duration::from_secs(3600)))),
+        email_ttl: Arc::new(RwLock::new(TtlHashMap::<String, i32>::new(
+            Duration::from_secs(3600),
+        ))),
         captcha,
-        alpha_code
+        alpha_code,
     };
 
     let app = axum::Router::new()

@@ -1,8 +1,8 @@
 use axum::routing::post;
 
+mod email;
 mod login;
 mod register;
-mod email;
 mod reset;
 
 pub fn router() -> axum::Router<crate::State> {

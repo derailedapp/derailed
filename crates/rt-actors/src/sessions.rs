@@ -16,11 +16,11 @@ pub struct State {
 
 #[derive(Debug)]
 pub struct Args {
-    user_id: String,
-    session_id: String,
-    joined_guilds: Vec<String>,
-    joined_channels: Vec<String>,
-    ws: tokio::sync::mpsc::UnboundedSender<crate::message::Dispatch>,
+    pub user_id: String,
+    pub session_id: String,
+    pub joined_guilds: Vec<String>,
+    pub joined_channels: Vec<String>,
+    pub ws: tokio::sync::mpsc::UnboundedSender<crate::message::Dispatch>,
 }
 
 #[async_trait]
