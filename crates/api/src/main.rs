@@ -130,7 +130,7 @@ pub enum Error {
 
 #[tokio::main]
 async fn main() {
-    dotenvy::dotenv().unwrap();
+    _ = dotenvy::dotenv();
 
     let db_connection_str = std::env::var("DATABASE_URL").unwrap();
 
