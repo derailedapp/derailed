@@ -136,7 +136,7 @@ dependencies = [
  "ractor",
  "rand 0.9.1",
  "regex",
- "rt-actors",
+ "rt_actors",
  "serde",
  "serde_json",
  "serde_valid",
@@ -2728,7 +2728,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rt-actors"
+name = "rt_actors"
 version = "0.1.0"
 dependencies = [
  "models",

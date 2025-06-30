@@ -38,4 +38,4 @@ cf-turnstile = "0.2"
 futures = "0.3.31"
 
 models = { path = "./crates/models" }
-rt-actors = { path = "./crates/rt-actors" }
+rt_actors = { path = "./crates/rt_actors" }

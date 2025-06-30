@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{State, WebSocketUpgrade, ws::WebSocket},
-    response::Response,
+    extract::{ws::{CloseFrame, WebSocket}, State, WebSocketUpgrade},
+    response::{IntoResponse, Response},
     routing::any,
 };
 use futures_util::{SinkExt, StreamExt, stream::SplitStream};
@@ -60,15 +60,15 @@ async fn handle_socket(socket: WebSocket, state: crate::State) {
         let msg = receiver.recv().await;
         if let Some(message) = msg {
             if let Dispatch::WSClose = message {
-                // TODO
-                //let err = should_close.lock().await;
-                //if let Some(err) = err {
-                //    let resp = err.into_response();
-                //    sink.send(axum::extract::ws::Message::Close(Some(CloseFrame {
-                //        code: resp.status().as_u16(),
-                //        reason: "".into()
-                //    }))).await;
-                //}
+                let mut err = should_close.lock().await;
+
+                if let Some(err) = err.take() {
+                    let resp = err.into_response();
+                    let _ = sink.send(axum::extract::ws::Message::Close(Some(CloseFrame {
+                        code: resp.status().as_u16(),
+                        reason: "".into()
+                    }))).await;
+                }
                 receiver.close();
                 return;
             }
