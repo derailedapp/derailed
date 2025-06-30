@@ -14,7 +14,7 @@ let username: string | undefined = $state();
 let email: string | undefined = $state();
 let password: string | undefined = $state();
 let turnstileResponse: string | undefined = $state();
-let pinValue = $state("");
+let pinValue: string | undefined = $state();
 let emailSent = $state(false);
 let checked = $state(false);
 let turnstile = $state(false);
@@ -39,16 +39,16 @@ const turnstileCallback = async (
 };
 
 async function sendEmail() {
-	await fetch(env.PUBLIC_API_URL + "/verify-email", {
-		headers: {
-			"Content-Type": "application/json",
-		},
-		method: "POST",
-		body: JSON.stringify({
-			email,
-			cf_response: turnstileResponse,
-		}),
-	});
+	//await fetch(env.PUBLIC_API_URL + "/verify-email", {
+	//	headers: {
+	//		"Content-Type": "application/json",
+	//	},
+	//	method: "POST",
+	//	body: JSON.stringify({
+	//		email,
+	//		cf_response: turnstileResponse,
+	//	}),
+	//});
 	emailSent = true;
 }
 
@@ -73,7 +73,7 @@ async function onRegister(e: SubmitEvent) {
 			username,
 			email,
 			password,
-			code: Number(pinValue),
+			code: pinValue,
 			//	session_detail: {
 			//		operating_system: ua.os.name || "Unknown",
 			//		browser: ua.browser.name || "Unknown",
@@ -156,9 +156,14 @@ onMount(async () => {
                         </div>
                         <div class="flex flex-row justify-center items-center w-full h-[96px]">
                             {#if emailSent}
-                                <div transition:fly={{ x: -500, duration: 150 }}>
-                                    <Pin bind:value={pinValue}></Pin>
-                                </div>
+                                <section class="space-y-2 w-full" transition:fly={{ x: -500, duration: 150 }}>
+                                    <div>
+                                        <div class="font-bold text-sm text-weep-gray tracking-tight">
+                                            ALPHA CODE
+                                        </div>
+                                    </div>
+                                    <input required style="box-shadow: none;" bind:value={pinValue} type="text" class="bg-transparent w-full border-t-0 border-l-0 border-r-0 border-b border-b-sexy-red-gray appearance-none" />
+                                </section>
                             {:else if turnstile}
                                 <div transition:fly={{ x: -500, duration: 150 }}>
                                     <Turnstile siteKey={env.PUBLIC_SITE_KEY!} on:callback={turnstileCallback} />
