@@ -19,7 +19,7 @@ ws.onopen = () => {
 };
 
 ws.onmessage = (ev) => {
-	let data = ev.data;
+	let data = JSON.parse(ev.data);
 
 	let op = data.op;
 	let e = data.e;
