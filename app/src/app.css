@@ -45,19 +45,19 @@ button {
 		@apply text-3xl font-bold mb-4;
 	}
 	h2 {
-		@apply text-2xl font-bold py-1;
+		@apply text-2xl font-bold py-2.5;
 	}
 	h3 {
-		@apply text-xl font-bold py-1;
+		@apply text-xl font-bold py-2.5;
 	}
 	h4 {
-		@apply font-bold py-1;
+		@apply font-bold py-2.5;
 	}
 	h5 {
-		@apply text-base font-bold py-1;
+		@apply text-base font-bold py-2.5;
 	}
 	h6 {
-		@apply text-sm font-semibold py-1;
+		@apply text-sm font-semibold py-2.5;
 	}
 	b {
 		@apply font-bold;

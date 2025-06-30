@@ -1,11 +1,11 @@
 <script lang="ts">
+import "$lib/rt";
+
 import Sidebar from "$lib/components/Sidebar.svelte";
 import { goto } from "$app/navigation";
-import { onMount } from "svelte";
+import { isLoading } from "$lib/state";
 
 let { children } = $props();
-
-const isLoading = false;
 
 $effect(() => {
 	if (!localStorage.getItem("token")) {
@@ -16,7 +16,7 @@ $effect(() => {
 
 <div class="h-screen w-full overflow-hidden bg-cover bg-secondary-bg">
     <div class="flex h-full w-full flex-row">
-        {#if isLoading}
+        {#if $isLoading}
             <div>Derailed is loading</div>
         {:else}
             <Sidebar />

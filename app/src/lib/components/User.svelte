@@ -1,10 +1,5 @@
 <script lang="ts">
-import {
-	channelMembers as channelMemberStore,
-	channels,
-	currentActor,
-	readStates,
-} from "$lib/state";
+import { channels, currentActor, readStates } from "$lib/state";
 import Client from "$lib/api";
 
 let {
@@ -15,8 +10,9 @@ let {
 	selected?: boolean;
 } = $props();
 
-const channel = $derived($channels.find((v) => v.id == channelId));
-const channelMembers = $derived($channelMemberStore.get(channelId));
+const rtChannel = $derived($channels.find((v) => v.channel.id == channelId));
+const channel = $derived(rtChannel!.channel);
+const channelMembers = $derived(rtChannel!.members);
 const readState = $derived($readStates.find((v) => v.channel_id == channelId));
 
 export function getChannelName() {

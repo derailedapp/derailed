@@ -6,7 +6,6 @@ import MessageList from "./MessageList.svelte";
 import {
 	currentPrivateChannelId,
 	channels,
-	channelMembers as channelMemberStore,
 	currentActor,
 	readStates,
 } from "$lib/state";
@@ -14,8 +13,9 @@ import UserPop from "$lib/components/UserPop.svelte";
 
 const { id } = page.params;
 
-const channel = $derived($channels.find((v) => v.id == id));
-const channelMembers = $derived($channelMemberStore.get(id));
+const rtChannel = $derived($channels.find((v) => v.channel.id == id));
+const channel = $derived(rtChannel!.channel);
+const channelMembers = $derived(rtChannel!.members);
 const otherUser = $derived(
 	channelMembers?.find((v) => v.id != $currentActor?.id),
 );

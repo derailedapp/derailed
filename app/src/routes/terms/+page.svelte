@@ -1,8 +1,8 @@
 <script lang="ts">
-    import Header from "$lib/components/branding/Header.svelte";
-	import type { PageData } from "./$types";
+import Header from "$lib/components/branding/Header.svelte";
+import type { PageData } from "./$types";
 
-    let { data }: { data: PageData }  = $props();
+let { data }: { data: PageData } = $props();
 </script>
 
 <div class="overflow-y-hidden">

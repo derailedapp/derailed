@@ -118,6 +118,7 @@ async fn handle_messages(
         {
             let mut should = should_close.lock().await;
             *should = Some(err);
+            let _ = sender.send(Dispatch::WSClose);
         }
     }
 }

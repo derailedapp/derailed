@@ -1,12 +1,12 @@
-import { processor } from '$lib/markdown';
-import type { PageLoad } from './$types';
+import { processor } from "$lib/markdown";
+import type { PageLoad } from "./$types";
 
 export const load: PageLoad = async ({ fetch }) => {
-    const response = await fetch("/policies/terms.md");
-    if (!response.ok) throw new Error("Failed to load guidelines");
-    const markdown = await response.text();
+	const response = await fetch("/policies/terms.md");
+	if (!response.ok) throw new Error("Failed to load guidelines");
+	const markdown = await response.text();
 
-    return {
-        markdown: String(await processor.process(markdown))
-    };
+	return {
+		markdown: String(await processor.process(markdown)),
+	};
 };
