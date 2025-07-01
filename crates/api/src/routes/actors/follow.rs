@@ -92,6 +92,24 @@ pub async fn route(
                     )
                     .execute(&mut *txn)
                     .await?;
+                    sqlx::query!(
+                        "INSERT INTO read_states (user_id, channel_id, last_message_id, mentions) VALUES ($1, $2, $3, $4);",
+                        account.id,
+                        channel.id,
+                        "",
+                        0
+                    )
+                    .execute(&mut *txn)
+                    .await?;
+                    sqlx::query!(
+                        "INSERT INTO read_states (user_id, channel_id, last_message_id, mentions) VALUES ($1, $2, $3, $4);",
+                        other_user.id,
+                        channel.id,
+                        "",
+                        0
+                    )
+                    .execute(&mut *txn)
+                    .await?;
                     publish_to(&account.id, Dispatch::ChannelCreate(channel.clone())).await?;
                     publish_to(&other_user.id, Dispatch::ChannelCreate(channel)).await?;
                 }

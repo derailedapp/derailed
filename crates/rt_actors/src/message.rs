@@ -1,4 +1,8 @@
-use models::{channels::Channel, messages::ReadState, users::{Account, UserActor}};
+use models::{
+    channels::Channel,
+    messages::ReadState,
+    users::{Account, UserActor},
+};
 use serde::Serialize;
 
 /// Represents a communication between actors
@@ -14,7 +18,7 @@ pub enum Message {
 pub struct RTChannel {
     pub channel: Channel,
     pub members: Vec<models::users::UserActor>,
-    pub read_state: ReadState
+    pub read_state: ReadState,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -32,7 +36,7 @@ pub enum Dispatch {
         channels: Vec<RTChannel>,
         actor: UserActor,
         account: Account,
-        relationships: Vec<Relationship>
+        relationships: Vec<Relationship>,
     },
     ChannelCreate(models::channels::Channel),
     MessageCreate(models::messages::Message),

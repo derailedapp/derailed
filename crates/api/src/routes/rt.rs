@@ -1,7 +1,10 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{ws::{CloseFrame, WebSocket}, State, WebSocketUpgrade},
+    extract::{
+        State, WebSocketUpgrade,
+        ws::{CloseFrame, WebSocket},
+    },
     response::{IntoResponse, Response},
     routing::any,
 };
@@ -64,10 +67,12 @@ async fn handle_socket(socket: WebSocket, state: crate::State) {
 
                 if let Some(err) = err.take() {
                     let resp = err.into_response();
-                    let _ = sink.send(axum::extract::ws::Message::Close(Some(CloseFrame {
-                        code: resp.status().as_u16(),
-                        reason: "".into()
-                    }))).await;
+                    let _ = sink
+                        .send(axum::extract::ws::Message::Close(Some(CloseFrame {
+                            code: resp.status().as_u16(),
+                            reason: "".into(),
+                        })))
+                        .await;
                 }
                 receiver.close();
                 return;
@@ -92,9 +97,10 @@ async fn handle_socket(socket: WebSocket, state: crate::State) {
     }
     let sid = session_id.lock().await;
     if sid.is_some()
-        && let Some(session_cell) = ractor::registry::where_is(sid.clone().unwrap()) {
-            let _ = call(&session_cell, |_: RpcReplyPort<()>| Dispatch::WSClose, None).await;
-        }
+        && let Some(session_cell) = ractor::registry::where_is(sid.clone().unwrap())
+    {
+        let _ = call(&session_cell, |_: RpcReplyPort<()>| Dispatch::WSClose, None).await;
+    }
 }
 
 #[derive(Deserialize)]

@@ -44,8 +44,8 @@ const changeStatus = async () => {
                 </div>
                 <div class="overflow-y-auto">
                     {#if (type === "dms")}
-                        {#each $channels as channel}
-                            <User channelId={channel.id} selected={$currentPrivateChannelId == channel.id} />
+                        {#each $channels as rtChannel}
+                            <User channelId={rtChannel.channel.id} selected={$currentPrivateChannelId == rtChannel.channel.id} />
                         {/each}
                     {/if}
                 </div>
