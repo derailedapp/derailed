@@ -38,6 +38,7 @@ pub enum Dispatch {
         account: Account,
         relationships: Vec<Relationship>,
     },
+    ActorUpdate(UserActor),
     ChannelCreate(models::channels::Channel),
     MessageCreate(models::messages::Message),
     RelationshipUpdate(Relationship),

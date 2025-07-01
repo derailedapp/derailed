@@ -1,6 +1,10 @@
 use axum::{Extension, Json, extract::State};
+use models::users::Account;
+use rt_actors::message::Dispatch;
 use serde::Deserialize;
 use serde_valid::Validate;
+
+use crate::utils::publishing::publish_to;
 
 #[derive(Deserialize, Validate)]
 pub struct ModifyData {
@@ -12,7 +16,7 @@ pub struct ModifyData {
 
 pub async fn route(
     State(state): State<crate::State>,
-    Extension(account_id): Extension<String>,
+    Extension(account): Extension<Account>,
     Json(model): Json<ModifyData>,
 ) -> Result<Json<models::users::UserActor>, crate::Error> {
     let mut txn = state.pg.begin().await?;
@@ -21,7 +25,7 @@ pub async fn route(
         sqlx::query!(
             "UPDATE actors SET display_name = $1 WHERE id = $2",
             display_name,
-            account_id
+            account.id
         )
         .execute(&mut *txn)
         .await?;
@@ -44,7 +48,7 @@ pub async fn route(
         sqlx::query!(
             "UPDATE actors SET username = $1 WHERE id = $2",
             username,
-            account_id
+            account.id
         )
         .execute(&mut *txn)
         .await?;
@@ -55,10 +59,21 @@ pub async fn route(
     let actor = sqlx::query_as!(
         models::users::UserActor,
         "SELECT * FROM actors WHERE id = $1",
-        account_id
+        account.id
     )
     .fetch_one(&state.pg)
     .await?;
+
+    let channels = sqlx::query!(
+        "SELECT id FROM channels WHERE id IN (SELECT channel_id FROM channel_members WHERE user_id = $1);",
+        account.id
+    )
+    .fetch_all(&state.pg)
+    .await?;
+
+    for channel in channels {
+        publish_to(&channel.id, Dispatch::ActorUpdate(actor.clone())).await?;
+    }
 
     Ok(Json(actor))
 }
