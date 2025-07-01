@@ -22,3 +22,5 @@ currentPrivateChannelId.set(undefined);
         
     </div>
 </div>
+
+<UserPop user={$currentActor} />

@@ -16,20 +16,20 @@ let {
             <div>
                 <div class="flex flex-col w-full items-center justify-center">
                     {#if !user?.banner_id}
-                        <div class="bg-secondary-bg w-full h-[130px] rounded-t-4xl z-[5]"></div>
+                        <div class="bg-blurple w-full h-[130px] rounded-t-4xl z-[5]"></div>
                     {:else}
                         <img src={Client.getCDNUrl("banners", user.banner_id)} alt="banner" class="w-full z-[5] h-[130px] object-cover bg-secondary-bg rounded-t-4xl">
                     {/if}
                     <div class="absolute top-[4.7rem] z-[6]">
                         {#if user?.avatar_id === null}
                             <img
-                                class="size-[7rem] rounded-full object-cover border-[2px] border-tertiary-bg group-hover:opacity-70 transition-all"
+                                class="size-[7rem] rounded-full object-cover group-hover:opacity-70 transition-all"
                                 src={"/default_pfp.webp"}
                                 alt="avatar"
                             />
                         {:else}
                             <img
-                                class="size-[7rem] rounded-full object-cover border-[2px] border-tertiary-bg group-hover:opacity-70 transition-all"
+                                class="size-[7rem] rounded-full object-cover group-hover:opacity-70 transition-all"
                                 src={Client.getCDNUrl("avatars", user.avatar_id)}
                                 alt="avatar"
                             />

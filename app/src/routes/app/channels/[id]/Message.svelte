@@ -4,7 +4,8 @@ import moment from "moment-timezone";
 import { processor } from "$lib/markdown";
 import { unScrewHtml } from "$lib/markdown";
 import { IdentificationCard, Pen, Pencil, Trash } from "phosphor-svelte";
-import Client, { type Message } from "$lib/api";
+import Client from "$lib/api";
+import type { Message } from "$lib/models";
 import { currentActor, users } from "$lib/state";
 
 let {

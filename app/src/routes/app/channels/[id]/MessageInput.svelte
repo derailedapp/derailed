@@ -48,7 +48,7 @@ async function onKey(event: KeyboardEvent) {
       throw error;
     }
 }} bind:this={composer}>
-	<div class="flex flex-row relative justify-center px-4 py-3 font-light w-full max-h-[450px] text-white rounded-4xl bg-secondary-bg border border-tertiary-bg">
+	<div class="flex flex-row relative min-h-[56px] justify-center px-4 py-3 font-light w-full max-h-[450px] text-white rounded-4xl bg-secondary-bg border-t border-tertiary-bg">
 		<div 
 			onkeyup={onKey} 
 			role="textbox" 
@@ -58,12 +58,12 @@ async function onKey(event: KeyboardEvent) {
 			class="w-full text-white m-0 relative max-w-full flex-auto overflow-y-auto"
 		>
 			<ContentEditable className="h-auto outline-0 focus:ring-0 block relative" />
-			<PlaceHolder className="text-weep-gray overflow-hidden top-1/20 absolute select-none whitespace-nowrap inline-block pointer-events-none">Message #{channelName}</PlaceHolder>
+			<PlaceHolder className="text-weep-gray overflow-hidden top-1/18 absolute select-none whitespace-nowrap inline-block pointer-events-none">Message #{channelName}</PlaceHolder>
 		</div>
 		<RichTextPlugin />
 		<HistoryPlugin />
 
-		<div class="flex justify-center items-end pb-0.5">
+		<div class="flex justify-center items-end pb-1.5">
 			<EmojiPicker composer={composer} />
 		</div>
 	</div>
