@@ -34,9 +34,9 @@ export function getChannelName() {
 }
 </script>
 
-<div class="w-full grid grid-rows-[62px_1fr_minmax(56px,auto)] bg-dark-bg border m-1 border-tertiary-bg rounded-4xl">
-    <div class="flex flex-1 flex-row items-center p-4 h-[62px] border-b border-tertiary-bg">
-        <div class="flex items-center gap-1.5 pl-3 select-none">
+<div class="w-full grid grid-rows-[56px_1fr_minmax(56px,auto)] bg-dark-bg border m-0.5 border-tertiary-bg rounded-3xl rounded-b-xl">
+    <div class="flex flex-1 flex-row items-center p-4 h-[56px] border-b border-tertiary-bg">
+        <div class="flex items-center gap-1.5 select-none">
             <Hash color="#a0a0a5" height="22" width="22" />
             <div class="text-white truncate max-w-50">
                 {getChannelName()}

@@ -3,7 +3,7 @@ import { Dialog } from "bits-ui";
 import { currentActor } from "$lib/state";
 import Settings from "./Settings.svelte";
 </script>
-<div class="m-1 backdrop-blur-3xl bg-dark-bg border rounded-2xl border-tertiary-bg">
+<div class="m-0.5 backdrop-blur-3xl bg-dark-bg border rounded-2xl border-tertiary-bg">
     <div class="flex flex-row justify-center items-center gap-2 w-full h-full">
         <Dialog.Root>
             <Dialog.Trigger>

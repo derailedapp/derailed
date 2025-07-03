@@ -23,9 +23,9 @@ const changeStatus = async () => {
 <div class="flex flex-col select-none">
     <div class="flex h-full w-full">
         <GuildScroll />
-        <div class="w-[280px] bg-dark-bg border border-tertiary-bg rounded-4xl select-none round-corners m-1 py-1 flex flex-col justify-between">
+        <div class="w-[280px] bg-dark-bg border border-tertiary-bg rounded-3xl select-none m-0.5 flex flex-col justify-between">
             <div class="z-[3]">
-				<div class="border-b border-tertiary-bg h-[58px]">
+				<div class="border-b border-tertiary-bg h-[56px]">
 					<a href="/app">
 						<div class="p-4 text-white flex items-center gap-2 group">
 							<HandWaving weight="fill" class="inline w-5 h-5" />
@@ -35,7 +35,7 @@ const changeStatus = async () => {
 						</div>
 					</a>
 				</div>
-                <div class="px-4 mb-0 pb-1 pt-4 flex items-center justify-between">
+                <div class="px-[18px] mb-0 py-2 flex items-center justify-between">
                     {#if (type === "dms")}
                         <div class="text-white text-sm">
                             Direct Messages

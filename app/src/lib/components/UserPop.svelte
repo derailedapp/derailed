@@ -10,7 +10,7 @@ let {
 }: { user: Actor; round?: boolean; padTop?: boolean } = $props();
 </script>
 
-<div class="w-[600px] h-auto m-1 rounded-4xl">
+<div class="w-[600px] h-auto m-0.5 rounded-4xl">
     <div class="flex flex-col items-center gap-2 z-[3] h-auto text-white w-full" class:rounded-xl={round}>
         <div class="w-full flex border bg-dark-bg border-tertiary-bg rounded-4xl flex-col pb-1">
             <div>
