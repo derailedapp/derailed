@@ -7,18 +7,19 @@ let {
 	user,
 	round = false,
 	padTop = false,
-}: { user: Actor; round?: boolean; padTop?: boolean } = $props();
+    unroundLeft = false
+}: { user: Actor; round?: boolean; padTop?: boolean, unroundLeft?: boolean } = $props();
 </script>
 
-<div class="w-[600px] h-auto m-0.5 rounded-4xl">
-    <div class="flex flex-col items-center gap-2 z-[3] h-auto text-white w-full" class:rounded-xl={round}>
-        <div class="w-full flex border bg-dark-bg border-tertiary-bg rounded-4xl flex-col pb-1">
+<div class="w-[600px] h-auto m-0.5 rounded-xl" class:ml-0={unroundLeft}>
+    <div class="flex flex-col items-center gap-2 z-[3] h-auto text-white w-full" class:rounded-xl={round} class:rounded-l-none={unroundLeft}>
+        <div class="w-full flex border bg-dark-bg border-tertiary-bg rounded-xl flex-col pb-1" class:rounded-l-none={unroundLeft} class:border-l-0={unroundLeft}>
             <div>
                 <div class="flex flex-col w-full items-center justify-center">
                     {#if !user?.banner_id}
-                        <div class="bg-blurple w-full h-[130px] rounded-t-4xl z-[5]"></div>
+                        <div class="bg-blurple w-full h-[130px] rounded-t-xl z-[5]" class:rounded-l-none={unroundLeft}></div>
                     {:else}
-                        <img src={Client.getCDNUrl("banners", user.banner_id)} alt="banner" class="w-full z-[5] h-[130px] object-cover bg-secondary-bg rounded-t-4xl">
+                        <img src={Client.getCDNUrl("banners", user.banner_id)} alt="banner" class:rounded-l-none={unroundLeft} class="w-full z-[5] h-[130px] object-cover bg-secondary-bg rounded-t-xl">
                     {/if}
                     <div class="absolute top-[4.7rem] z-[6]">
                         {#if user?.avatar_id === null}

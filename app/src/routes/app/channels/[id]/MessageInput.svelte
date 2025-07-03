@@ -48,7 +48,7 @@ async function onKey(event: KeyboardEvent) {
       throw error;
     }
 }} bind:this={composer}>
-	<div class="flex flex-row relative min-h-[56px] justify-center px-4 py-3 font-light w-full max-h-[450px] text-white rounded-xl rounded-t-3xl bg-secondary-bg border-t border-tertiary-bg">
+	<div class="flex flex-row relative min-h-[56px] justify-center px-4 py-3 font-light w-full max-h-[450px] text-white rounded-xl rounded-t-2xl bg-secondary-bg border-t border-tertiary-bg">
 		<div 
 			onkeyup={onKey} 
 			role="textbox" 
