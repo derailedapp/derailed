@@ -31,6 +31,7 @@ pub struct Relationship {
 #[derive(Debug, Clone, Serialize)]
 #[serde(tag = "t", content = "d")]
 pub enum Dispatch {
+    #[serde(rename = "READY")]
     Ready {
         session_id: String,
         channels: Vec<RTChannel>,
@@ -38,9 +39,13 @@ pub enum Dispatch {
         account: Account,
         relationships: Vec<Relationship>,
     },
+    #[serde(rename = "ACTOR_UPDATE")]
     ActorUpdate(UserActor),
+    #[serde(rename = "CHANNEL_CREATE")]
     ChannelCreate(models::channels::Channel),
+    #[serde(rename = "MESSAGE_CREATE")]
     MessageCreate(models::messages::Message),
+    #[serde(rename = "RELATIONSHIP_UPDATE")]
     RelationshipUpdate(Relationship),
     WSClose,
 }

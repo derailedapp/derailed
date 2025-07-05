@@ -36,6 +36,7 @@ lettre = "0.11"
 ttlhashmap = "0.1"
 cf-turnstile = "0.2"
 futures = "0.3.31"
+tower = "0.5"
 
 models = { path = "./crates/models" }
 rt_actors = { path = "./crates/rt_actors" }

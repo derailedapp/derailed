@@ -8,6 +8,7 @@ pub struct Message {
     pub channel_id: String,
     pub created_at: i64,
     pub last_modified_at: i64,
+    pub nonce: Option<String>
 }
 
 #[derive(Debug, Clone, Serialize)]

@@ -16,6 +16,7 @@ use models::{
 };
 use ractor::{Actor, RpcReplyPort, rpc::call};
 use rt_actors::{
+    channels::{Args as ChannelArgs, PrivateChannel},
     message::{Dispatch, RTChannel, Relationship},
     sessions::{Args as SessionArgs, Session},
 };
@@ -34,7 +35,7 @@ pub fn router() -> axum::Router<crate::State> {
 
 #[derive(Serialize)]
 pub struct GatewayMessage {
-    op: String,
+    op: i32,
     #[serde(skip_serializing_if = "Option::is_none")]
     e: Option<Dispatch>,
     seq: i32,
@@ -81,7 +82,7 @@ async fn handle_socket(socket: WebSocket, state: crate::State) {
                 let mut seq = sequence.lock().await;
                 *seq += 1;
                 serde_json::to_string(&GatewayMessage {
-                    op: "Dispatch".to_string(),
+                    op: 0,
                     e: Some(message),
                     seq: *seq,
                 })
@@ -106,6 +107,7 @@ async fn handle_socket(socket: WebSocket, state: crate::State) {
 #[derive(Deserialize)]
 #[serde(tag = "op", content = "d")]
 pub enum UserMessage {
+    #[serde(rename = "IDENTIFY")]
     Identify { token: String },
 }
 
@@ -135,6 +137,22 @@ async fn get_channel_data(
     pg: &PgPool,
 ) -> Result<RTChannel, crate::Error> {
     let members = sqlx::query_as!(UserActor, "SELECT * FROM actors WHERE id IN (SELECT user_id FROM channel_members WHERE channel_id = $1);", channel.id).fetch_all(pg).await?;
+
+    let instance = ractor::registry::where_is(channel.id.clone());
+    if instance.is_none() {
+        let (_, handle) = Actor::spawn(
+            Some(channel.id.clone()),
+            PrivateChannel,
+            ChannelArgs {
+                channel_id: channel.id.clone(),
+                members: members.clone(),
+            },
+        )
+        .await
+        .map_err(|_| crate::Error::ActorError)?;
+        tokio::spawn(handle);
+    }
+
     let read_state = sqlx::query_as!(
         ReadState,
         "SELECT * FROM read_states WHERE user_id = $1 AND channel_id = $2;",

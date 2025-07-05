@@ -70,7 +70,6 @@ button {
 	transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
 }
 
-
 @theme {
 	--color-thingy: rgba(255, 255, 255, 0.5);
 	--color-blurple: #3e6bff;

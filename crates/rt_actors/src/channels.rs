@@ -1,10 +1,7 @@
 use models::users::UserActor;
 use ractor::{
-    Actor, ActorProcessingErr, ActorRef, RpcReplyPort, async_trait, concurrency::Duration, pg,
-    rpc::call,
+    Actor, ActorProcessingErr, ActorRef, async_trait, pg,
 };
-
-use crate::message::Message;
 
 pub struct PrivateChannel;
 
@@ -32,9 +29,10 @@ impl Actor for PrivateChannel {
         myself: ActorRef<Self::Msg>,
         args: Self::Arguments,
     ) -> Result<Self::State, ActorProcessingErr> {
+        pg::join(args.channel_id.clone(), vec![myself.get_cell()]);
         for member in args.members.iter() {
-            pg::monitor(member.id.clone() + "-updates", myself.get_cell());
-            pg::monitor(member.id.clone() + "-presence", myself.get_cell());
+            pg::join(member.id.clone() + "-updates", vec![myself.get_cell()]);
+            pg::join(member.id.clone() + "-presence", vec![myself.get_cell()]);
         }
         Ok(State {
             channel_id: args.channel_id,
@@ -46,23 +44,8 @@ impl Actor for PrivateChannel {
         &self,
         _myself: ActorRef<Self::Msg>,
         message: Self::Msg,
-        state: &mut Self::State,
+        _state: &mut Self::State,
     ) -> Result<(), ActorProcessingErr> {
-        match message {
-            crate::message::Message::Publish(dispatch) => {
-                let subscribers = pg::get_members(&state.channel_id);
-                for subscriber in subscribers.iter() {
-                    // TODO: don't clone
-                    call(
-                        subscriber,
-                        |_: RpcReplyPort<()>| Message::Publish(dispatch.clone()),
-                        Some(Duration::from_secs(3)),
-                    )
-                    .await?;
-                }
-                Ok(())
-            }
-            _ => Ok(()),
-        }
+        Ok(())
     }
 }

@@ -122,7 +122,7 @@ pub enum Error {
     S3Error(#[from] minio::s3::error::Error),
     #[status(500)]
     #[error("Internal Service Error")]
-    MessagingError(#[from] MessagingErr<rt_actors::message::Dispatch>),
+    MessagingError(#[from] MessagingErr<rt_actors::message::Message>),
     #[status(500)]
     #[error("Internal Service Error")]
     SMTPError(#[from] lettre::transport::smtp::Error),

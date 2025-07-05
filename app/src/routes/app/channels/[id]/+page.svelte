@@ -3,12 +3,7 @@ import { page } from "$app/state";
 import { Hash } from "phosphor-svelte";
 import MessageInput from "./MessageInput.svelte";
 import MessageList from "./MessageList.svelte";
-import {
-	currentPrivateChannelId,
-	channels,
-	currentActor,
-	readStates,
-} from "$lib/state";
+import { currentPrivateChannelId, channels, currentActor } from "$lib/state";
 import UserPop from "$lib/components/UserPop.svelte";
 
 const { id } = page.params;
@@ -17,20 +12,20 @@ const rtChannel = $derived($channels.find((v) => v.channel.id == id));
 const channel = $derived(rtChannel!.channel);
 const channelMembers = $derived(rtChannel!.members);
 const otherUser = $derived(
-	channelMembers?.find((v) => v.id != $currentActor?.id),
+	channelMembers?.find((v) => v.deref()!.id != $currentActor?.id),
 );
 currentPrivateChannelId.set(id);
-const readState = $derived($readStates.find((v) => v.channel_id == id));
+const readState = $derived(rtChannel!.read_state);
 const isDM = $derived(channelMembers && channelMembers.length === 2);
 
 export function getChannelName() {
 	let profile = channelMembers?.find((v) => {
-		if ($currentActor?.id !== v.id) {
+		if ($currentActor?.id !== v.deref()!.id) {
 			return true;
 		}
 		return false;
 	})!;
-	let name = profile?.display_name || profile?.username;
+	let name = profile?.deref()!.display_name || profile?.deref()!.username;
 	return name!;
 }
 </script>
@@ -50,7 +45,7 @@ export function getChannelName() {
         </div>
         <div class="flex flex-1 min-h-[300px]">
             {#if channel && readState}
-                <MessageList channelId={id} username={otherUser?.display_name || otherUser?.username || ""} lastMessageId={channel.last_message_id} around={readState.last_message_id} />
+                <MessageList channelId={id} username={otherUser?.deref()!.display_name || otherUser?.deref()!.username || ""} lastMessageId={channel.last_message_id} around={readState.deref()!.last_message_id} />
             {/if}
         </div>
         <div class="min-h-[56px]">
@@ -59,6 +54,6 @@ export function getChannelName() {
     </div>
 
     {#if isDM}
-        <UserPop user={otherUser!} unroundLeft={true} />
+        <UserPop user={otherUser!.deref()!} unroundLeft={true} />
     {/if}
 </div>

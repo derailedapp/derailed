@@ -4,7 +4,7 @@ use rt_actors::message::Dispatch;
 use serde::Deserialize;
 use serde_valid::Validate;
 
-use crate::utils::publishing::publish_to;
+use crate::utils::publishing::publish_group;
 
 #[derive(Deserialize, Validate)]
 pub struct ModifyData {
@@ -64,16 +64,11 @@ pub async fn route(
     .fetch_one(&state.pg)
     .await?;
 
-    let channels = sqlx::query!(
-        "SELECT id FROM channels WHERE id IN (SELECT channel_id FROM channel_members WHERE user_id = $1);",
-        account.id
+    publish_group(
+        &(account.id + "-updates"),
+        Dispatch::ActorUpdate(actor.clone()),
     )
-    .fetch_all(&state.pg)
     .await?;
-
-    for channel in channels {
-        publish_to(&channel.id, Dispatch::ActorUpdate(actor.clone())).await?;
-    }
 
     Ok(Json(actor))
 }

@@ -18,7 +18,6 @@ let ctxOpen = $state(false);
 let author = $derived($users.find((v) => v.id == message.author_id));
 
 function getDate(ts: number) {
-	ts = Number(ts / 1000);
 	const now = Date.now() / 1000;
 	const difference = now - ts;
 	let m = moment.unix(ts).tz(Intl.DateTimeFormat().resolvedOptions().timeZone);
@@ -74,14 +73,14 @@ async function processContent(content: string | undefined | null) {
 
 <ContextMenu.Root bind:open={ctxOpen}>
 	<ContextMenu.Trigger>
-		<li id={message.id} class="flex flex-row w-full group gap-3 hover:bg-sexy-lighter-black/30 pl-6 p-1 py-0.5" class:my-2={!cascade && !nextMessageWillCascade} class:pl-7={cascade} class:hover:pl-5={cascade} class:mt-2={!cascade && nextMessageWillCascade} class:items-center={cascade} class:pb-0={nextMessageWillCascade}>
+		<li id={message.id} class="flex flex-row w-full group hover:bg-sexy-lighter-black/30 pl-6 p-1 py-0.5" class:gap-3={!cascade} class:gap-1={cascade} class:my-2={!cascade && !nextMessageWillCascade} class:pl-7={cascade} class:hover:pl-5={cascade} class:mt-2={!cascade && nextMessageWillCascade} class:items-center={cascade} class:pb-0={nextMessageWillCascade}>
 			{#if !cascade}
 				<Avatar.Root class="select-none shrink-0 mt-[1px]">
 					<Avatar.Image class="rounded-full h-11 w-11" src={Client.getCDNUrl("avatars", author?.avatar_id!)} alt={`User Profile Picture`} />
 					<Avatar.Fallback><img class="rounded-full h-11 w-11" alt="Fallback Avatar" src={"https://avatars.githubusercontent.com/u/132799819"} /></Avatar.Fallback>
 				</Avatar.Root>
 			{:else}
-				<div class="text-weep-gray select-none w-12 tracking-tighter text-xs font-semibold hidden group-hover:block" style="font-variant-numeric:tabular-nums">
+				<div class="text-weep-gray select-none w-14 tracking-tighter text-xs hidden group-hover:block" style="font-variant-numeric:tabular-nums">
 					{getDate(message.last_modified_at)}
 				</div>
 			{/if}

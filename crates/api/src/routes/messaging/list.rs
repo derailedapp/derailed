@@ -26,7 +26,7 @@ pub async fn route(
     if let Some(id) = opts.around {
         let mut around = sqlx::query_as!(
             Message,
-            "SELECT * FROM messages WHERE channel_id = $1 AND id >= $2;",
+            "SELECT * FROM messages WHERE channel_id = $1 AND id >= $2 ORDER BY id DESC;",
             channel.id,
             id
         )
@@ -35,36 +35,42 @@ pub async fn route(
         around.extend(
             sqlx::query_as!(
                 Message,
-                "SELECT * FROM messages WHERE channel_id = $1 AND id < $2;",
+                "SELECT * FROM messages WHERE channel_id = $1 AND id < $2 ORDER BY id DESC;",
                 channel.id,
                 id
             )
             .fetch_all(&state.pg)
             .await?,
         );
-        return Ok(Json(around));
-    }
-    if let Some(id) = opts.after {
+        Ok(Json(around))
+    } else if let Some(id) = opts.after {
         let after = sqlx::query_as!(
             Message,
-            "SELECT * FROM messages WHERE channel_id = $1 AND id > $2;",
+            "SELECT * FROM messages WHERE channel_id = $1 AND id > $2 ORDER BY id DESC;",
             channel.id,
             id
         )
         .fetch_all(&state.pg)
         .await?;
-        return Ok(Json(after));
-    }
-    if let Some(id) = opts.before {
+        Ok(Json(after))
+    } else if let Some(id) = opts.before {
         let before = sqlx::query_as!(
             Message,
-            "SELECT * FROM messages WHERE channel_id = $1 AND id < $2;",
+            "SELECT * FROM messages WHERE channel_id = $1 AND id < $2 ORDER BY id DESC;",
             channel.id,
             id
         )
         .fetch_all(&state.pg)
         .await?;
-        return Ok(Json(before));
+        Ok(Json(before))
+    } else {
+        let newest = sqlx::query_as!(
+            Message,
+            "SELECT * FROM messages WHERE channel_id = $1 ORDER BY id DESC;",
+            channel.id
+        )
+        .fetch_all(&state.pg)
+        .await?;
+        Ok(Json(newest))
     }
-    Err(crate::Error::NoPaginationOptions)
 }

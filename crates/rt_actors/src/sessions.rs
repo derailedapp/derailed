@@ -1,5 +1,5 @@
 use queues::{IsQueue, Queue};
-use ractor::{Actor, ActorProcessingErr, ActorRef, RpcReplyPort, async_trait, pg, rpc::call};
+use ractor::{Actor, ActorProcessingErr, ActorRef, async_trait, pg};
 
 use crate::message::Dispatch;
 
@@ -36,20 +36,20 @@ impl Actor for Session {
     ) -> Result<Self::State, ActorProcessingErr> {
         // subscribe to the necessary process groups
 
-        pg::monitor(args.session_id.clone(), myself.get_cell());
+        pg::join(args.session_id.clone(), vec![myself.get_cell()]);
 
         // the current users groups
-        pg::monitor(args.user_id.clone(), myself.get_cell());
-        pg::monitor(args.user_id.clone() + "-updates", myself.get_cell());
-        pg::monitor(args.user_id.clone() + "-presence", myself.get_cell());
+        pg::join(args.user_id.clone(), vec![myself.get_cell()]);
+        pg::join(args.user_id.clone() + "-updates", vec![myself.get_cell()]);
+        pg::join(args.user_id.clone() + "-presence", vec![myself.get_cell()]);
 
         // guilds and channels
         args.joined_channels
             .into_iter()
-            .for_each(|id| pg::monitor(id, myself.get_cell()));
+            .for_each(|id| pg::join(id, vec![myself.get_cell()]));
         args.joined_guilds
             .into_iter()
-            .for_each(|id| pg::monitor(id, myself.get_cell()));
+            .for_each(|id| pg::join(id, vec![myself.get_cell()]));
 
         Ok(State {
             session_id: args.session_id,
@@ -70,12 +70,8 @@ impl Actor for Session {
             crate::message::Message::Publish(dispatch) => {
                 if let Some(ws) = &state.ws {
                     if ws.send(dispatch).is_err() {
-                        call(
-                            &myself,
-                            |_: RpcReplyPort<()>| crate::message::Message::WSClose,
-                            None,
-                        )
-                        .await?;
+                        println!("3");
+                        let _ = ractor::cast!(myself, crate::message::Message::WSClose);
                     }
                 } else if let Some(queue) = &mut state.queue {
                     queue.add(dispatch)?;

@@ -1,5 +1,6 @@
 <script lang="ts">
-import Client, { type Actor } from "$lib/api";
+import Client from "$lib/api";
+import type { UserActor } from "$lib/models";
 import moment from "moment-timezone";
 import { decodeTime } from "ulidx";
 
@@ -7,11 +8,16 @@ let {
 	user,
 	round = false,
 	padTop = false,
-    unroundLeft = false
-}: { user: Actor; round?: boolean; padTop?: boolean, unroundLeft?: boolean } = $props();
+	unroundLeft = false,
+}: {
+	user: UserActor;
+	round?: boolean;
+	padTop?: boolean;
+	unroundLeft?: boolean;
+} = $props();
 </script>
 
-<div class="w-[600px] h-auto m-0.5 rounded-xl" class:ml-0={unroundLeft}>
+<div class="w-[600px] h-auto m-1 rounded-xl" class:ml-0={unroundLeft}>
     <div class="flex flex-col items-center gap-2 z-[3] h-auto text-white w-full" class:rounded-xl={round} class:rounded-l-none={unroundLeft}>
         <div class="w-full flex border bg-dark-bg border-tertiary-bg rounded-xl flex-col pb-1" class:rounded-l-none={unroundLeft} class:border-l-0={unroundLeft}>
             <div>

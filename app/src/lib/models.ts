@@ -23,10 +23,13 @@ export interface UserActor {
 export interface Message {
 	id: string;
 	author_id: string;
+	author: WeakRef<UserActor>;
 	content: string;
 	channel_id: string;
 	created_at: number;
 	last_modified_at: number;
+	nonce: string | null;
+	pending?: boolean;
 }
 
 export interface ReadState {
@@ -50,11 +53,11 @@ export interface Channel {
 
 export interface RTChannel {
 	channel: Channel;
-	members: UserActor[];
-	read_state: ReadState;
+	members: WeakRef<UserActor>[];
+	read_state: WeakRef<ReadState>;
 }
 
 export interface Relationship {
 	type: number;
-	target: UserActor;
+	target: WeakRef<UserActor>;
 }

@@ -9,7 +9,7 @@ use models::{
 use rt_actors::message::{Dispatch, Relationship};
 use ulid::Ulid;
 
-use crate::utils::publishing::publish_to;
+use crate::utils::publishing::{publish_group, publish_to};
 
 // 0: following
 // 1: followed by
@@ -131,7 +131,7 @@ pub async fn route(
             )
             .execute(&mut *txn)
             .await?;
-            publish_to(
+            publish_group(
                 &account.id,
                 Dispatch::RelationshipUpdate(Relationship {
                     r#type: 2,
@@ -139,7 +139,7 @@ pub async fn route(
                 }),
             )
             .await?;
-            publish_to(
+            publish_group(
                 &other_user.id,
                 Dispatch::RelationshipUpdate(Relationship {
                     r#type: 2,

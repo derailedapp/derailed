@@ -2,7 +2,7 @@ import { writable } from "svelte/store";
 import {
 	type UserActor,
 	type Account,
-	type Channel,
+	type Message,
 	type ReadState,
 } from "./models";
 import type { Relationship, RTChannel } from "./models";
@@ -28,6 +28,8 @@ export const relationships = writable<Relationship[]>([]);
 
 export const channels = writable<RTChannel[]>([]);
 export const readStates = writable<ReadState[]>([]);
+export const channelMessages = writable<Map<string, Message[]>>(new Map());
+export const pendingNonces = writable<string[]>([]);
 
 export const currentPrivateChannelId = writable<string | undefined>();
 export const toasts = writable<Toast[]>([]);

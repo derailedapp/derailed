@@ -37,3 +37,4 @@ lettre.workspace = true
 ttlhashmap.workspace = true
 cf-turnstile.workspace = true
 futures.workspace = true
+tower.workspace = true

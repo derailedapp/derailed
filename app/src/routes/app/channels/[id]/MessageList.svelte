@@ -1,6 +1,9 @@
 <script lang="ts">
 import MessageComp from "./Message.svelte";
-import { onMount, tick } from "svelte";
+import { onMount } from "svelte";
+import type { Message } from "$lib/models";
+import { channelMessages, users } from "$lib/state";
+import Client from "$lib/api";
 
 let {
 	channelId,
@@ -21,17 +24,103 @@ let loadOlder: Element | undefined = $state();
 let loadingOlder: boolean = $state(false);
 let loadingNewer: boolean = $state(false);
 
-let messages = $state<any[]>([]);
+let messages = $derived<Message[]>($channelMessages.get(channelId) || []);
+
+async function loadInitial() {
+	let resp: Response;
+	if (around) {
+		resp = await Client.request(
+			"GET",
+			`/channels/${channelId}/messages?around=${around}`,
+			undefined,
+		);
+	} else {
+		resp = await Client.request(
+			"GET",
+			`/channels/${channelId}/messages`,
+			undefined,
+		);
+	}
+	let data: Message[] = await resp.json();
+	let msgs = data.map((v) => {
+		v.author = new WeakRef($users.find((v2) => v2.id == v.author_id)!);
+		return v;
+	});
+	channelMessages.update((v) => {
+		v.set(channelId, msgs.reverse());
+		return v;
+	});
+}
+
+async function loadOld() {
+	loadingOlder = true;
+	let resp: Response;
+	let oldestMessage = messages.at(-1);
+	if (!oldestMessage) {
+		return;
+	}
+	resp = await Client.request(
+		"GET",
+		`/channels/${channelId}/messages?before=${oldestMessage!.id}`,
+		undefined,
+	);
+	let data: Message[] = await resp.json();
+	let msgs = data.map((v) => {
+		v.author = new WeakRef($users.find((v2) => v2.id == v.author_id)!);
+		return v;
+	});
+	// @ts-ignore
+	channelMessages.update((mms) => {
+		let ms = mms.get(channelId);
+		msgs.forEach((m) => ms!.push(m));
+		return ms;
+	});
+	loadingOlder = false;
+}
+
+async function loadNew() {
+	loadingNewer = true;
+	let resp: Response;
+	let newestMessage = messages.at(0);
+	if (!newestMessage) {
+		return;
+	}
+	resp = await Client.request(
+		"GET",
+		`/channels/${channelId}/messages?before=${newestMessage!.id}`,
+		undefined,
+	);
+	let data: Message[] = await resp.json();
+	let msgs = data.map((v) => {
+		v.author = new WeakRef($users.find((v2) => v2.id == v.author_id)!);
+		return v;
+	});
+	// @ts-ignore
+	channelMessages.update((mms) => {
+		let ms = mms.get(channelId);
+		msgs.forEach((m) => ms!.unshift(m));
+		return ms;
+	});
+	loadingNewer = false;
+}
 
 onMount(() => {
 	const observer = new IntersectionObserver(
 		(entries) => {
-			entries.forEach((v) => {});
+			entries.forEach((v) => {
+				if (v.target.id == "loadOlder" && !loadingOlder) {
+					loadOld();
+				}
+				if (v.target.id == "loadNewer" && !loadingNewer) {
+					loadNew();
+				}
+			});
 		},
 		{ threshold: 0.2, root: container! },
 	);
 	observer.observe(loadOlder!);
 	observer.observe(loadNewer!);
+	loadInitial();
 });
 </script>
 
@@ -40,7 +129,7 @@ onMount(() => {
 		<div class="font-bold text-xl pl-2">
 			{username}
 		</div>
-		<div class="text-center pl-2">
+		<div class="text-center pl-2 text-weep-gray">
 			This is the start of your mutual chat with {username}
 		</div>
 	</div>

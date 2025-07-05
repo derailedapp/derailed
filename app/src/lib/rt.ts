@@ -1,6 +1,7 @@
 import { writable } from "svelte/store";
 import { env } from "$env/dynamic/public";
 import Events from "./events";
+import { goto } from "$app/navigation";
 
 const ws = new WebSocket(env.PUBLIC_GATEWAY_URL);
 
@@ -9,7 +10,7 @@ ws.onopen = () => {
 	if (token) {
 		ws.send(
 			JSON.stringify({
-				op: "Identify",
+				op: "IDENTIFY",
 				d: {
 					token,
 				},
@@ -26,7 +27,14 @@ ws.onmessage = (ev) => {
 	let t = e?.t;
 	let d = e?.d;
 
-	if (op == "Dispatch") {
+	if (op == 0) {
 		Events.emit(t, d);
+	}
+};
+
+ws.onclose = (ev) => {
+	if (ev.code === 401) {
+		localStorage.removeItem("token");
+		goto("/login");
 	}
 };

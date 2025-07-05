@@ -10,6 +10,9 @@ import {
 } from "svelte-lexical";
 import { theme } from "svelte-lexical/dist/themes/default";
 import EmojiPicker from "./EmojiPicker.svelte";
+import Client from "$lib/api";
+import { ulid } from "ulidx";
+import { channelMessages, currentActor, pendingNonces } from "$lib/state";
 
 let { channelId, channelName }: { channelId: string; channelName: string } =
 	$props();
@@ -32,10 +35,35 @@ async function onKey(event: KeyboardEvent) {
 			getRoot().clear();
 		});
 
-		//await client.mutation(api.messages.createInPrivateChannel, {
-		//	channelId: channelId as Id<"channels">,
-		//	content,
-		//});
+		let nonce = ulid();
+		await Client.request("POST", `/channels/${channelId}/messages`, {
+			content,
+			nonce,
+		});
+		pendingNonces.update((nonces) => {
+			nonces.push(nonce);
+			return nonces;
+		});
+		channelMessages.update((msgs) => {
+			let messages = msgs.get(channelId);
+			let msg = {
+				id: "undefined",
+				content,
+				nonce,
+				author_id: $currentActor!.id,
+				author: new WeakRef($currentActor!),
+				channel_id: channelId,
+				pending: true,
+				created_at: Date.now(),
+				last_modified_at: Date.now(),
+			};
+			if (!messages) {
+				msgs.set(channelId, [msg]);
+			} else {
+				messages.push(msg);
+			}
+			return msgs;
+		});
 	}
 }
 </script>
