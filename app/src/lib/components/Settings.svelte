@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Dialog, Tabs } from "bits-ui";
 
-import { SignOut, Gear, User, X, At, Pencil, EnvelopeSimple, GithubLogo, Butterfly, Lock, IdentificationBadge } from "phosphor-svelte";
+import { SignOut, Gear, User, X, At, Pencil, EnvelopeSimple, GithubLogo, Butterfly, Lock, IdentificationBadge, XLogo } from "phosphor-svelte";
 import { readAndCompressImage } from "browser-image-resizer";
 
 import { addToast } from "$lib/state";
@@ -144,7 +144,7 @@ const logout = async () => {
         <Dialog.Overlay
             class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
         />
-        <Dialog.Content class="bg-dark-bg rounded-3xl fixed left-[50%] top-[50%] w-[1200px] h-[900px] z-50 translate-x-[-50%] translate-y-[-50%] 
+        <Dialog.Content class="bg-dark-bg rounded-3xl fixed left-[50%] top-[50%] max-w-[1200px] max-h-[900px] w-full h-full z-50 translate-x-[-50%] translate-y-[-50%] 
         data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
             <Tabs.Root bind:value={selectedTab} onValueChange={() => reset(true)} class="flex flex-row h-full w-full">
                 <Tabs.List class="flex justify-center w-[200px] h-full border border-tertiary-bg rounded-3xl rounded-r-none">
@@ -188,11 +188,15 @@ const logout = async () => {
                             <a href="https://bsky.app/profile/derailed.top">
                                 <Butterfly size="20px"/>
                             </a>
+
+                            <a href="https://x.com/derailedapp">
+                                <XLogo size="20px"/>
+                            </a>
                         </div>
                     </div>
                 </Tabs.List>
 
-                <Tabs.Content value="account" class="flex flex-col items-center mt-6 w-[1000px] h-full gap-3">
+                <Tabs.Content value="account" class="flex flex-col items-center mt-6 w-[1000px] h-full gap-3 overflow-y-auto">
                     <h1 class="font-bold text-xl mb-5">Account</h1>
 
                     <div class="flex flex-row items-center gap-3 w-[800px] h-[80px] rounded-xl">
@@ -282,7 +286,7 @@ const logout = async () => {
                     </Dialog.Root>
                 </Tabs.Content>
 
-                <Tabs.Content value="profile" class="flex flex-col items-center mt-6 w-[1000px] h-full gap-12">
+                <Tabs.Content value="profile" class="flex flex-col items-center mt-6 w-[1000px] h-full gap-12 overflow-y-auto">
                     <h1 class="font-bold text-xl mb-5">Profile</h1>
 
                     <div class="flex flex-row items-center justify-center w-[600px]">

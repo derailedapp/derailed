@@ -11,7 +11,7 @@ use zune_core::options::DecoderOptions;
 use zune_image::codecs::ImageFormat;
 use zune_image::image::Image;
 use zune_image::traits::OperationsTrait;
-use zune_imageprocs::crop::Crop;
+use zune_imageprocs::resize::{Resize, ResizeMethod};
 
 use caesium::parameters::CSParameters;
 
@@ -35,16 +35,8 @@ pub async fn route(
                     .to_vec();
 
                 let mut image = Image::read(bytes, DecoderOptions::default())?;
+                Resize::new(400, 400, ResizeMethod::Bilinear).execute(&mut image)?;
 
-                let (w, h) = image.dimensions();
-                if w < 400 || h < 400 {
-                    return Err(crate::Error::ImageTooSmall(400, 400))
-                }
-
-                let start_x = (w / 2) - 200;
-                let start_y = (h / 2) - 200;
-
-                Crop::new(400, 400, start_x, start_y).execute(&mut image)?;
                 let image = image.write_to_vec(ImageFormat::JPEG)?;
                 let mut parameters = CSParameters::new();
                 parameters.jpeg.quality = 60;
@@ -87,15 +79,7 @@ pub async fn route(
 
                 let mut image = Image::read(bytes, DecoderOptions::default())?;
 
-                let (w, h) = image.dimensions();
-                if w < 980 || h < 400 {
-                    return Err(crate::Error::ImageTooSmall(980, 400));
-                }
-
-                let start_x = (w / 2) - 490;
-                let start_y = (h / 2) - 200;
-
-                Crop::new(980, 400, start_x, start_y).execute(&mut image)?;
+                Resize::new(980, 400, ResizeMethod::Bilinear).execute(&mut image)?;
                 let image = image.write_to_vec(ImageFormat::JPEG)?;
 
                 let mut parameters = CSParameters::new();
