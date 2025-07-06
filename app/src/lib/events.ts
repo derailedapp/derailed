@@ -93,3 +93,20 @@ emitter.on("MESSAGE_CREATE", (data: Message) => {
 		);
 	}
 });
+
+emitter.on("ACTOR_UPDATE", (data: UserActor) => {
+	const currentActorData = get(currentActor)!;
+	if (currentActorData.id == data.id) {
+		currentActor.set(data);
+	}
+
+	users.update((v) => {
+		let idx = v.findIndex((v) => v.id == data.id);
+		if (idx === -1) {
+			v.push(data);
+		} else {
+			v[idx] = data;
+		}
+		return v;
+	});
+});

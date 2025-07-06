@@ -7,13 +7,13 @@ use axum::http::{HeaderValue, Method};
 use ractor::MessagingErr;
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use sqlxmq::JobRegistry;
-use tokio::{net::TcpListener, sync::RwLock};
+use tokio::net::TcpListener;
 use tower_http::cors::{Any, CorsLayer};
 
 use cf_turnstile::TurnstileClient;
 use lettre::SmtpTransport;
 use lettre::transport::smtp::authentication::Credentials;
-use ttlhashmap::TtlHashMap;
+use ttl_dashmap::TtlDashmap;
 
 mod routes;
 mod utils;
@@ -25,7 +25,7 @@ pub struct State {
     pub password_hasher: argon2::Argon2<'static>,
     pub mailer: Option<SmtpTransport>,
 
-    pub email_ttl: Arc<RwLock<TtlHashMap<String, i32>>>,
+    pub email_ttl: TtlDashmap<String, i32>,
     pub captcha: Option<Arc<TurnstileClient>>,
     pub alpha_code: String,
 }
@@ -59,6 +59,9 @@ pub enum Error {
     #[status(400)]
     #[error("Error while parsing image")]
     ImageErrors(#[from] zune_image::errors::ImageErrors),
+    #[status(400)]
+    #[error("Image is too small, it must be atleast: {0}x{1}")]
+    ImageTooSmall(i32, i32),
     #[status(404)]
     #[error("Actor not found")]
     ActorNotFound,
@@ -195,9 +198,9 @@ async fn main() {
         s3_client,
         password_hasher: argon2::Argon2::default(),
         mailer,
-        email_ttl: Arc::new(RwLock::new(TtlHashMap::<String, i32>::new(
+        email_ttl: TtlDashmap::<String, i32>::new(
             Duration::from_secs(3600),
-        ))),
+        ),
         captcha,
         alpha_code,
     };

@@ -10,8 +10,7 @@ use crate::utils::publishing::publish_group;
 pub struct ModifyData {
     #[validate(min_length = 4)]
     #[validate(max_length = 32)]
-    username: Option<String>,
-    display_name: Option<String>,
+    display_name: String,
 }
 
 pub async fn route(
@@ -19,42 +18,13 @@ pub async fn route(
     Extension(account): Extension<Account>,
     Json(model): Json<ModifyData>,
 ) -> Result<Json<models::users::UserActor>, crate::Error> {
-    let mut txn = state.pg.begin().await?;
-
-    if let Some(display_name) = model.display_name {
-        sqlx::query!(
-            "UPDATE actors SET display_name = $1 WHERE id = $2",
-            display_name,
-            account.id
-        )
-        .execute(&mut *txn)
-        .await?;
-    }
-
-    if let Some(username) = model.username {
-        if sqlx::query!("SELECT id FROM actors WHERE username = $1", &username)
-            .fetch_optional(&state.pg)
-            .await?
-            .is_some()
-        {
-            return Err(crate::Error::UsernameAlreadyUsed);
-        }
-
-        let username_re = regex::Regex::new("^[a-z0-9_]+$").unwrap();
-        if !username_re.is_match(&username) {
-            return Err(crate::Error::UsernameTestFail);
-        }
-
-        sqlx::query!(
-            "UPDATE actors SET username = $1 WHERE id = $2",
-            username,
-            account.id
-        )
-        .execute(&mut *txn)
-        .await?;
-    }
-
-    txn.commit().await?;
+    sqlx::query!(
+        "UPDATE actors SET display_name = $1 WHERE id = $2",
+        model.display_name,
+        account.id
+    )
+    .execute(&state.pg)
+    .await?;
 
     let actor = sqlx::query_as!(
         models::users::UserActor,

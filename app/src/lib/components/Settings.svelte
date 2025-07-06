@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Dialog, Tabs } from "bits-ui";
 
-import { NotePencil, SignOut, Gear, Spinner, X } from "phosphor-svelte";
+import { SignOut, Gear, User, X, At, Pencil, EnvelopeSimple, GithubLogo, Butterfly, Lock, IdentificationBadge } from "phosphor-svelte";
 import { readAndCompressImage } from "browser-image-resizer";
 
 import { addToast } from "$lib/state";
@@ -14,15 +14,11 @@ import Client from "$lib/api";
 
 let banner: File | undefined = $state();
 let avatar: File | undefined = $state();
-
-let newUsername: string = $derived($currentActor!.username);
 let newDisplayName: string = $derived($currentActor!.display_name || "");
-let newEmail: string = $derived($currentAccount!.email);
-
-let currentPassword: string | undefined = $state();
 
 let bannerInput: HTMLInputElement | undefined = $state();
 let avatarInput: HTMLInputElement | undefined = $state();
+let selectedTab = $state("account");
 
 let crop: { type: CropType; image: string } | null = $state(null);
 
@@ -46,56 +42,51 @@ const getAvatar = (currentAvatarId: string | null) => {
 	return "/default_pfp.webp";
 };
 
-const onSubmit = async (e: Event) => {
+const updateActor = async (e: Event) => {
 	e.preventDefault();
-
-	//client.mutation(api.users.modifyProfile, {
-	//    username: newUsername !== currentUser!.username ? newUsername : undefined,
-	//    displayName: newDisplayName !== (currentUser!.displayName || "") ? newDisplayName : undefined,
-	//})
+    let hasChanges = false;
+    let form = new FormData();
 
 	if (avatar) {
-		//const uploadUrl = await client.mutation(api.users.getUploadURL, {});
-		const compressed = await readAndCompressImage(avatar, {
-			quality: 0.9,
-			maxWidth: 400,
-			maxHeight: 400,
-			mimeType: "image/webp",
+		let avatarCompressed = await readAndCompressImage(avatar, {
+			mimeType: "image/jpeg",
 		});
 
-		//const result = await fetch(uploadUrl, {
-		//    method: "POST",
-		//    headers: { "Content-Type": "image/webp" },
-		//    body: compressed,
-		//});
-
-		//const { storageId } = await result.json();
-
-		//await client.mutation(api.users.setAvatarID, { id: storageId })
+        form.append("avatar", avatarCompressed);
 	}
 
 	if (banner) {
-		//const uploadUrl = await client.mutation(api.users.getUploadURL, {});
-		const compressed = await readAndCompressImage(banner, {
-			quality: 0.9,
-			maxWidth: 980,
-			maxHeight: 400,
-			mimeType: "image/webp",
+		let bannerCompressed = await readAndCompressImage(banner, {
+			mimeType: "image/jpeg",
 		});
 
-		//const result = await fetch(uploadUrl, {
-		//    method: "POST",
-		//    headers: { "Content-Type": "image/webp" },
-		//    body: compressed,
-		//});
-
-		//const { storageId } = await result.json();
-
-		//await client.mutation(api.users.setBannerID, { id: storageId })
+        form.append("banner", bannerCompressed);
 	}
 
+    if (form.has("avatar") || form.has("banner")) {
+        const request = await Client.requestForm("POST", "/users/@me/assets", form);
+        if (!request.ok) {
+            return addToast("error", "Failed to update avatar/banner", 3000);
+        }
+
+        hasChanges = true;
+    }
+
+    if (newDisplayName != ($currentActor!.display_name || "")) {
+        const request = await Client.request("PATCH", "/users/@me", { display_name: newDisplayName });
+        if (!request.ok) {
+            return addToast("error", "Failed to update profile", 3000);
+        }
+
+        hasChanges = true;
+    }
+
 	reset(true);
-	addToast("success", "Profile updated", 3000);
+    if (hasChanges) {
+	    addToast("success", "Profile updated", 3000);
+    } else {
+	    addToast("error", "Nothing to change", 3000);
+    }
 };
 
 const setCrop = async (
@@ -131,9 +122,7 @@ const reset = (reset: boolean) => {
 		banner = undefined;
 		avatar = undefined;
 
-		newUsername = $currentActor!.username;
 		newDisplayName = $currentActor!.display_name || "";
-		newEmail = $currentAccount!.email!;
 	}
 };
 
@@ -155,138 +144,210 @@ const logout = async () => {
         <Dialog.Overlay
             class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
         />
-        <Dialog.Content class="bg-aside rounded-lg fixed left-[50%] top-[50%] z-50 w-[1000px] h-[800px] translate-x-[-50%] translate-y-[-50%] 
+        <Dialog.Content class="bg-dark-bg rounded-3xl fixed left-[50%] top-[50%] w-[1200px] h-[900px] z-50 translate-x-[-50%] translate-y-[-50%] 
         data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
-            <Tabs.Root value="myaccount" class="flex h-full w-full flex-row">
-                <Tabs.List class="w-[180px] h-full bg-guild-aside rounded-l-lg flex justify-end">
-                    <div class="flex flex-col gap-1 mt-6 ml-auto w-[180px]">
+            <Tabs.Root bind:value={selectedTab} onValueChange={() => reset(true)} class="flex flex-row h-full w-full">
+                <Tabs.List class="flex justify-center w-[200px] h-full border border-tertiary-bg rounded-3xl rounded-r-none">
+                    <div class="flex flex-col gap-2 mt-6 mx-3 w-full">
                         <div class="flex flex-row justify-center items-center font-bold">
-                            USER SETTINGS
+                            SETTINGS
                         </div>
                         <Tabs.Trigger 
-                            value="myaccount"
-                            class="py-4 w-[200px] flex mt-5 relative rounded-sm
-                            before:absolute before:left-0 before:top-0 before:h-full before:w-1 
-                            before:bg-transparent text-[15px] data-[state=active]:before:bg-blurple">
+                            value="account"
+                            class="py-2 mt-5 data-[state=active]:bg-aside/40 hover:bg-aside/20 duration-75 rounded-lg">
+                            
+                            <div class="flex flex-row items-center ml-2">
+                                <User size="20px" />
+                                <h1 class="text-sm ml-2">Account</h1>
+                            </div>
+                        </Tabs.Trigger>
 
-                            <h1 class="ml-6 text-sm">My Account</h1>
+                        <Tabs.Trigger 
+                            value="profile"
+                            class="py-2 data-[state=active]:bg-aside/40 hover:bg-aside/20 duration-75 rounded-lg">
+                            
+                            <div class="flex flex-row items-center ml-2">
+                                <IdentificationBadge size="20px" />
+                                <h1 class="text-sm ml-2">Profile</h1>
+                            </div>
                         </Tabs.Trigger>
 
                         <button onclick={logout} class="data-[state=active]:bg-aside/40 transition-colors duration-800 rounded-sm
-                        py-1 x-3 flex m-2 mb-4 items-center text-red-300 hover:text-white text-sm hover:bg-red-600/20 mt-auto group">
+                        py-1 x-3 flex items-center text-red-300 hover:text-white text-sm hover:bg-red-600/20 mt-auto group">
                             <h1 class="text-[15px] ml-2">Log Out</h1>
                             <SignOut weight="bold" class="ml-auto mr-2 size-[17px] group-hover:mr-1 transition-all duration-800"/>
                         </button>
+
+                        <div class="border-b border-tertiary-bg w-full h-px"></div>
+
+                        <div class="flex flex-row justify-center mb-2 gap-4">
+                            <a href="https://github.com/derailedapp">
+                                <GithubLogo size="20px"/>
+                            </a>
+
+                            <a href="https://bsky.app/profile/derailed.top">
+                                <Butterfly size="20px"/>
+                            </a>
+                        </div>
                     </div>
                 </Tabs.List>
 
-                <Tabs.Content value="myaccount" class="flex flex-col w-full h-full">
-                    <form class="h-full w-full" onsubmit={onSubmit}>
-                        <div class="flex flex-row w-full h-[90%] pl-6 pr-6 pt-12 overflow-y-auto gap-8">
-                            <div class="flex flex-col pl-8 pt-8 w-1/2 gap-10">
-                                <section>
-                                    <div class="font-bold text-sm text-weep-gray tracking-tighter mb-8">
-                                        DISPLAY NAME
-                                    </div>
+                <Tabs.Content value="account" class="flex flex-col items-center mt-6 w-[1000px] h-full gap-3">
+                    <h1 class="font-bold text-xl mb-5">Account</h1>
 
-                                    
-                                    <div class="flex flex-row justify-center items-center gap-3">
-                                        <input 
-                                            style="box-shadow: none;" 
-                                            placeholder="No Display Name"
-                                            bind:value={newDisplayName} 
-                                            class="bg-transparent appearance-none w-full border-0 border-b border-b-sexy-red-gray" 
-                                        />
-                                    </div>
-                                </section>
-
-                                <section>
-                                    <div class="font-bold text-sm text-weep-gray tracking-tighter mb-8">
-                                        USERNAME
-                                    </div>
-
-                                    <input 
-                                        required 
-                                        style="box-shadow: none;" 
-                                        bind:value={newUsername} 
-                                        onkeypress={(e) => {if (e.key === " ") { e.preventDefault() }}} 
-                                        class="bg-transparent appearance-none w-full border-0 border-b border-b-sexy-red-gray" 
-                                    />
-                                </section>
-
-                                <section>
-                                    <div class="font-bold text-sm text-weep-gray tracking-tighter mb-8">
-                                        EMAIL
-                                    </div>
-
-                                    <input
-                                        style="box-shadow: none;"
-                                        bind:value={newEmail}
-                                        class="bg-transparent appearance-none w-full border-0 border-b border-b-sexy-red-gray"
-                                    />
-                                </section>
-
-                                <section>
-                                    <button class="font-semibold text-sm px-4 py-2 bg-blurple rounded-md">
-                                        Change Password
-                                    </button>
-                                </section>
-                            </div>
-
-                            <div class="flex flex-col items-center pr-8 pt-8 gap-12 w-1/2">
-                                <div class="font-bold text-sm text-weep-gray tracking-tighter text-center">
-                                    PROFILE PICTURE
-                                </div>
-                                <button type="button" class="relative group" onclick={() => avatarInput?.click()}>
-                                    <img src={getAvatar($currentActor!.avatar_id)} class="size-[12rem] rounded-full opacity-100 group-hover:opacity-70 mx-auto transition-all duration-200" alt="me">
-
-                                    <span class="opacity-0 group-hover:opacity-200
-                                        absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 duration-200">
-                                        <NotePencil class="w-6 h-6" />
-                                    </span>
-                                </button>
-
-                                <div class="font-bold text-sm text-weep-gray tracking-tighter text-center">
-                                    BANNER
-                                </div>
-                                <button type="button" class="relative group" onclick={() => bannerInput?.click()}>
-                                    {#await getBanner($currentActor!.banner_id) then url}
-                                        {#if url == null}
-                                            <div class="w-[350px] h-[130px] bg-guild-aside"></div>
-                                        {:else}
-                                            <img src={getBanner($currentActor!.banner_id)} class="w-[350px] h-[130px] opacity-100 group-hover:opacity-70 mx-auto transition-all duration-200 object-cover bg-center" alt="me">
-                                        {/if}
-
-                                    {/await}
-
-                                    <span class="opacity-0 group-hover:opacity-200
-                                        absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 duration-200">
-                                        <NotePencil class="w-6 h-6" />
-                                    </span>
-                                </button>
-                            </div>
+                    <div class="flex flex-row items-center gap-3 w-[800px] h-[80px] rounded-xl">
+                        {#if $currentActor?.avatar_id}
+                            <img src={Client.getCDNUrl("avatars", $currentActor.avatar_id)} class="ml-3 size-18 rounded-full">
+                        {:else}
+                            <img src="/default_pfp.webp" class="ml-3 size-18 rounded-full">
+                        {/if}
+                        <div class="flex flex-col items-start">
+                            <p class="text-md font-bold">{$currentActor!.username}</p>
+                            <p class="text-xs font-bold">{$currentActor!.id}</p>
                         </div>
+                        <button onclick={() => {selectedTab = "profile"}} class="ml-auto px-4 text-white rounded-4xl py-0.5 hover:scale-105 hover:bg-fourth-bg bg-secondary-bg border border-tertiary-bg duration-500">
+                            Edit Profile
+                        </button>
+                    </div>
 
-                        <div class="h-[10%] w-full bg-sexy-red-black rounded-br-lg flex items-center justify-end">
-                            {#if newEmail != $currentAccount?.email}
-                                <div class="mr-auto ml-8 w-1/2">
-                                    <input
-                                        required
-                                        type="password"
-                                        placeholder="Enter current password"
-                                        style="box-shadow: none;"
-                                        bind:value={currentPassword}
-                                        class="bg-transparent appearance-none w-full border-0 border-b border-b-sexy-red-gray"
-                                    />
+                    <Dialog.Root>
+                        <Dialog.Trigger class="flex flex-row items-center gap-3 w-[800px] h-[55px] bg-sexy-lighter-black rounded-xl text-weep-gray hover:text-white duration-75">
+                            <At size="25px" class="ml-3"/>
+
+                            <div class="flex flex-col items-start">
+                                <div class="text-xs">
+                                    USERNAME
                                 </div>
-                            {/if}
+                                <div class="text-md font-bold">{$currentActor!.username}</div>
+                            </div>
 
-                            <button type="submit" class="mr-8 bg-blurple py-1 px-8 rounded-sm">
-                                Save
+                            <div class="ml-auto mr-3">
+                                <Pencil size="20px" />
+                            </div>
+                        </Dialog.Trigger>
+
+                        <Dialog.Portal>
+                            <Dialog.Overlay
+                                class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
+                            />
+                        </Dialog.Portal>
+                    </Dialog.Root>
+
+                    <Dialog.Root>
+                        <Dialog.Trigger class="flex flex-row items-center gap-3 w-[800px] h-[55px] bg-sexy-lighter-black rounded-xl text-weep-gray hover:text-white duration-75">
+                            <EnvelopeSimple size="25px" class="ml-3"/>
+
+                            <div class="flex flex-col items-start">
+                                <div class="text-xs">
+                                    EMAIL
+                                </div>
+                                <div class="flex flex-row gap-2">
+                                    <div class="text-md font-bold">{$currentAccount!.email}</div>
+                                </div>
+                            </div>
+
+                            <div class="ml-auto mr-3">
+                                <Pencil size="20px" />
+                            </div>
+                        </Dialog.Trigger>
+
+                        <Dialog.Portal>
+                            <Dialog.Overlay
+                                class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
+                            />
+                        </Dialog.Portal>
+                    </Dialog.Root>
+
+                    <Dialog.Root>
+                        <Dialog.Trigger class="flex flex-row items-center gap-3 w-[800px] h-[55px] bg-sexy-lighter-black rounded-xl text-weep-gray hover:text-white duration-75">
+                            <Lock size="25px" class="ml-3"/>
+
+                            <div class="flex flex-col items-start">
+                                <div class="text-xs">
+                                    PASSWORD
+                                </div>
+                                <div class="text-md font-bold">{"*".repeat(10)}</div>
+                            </div>
+
+                            <div class="ml-auto mr-3">
+                                <Pencil size="20px" />
+                            </div>
+                        </Dialog.Trigger>
+
+                        <Dialog.Portal>
+                            <Dialog.Overlay
+                                class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
+                            />
+                        </Dialog.Portal>
+                    </Dialog.Root>
+                </Tabs.Content>
+
+                <Tabs.Content value="profile" class="flex flex-col items-center mt-6 w-[1000px] h-full gap-12">
+                    <h1 class="font-bold text-xl mb-5">Profile</h1>
+
+                    <div class="flex flex-row items-center justify-center w-[600px]">
+                        <div class="flex flex-col items-center justify-center mr-auto gap-1">
+                            <div class="text-xl tracking-tighter font-bold text-weep-gray">
+                                AVATAR
+                            </div>
+
+                            <button class="relative group" onclick={() => avatarInput?.click()}>
+                                <img src={getAvatar($currentActor!.avatar_id)} class="size-[130px] rounded-full opacity-100 group-hover:opacity-60 mx-auto transition-all duration-200" alt="me">
+
+                                <span class="opacity-0 group-hover:opacity-200
+                                    absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 duration-200">
+                                    <Pencil class="size-6" />
+                                </span>
                             </button>
                         </div>
-                    </form>
+
+                        <div class="flex flex-col items-center justify-center ml-auto gap-1">
+                            <div class="text-xl tracking-tighter font-bold text-weep-gray">
+                                BANNER
+                            </div>
+
+                            <button class="relative group" onclick={() => bannerInput?.click()}>
+                                {#await getBanner($currentActor!.banner_id) then url}
+                                    {#if url == null}
+                                        <div class="w-[350px] h-[130px] bg-guild-aside"></div>
+                                    {:else}
+                                        <img src={getBanner($currentActor!.banner_id)} class="w-[350px] h-[130px] opacity-100 group-hover:opacity-70 mx-auto transition-all duration-200 object-cover bg-center" alt="me">
+                                    {/if}
+                                {/await}
+
+                                <span class="opacity-0 group-hover:opacity-200
+                                    absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 duration-200">
+                                    <Pencil class="size-6" />
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center justify-center gap-4 w-[600px]">
+                        <div class="text-xl tracking-tighter font-bold text-weep-gray">
+                            DISPLAY NAME
+                        </div>
+
+                        <input 
+                            style="box-shadow: none;" 
+                            placeholder="No Display Name"
+                            bind:value={newDisplayName} 
+                            class="bg-transparent appearance-none w-full border-0 border-b border-b-sexy-red-gray" 
+                        />
+                    </div>
+
+                    <button onclick={updateActor} class="px-4 text-white rounded-4xl py-0.5 hover:scale-105 hover:bg-fourth-bg bg-secondary-bg border border-tertiary-bg duration-500">
+                        Save
+                    </button>
                 </Tabs.Content>
+
+                <Dialog.Close class="fixed right-0 flex flex-col justify-start mt-3 mr-3 group">
+                    <div class="border-3 border-lightest-bg rounded-full p-2 group-hover:border-white duration-200 transition-all">
+                        <X size="20px" />
+                    </div>
+                
+                    <h1 class="font-extrabold tracking-tighter">ESC</h1>
+                </Dialog.Close>
             </Tabs.Root>
             {#if crop}
                 <section class="bg-[#0b0b0d] fixed left-[50%] top-[50%] z-[999] w-full h-full translate-x-[-50%] translate-y-[-50%]">

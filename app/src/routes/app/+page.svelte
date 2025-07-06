@@ -23,4 +23,4 @@ currentPrivateChannelId.set(undefined);
     </div>
 </div>
 
-<UserPop user={$currentActor} unroundLeft={true} />
+<UserPop user={$currentActor!} unroundLeft={true} />

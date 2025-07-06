@@ -60,9 +60,7 @@ pub async fn route(
 
     let code = random_range(111111..999999);
 
-    let mut email_ttl = state.email_ttl.write().await;
-    email_ttl.insert(model.email.clone(), code);
-    drop(email_ttl);
+    state.email_ttl.push(email.clone(), code);
 
     match state.mailer {
         Some(mailer) => {

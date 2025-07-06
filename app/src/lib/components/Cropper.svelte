@@ -100,12 +100,12 @@ let {
         <X class="size-5" />
     </button>
     {#if type == CropType.Banner}
-        <div class="relative h-[350px] w-[980px]">
+        <div class="relative h-[400px] w-[980px]">
             <Cropper
                 {image}
                 bind:crop
                 bind:zoom
-                aspect={980 / 350}
+                aspect={980 / 400}
                 maxZoom={5}
                 oncropcomplete={handleCropComplete}
             />

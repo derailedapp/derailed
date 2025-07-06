@@ -37,6 +37,10 @@ pub async fn route(
                 let mut image = Image::read(bytes, DecoderOptions::default())?;
 
                 let (w, h) = image.dimensions();
+                if w < 400 || h < 400 {
+                    return Err(crate::Error::ImageTooSmall(400, 400))
+                }
+
                 let start_x = (w / 2) - 200;
                 let start_y = (h / 2) - 200;
 
@@ -84,6 +88,10 @@ pub async fn route(
                 let mut image = Image::read(bytes, DecoderOptions::default())?;
 
                 let (w, h) = image.dimensions();
+                if w < 980 || h < 400 {
+                    return Err(crate::Error::ImageTooSmall(980, 400));
+                }
+
                 let start_x = (w / 2) - 490;
                 let start_y = (h / 2) - 200;
 

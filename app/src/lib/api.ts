@@ -22,6 +22,16 @@ export class APIClient {
 		});
 	}
 
+	requestForm(method: string, route: string, body: FormData) {
+		return fetch(env.PUBLIC_API_URL + route, {
+			body: body,
+			method,
+			headers: {
+				Authorization: this.token,
+			},
+		});
+	}
+
 	getCDNUrl(scope: string, id: string) {
 		return env.PUBLIC_CDN_URL + `/${scope}/` + id;
 	}

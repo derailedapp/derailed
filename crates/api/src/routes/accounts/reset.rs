@@ -75,9 +75,7 @@ pub async fn request(
 
     let code = random_range(111111..999999);
 
-    let mut email_ttl = state.email_ttl.write().await;
-    email_ttl.insert(format!("{}-reset", model.email.clone()), code);
-    drop(email_ttl);
+    state.email_ttl.push(format!("{}-reset", model.email.clone()), code);
 
     match state.mailer {
         Some(mailer) => {
@@ -139,18 +137,14 @@ pub async fn reset(
             .unwrap());
     }
 
-    let email_ttl = state.email_ttl.read().await;
 
-    match email_ttl.get_raw(&format!("{}-reset", model.email.clone())) {
+    match state.email_ttl.get(&format!("{}-reset", model.email.clone())) {
         Some(code) => {
-            if *code != model.code {
+            if code != model.code {
                 return Err(crate::Error::InvalidCode);
             }
 
-            drop(email_ttl);
-            let mut email_ttl = state.email_ttl.write().await;
-            email_ttl.remove(&format!("{}-reset", model.email.clone()));
-            drop(email_ttl);
+            state.email_ttl.remove(&format!("{}-reset", model.email.clone()));
 
             let from = Mailbox::new(
                 Some("Derailed".to_owned()),

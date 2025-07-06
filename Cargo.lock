@@ -147,7 +147,7 @@ dependencies = [
  "tokio",
  "tower",
  "tower-http",
- "ttlhashmap",
+ "ttl_dashmap",
  "ulid",
  "zune-core",
  "zune-image",
@@ -3712,10 +3712,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
-name = "ttlhashmap"
+name = "ttl_dashmap"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "50ddd0e3ea228684ba88409bd2987421f96130063f68ae29c0ac322219be83f2"
+dependencies = [
+ "dashmap",
+]
 
 [[package]]
 name = "tungstenite"

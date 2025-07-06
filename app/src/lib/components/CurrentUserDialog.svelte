@@ -2,17 +2,19 @@
 import { Dialog } from "bits-ui";
 import { currentActor } from "$lib/state";
 import Settings from "./Settings.svelte";
+import Client from "../api";
+
 </script>
 <div class="m-0.5 mt-0 backdrop-blur-3xl bg-dark-bg border rounded-b-xl border-tertiary-bg border-t-0">
     <div class="flex flex-row justify-center items-center gap-2 w-full h-full">
         <Dialog.Root>
             <Dialog.Trigger>
                 <button class="hover:bg-light-bg p-2 px-3 flex flex-row items-center gap-2 rounded-l-2xl rounded-tl-none w-[190px]">
-                    {#if ($currentActor !== null)}
-                        {#if $currentActor?.avatar_id === null}
+                    {#if ($currentActor !== undefined)}
+                        {#if $currentActor.avatar_id === null}
                             <div class="bg-blurple w-10 h-10 rounded-full"></div>
                         {:else}
-                            <img src={$currentActor?.avatar_id} class="rounded-full w-10 h-10 bg-light-bg" alt="">
+                            <img src={Client.getCDNUrl("avatars", $currentActor.avatar_id)} class="rounded-full w-10 h-10 bg-light-bg" alt="">
                         {/if}
                     {/if}
                     <div class="flex flex-col items-start">
