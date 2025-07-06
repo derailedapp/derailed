@@ -13,6 +13,8 @@ import EmojiPicker from "./EmojiPicker.svelte";
 import Client from "$lib/api";
 import { ulid } from "ulidx";
 import { channelMessages, currentActor, pendingNonces } from "$lib/state";
+import { EmojiNode } from "$lib/plugins/emojiNode";
+import EmojiPlugin from "$lib/plugins/emojiPlugin.svelte";
 
 let { channelId, channelName }: { channelId: string; channelName: string } =
 	$props();
@@ -71,7 +73,7 @@ async function onKey(event: KeyboardEvent) {
 <Composer initialConfig={{
 	theme: theme,
 	namespace: channelId,
-    nodes: [],
+    nodes: [EmojiNode],
     onError: (error: Error) => {
       throw error;
     }
@@ -90,6 +92,7 @@ async function onKey(event: KeyboardEvent) {
 		</div>
 		<RichTextPlugin />
 		<HistoryPlugin />
+		<EmojiPlugin />
 
 		<div class="flex justify-center items-end pb-1.5">
 			<EmojiPicker composer={composer} />
