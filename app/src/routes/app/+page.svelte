@@ -1,5 +1,5 @@
 <script lang="ts">
-import AddFriend from "$lib/components/AddFriend.svelte";
+import AddFriend from "$lib/components/dialogs/AddFriend.svelte";
 
 // @ts-ignore
 import UserPop from "$lib/components/UserPop.svelte";
