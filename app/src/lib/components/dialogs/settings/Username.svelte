@@ -27,6 +27,8 @@
             if (!request.ok) {
                 return addToast("error", await request.text(), 3000);
             }
+
+            currentActor.set(await request.json());
         }
 
         reset(true);

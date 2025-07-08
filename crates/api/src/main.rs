@@ -208,12 +208,11 @@ async fn main() {
         s3_client,
         password_hasher: argon2::Argon2::default(),
         mailer,
-        otp: Arc::new(TtlDashmap::<String, i32>::new(
-            Duration::from_secs(3600),
-        )),
-        email_change: Arc::new(TtlDashmap::<String, crate::routes::accounts::modify::EmailChange>::new(
-            Duration::from_secs(600),
-        )),
+        otp: Arc::new(TtlDashmap::<String, i32>::new(Duration::from_secs(3600))),
+        email_change: Arc::new(TtlDashmap::<
+            String,
+            crate::routes::accounts::modify::EmailChange,
+        >::new(Duration::from_secs(600))),
         captcha,
         alpha_code,
     };

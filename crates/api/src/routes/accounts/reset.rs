@@ -75,7 +75,9 @@ pub async fn request(
 
     let code = random_range(111111..999999);
 
-    state.otp.push(format!("{}-reset", model.email.clone()), code);
+    state
+        .otp
+        .push(format!("{}-reset", model.email.clone()), code);
 
     match state.mailer {
         Some(mailer) => {

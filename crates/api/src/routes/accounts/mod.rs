@@ -2,9 +2,9 @@ use axum::{middleware, routing::post};
 
 mod email;
 mod login;
+pub(crate) mod modify;
 mod register;
 mod reset;
-pub(crate) mod modify;
 
 pub fn router(state: crate::State) -> axum::Router<crate::State> {
     axum::Router::new()
@@ -14,7 +14,7 @@ pub fn router(state: crate::State) -> axum::Router<crate::State> {
         .route("/forgot/request", post(reset::request))
         .route("/forgot/reset", post(reset::reset))
         .nest(
-            "/accounts/@me", 
+            "/accounts/@me",
             axum::Router::new()
                 .route("/change-username", post(modify::change_username))
                 .route("/change-password", post(modify::change_password))
@@ -23,6 +23,6 @@ pub fn router(state: crate::State) -> axum::Router<crate::State> {
                 .route_layer(middleware::from_fn_with_state(
                     state.clone(),
                     crate::utils::middleware::auth_middleware,
-                ))
+                )),
         )
 }

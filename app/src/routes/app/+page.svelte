@@ -9,7 +9,7 @@ import { HandWaving } from "phosphor-svelte";
 currentPrivateChannelId.set(undefined);
 </script>
 
-<div class="w-full m-1 mr-0 bg-dark-bg border border-tertiary-bg rounded-3xl rounded-tr-none z-[3]">
+<div class="flex-1 m-1 mr-0 bg-dark-bg border border-tertiary-bg rounded-3xl rounded-tr-none z-[3]">
     <div class="w-full h-[56px] border-b border-tertiary-bg flex items-center gap-3 p-4">
         <HandWaving color="#fff" weight="fill" height="22" width="22" />
         <div class="text-white">

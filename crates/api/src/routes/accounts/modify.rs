@@ -1,11 +1,17 @@
+use argon2::{
+    PasswordHash, PasswordVerifier,
+    password_hash::{PasswordHasher, SaltString, rand_core::OsRng},
+};
 use axum::{Extension, Json, extract::State};
-use lettre::{message::{header::ContentType, Mailbox}, Message, Transport};
+use lettre::{
+    Message, Transport,
+    message::{Mailbox, header::ContentType},
+};
 use models::users::{Account, UserActor};
 use rand::random_range;
 use rt_actors::message::Dispatch;
 use serde::Deserialize;
 use serde_valid::Validate;
-use argon2::{password_hash::{rand_core::OsRng, PasswordHasher, SaltString}, PasswordHash, PasswordVerifier};
 
 use crate::utils::publishing::publish_group;
 
@@ -14,31 +20,31 @@ pub struct UsernameData {
     #[validate(min_length = 4)]
     #[validate(max_length = 20)]
     username: String,
-    password: String
+    password: String,
 }
 
 #[derive(Deserialize)]
 pub struct PasswordData {
     password: String,
-    new_password: String
+    new_password: String,
 }
 
 #[derive(Deserialize, Validate)]
 pub struct EmailChangeData {
     password: String,
     #[validate(min_length = 5)]
-    email: String
+    email: String,
 }
 
 #[derive(Deserialize, Validate)]
 pub struct EmailChangeConfirmData {
-    code: i32
+    code: i32,
 }
 
 #[derive(Debug, Clone)]
 pub struct EmailChange {
     email: String,
-    code: i32
+    code: i32,
 }
 
 pub async fn change_username(
@@ -52,9 +58,10 @@ pub async fn change_username(
             model.password.as_bytes(),
             &PasswordHash::new(&account.password).map_err(|_| crate::Error::ArgonError)?,
         )
-        .is_err() {
-            return Err(crate::Error::InvalidLoginDetails)
-        }
+        .is_err()
+    {
+        return Err(crate::Error::InvalidLoginDetails);
+    }
 
     let username_re = regex::Regex::new("^[a-z0-9_]+$").unwrap();
     if !username_re.is_match(&model.username) {
@@ -87,7 +94,6 @@ pub async fn change_username(
     )
     .await?;
 
-
     Ok(Json(actor))
 }
 
@@ -102,13 +108,17 @@ pub async fn change_password(
             model.password.as_bytes(),
             &PasswordHash::new(&account.password).map_err(|_| crate::Error::ArgonError)?,
         )
-        .is_err() {
-            return Err(crate::Error::InvalidLoginDetails)
-        }
-    
+        .is_err()
+    {
+        return Err(crate::Error::InvalidLoginDetails);
+    }
+
     let new_password = state
         .password_hasher
-        .hash_password(model.new_password.as_bytes(), &SaltString::generate(&mut OsRng))
+        .hash_password(
+            model.new_password.as_bytes(),
+            &SaltString::generate(&mut OsRng),
+        )
         .map_err(|_| crate::Error::ArgonError)?
         .to_string();
 
@@ -155,18 +165,18 @@ pub async fn request_email_change(
             model.password.as_bytes(),
             &PasswordHash::new(&account.password).map_err(|_| crate::Error::ArgonError)?,
         )
-        .is_err() {
-            return Err(crate::Error::InvalidLoginDetails)
-        }
+        .is_err()
+    {
+        return Err(crate::Error::InvalidLoginDetails);
+    }
 
     if !email_address::EmailAddress::is_valid(&model.email) {
         return Err(crate::Error::InvalidEmail);
     }
-    
 
     let email = model.email.to_lowercase();
     if email == account.email {
-        return Err(crate::Error::SameEmail)
+        return Err(crate::Error::SameEmail);
     }
 
     let check_exist = sqlx::query!("SELECT id FROM accounts WHERE email = $1;", email)
@@ -202,7 +212,9 @@ pub async fn request_email_change(
         }
     }
 
-    state.email_change.push(account.email, EmailChange { email, code });
+    state
+        .email_change
+        .push(account.email, EmailChange { email, code });
 
     Ok(())
 }
@@ -211,10 +223,10 @@ pub async fn confirm_email_change(
     state: State<crate::State>,
     Extension(account): Extension<Account>,
     Json(model): Json<EmailChangeConfirmData>,
-) -> Result<(), crate::Error> {
+) -> Result<Json<Account>, crate::Error> {
     let data = match state.email_change.get(&account.email) {
         Some(data) => data,
-        None => return Err(crate::Error::NoEmailChange)
+        None => return Err(crate::Error::NoEmailChange),
     };
 
     if data.code != model.code {
@@ -251,14 +263,15 @@ pub async fn confirm_email_change(
         None => {}
     }
 
-    sqlx::query!(
-        "UPDATE accounts SET email = $1 WHERE id = $2;",
+    let new_account = sqlx::query_as!(
+        Account,
+        "UPDATE accounts SET email = $1 WHERE id = $2 RETURNING *;",
         data.email,
         account.id
     )
-    .execute(&state.pg)
+    .fetch_one(&state.pg)
     .await?;
 
     state.email_change.remove(&account.email);
-    Ok(())
+    Ok(Json(new_account))
 }

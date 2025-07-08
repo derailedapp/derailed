@@ -1,12 +1,12 @@
 use dashmap::DashMap;
-use std::time::{Instant, Duration};
 use std::hash::Hash;
+use std::time::{Duration, Instant};
 
 #[derive(Debug, Clone)]
 pub struct TtlDashmap<K, V>
 where
     K: Eq + Hash + Clone,
-    V: Clone
+    V: Clone,
 {
     map: DashMap<K, (V, Instant)>,
     ttl: Duration,
@@ -14,8 +14,8 @@ where
 
 impl<K, V> TtlDashmap<K, V>
 where
-  K: Eq + Hash + Clone,
-  V: Clone
+    K: Eq + Hash + Clone,
+    V: Clone,
 {
     pub fn new(ttl: Duration) -> Self {
         Self {
@@ -26,7 +26,7 @@ where
 
     pub fn get(&self, key: &K) -> Option<V> {
         let now = Instant::now();
-        
+
         if let Some(entry) = self.map.get(key) {
             if entry.1 > now {
                 return Some(entry.0.clone());

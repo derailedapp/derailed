@@ -28,9 +28,9 @@
                 return addToast("error", await request.text(), 3000);
             }
 
-            reset(true);
+            currentAccount.set(await request.json());
             dialogOpen = false;
-            return;
+            return reset(true);
         }
 
         if (currentPassword === undefined) {

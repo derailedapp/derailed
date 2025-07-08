@@ -78,6 +78,7 @@ const updateActor = async (e: Event) => {
             return addToast("error", "Failed to update avatar/banner", 3000);
         }
 
+        currentActor.set(await request.json());
         hasChanges = true;
     }
 
@@ -87,6 +88,7 @@ const updateActor = async (e: Event) => {
             return addToast("error", "Failed to update profile", 3000);
         }
 
+        currentActor.set(await request.json());
         hasChanges = true;
     }
 
