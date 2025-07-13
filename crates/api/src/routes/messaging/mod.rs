@@ -2,6 +2,7 @@ use axum::{middleware, routing::post};
 use tower::ServiceBuilder;
 mod create;
 mod list;
+mod delete;
 
 pub fn router(state: crate::State) -> axum::Router<crate::State> {
     axum::Router::new()

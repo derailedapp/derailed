@@ -17,7 +17,7 @@ let {
 } = $props();
 </script>
 
-<div class="w-[600px] h-auto m-1 rounded-xl" class:ml-0={unroundLeft}>
+<div class="w-[400px] h-auto m-1 rounded-xl" class:ml-0={unroundLeft}>
     <div class="flex flex-col items-center gap-2 z-[3] h-auto text-white w-full" class:rounded-xl={round} class:rounded-l-none={unroundLeft}>
         <div class="w-full flex border bg-dark-bg border-tertiary-bg rounded-xl flex-col pb-1" class:rounded-l-none={unroundLeft} class:border-l-0={unroundLeft}>
             <div>
