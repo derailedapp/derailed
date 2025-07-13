@@ -97,7 +97,7 @@ emitter.on("MESSAGE_CREATE", (data: Message) => {
 emitter.on("ACTOR_UPDATE", (data: UserActor) => {
 	const currentActorData = get(currentActor)!;
 	if (currentActorData.id == data.id) {
-		currentActor.set(data);
+		return currentActor.set(data);
 	}
 
 	users.update((v) => {

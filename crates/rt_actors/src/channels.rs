@@ -1,7 +1,5 @@
 use models::users::UserActor;
-use ractor::{
-    Actor, ActorProcessingErr, ActorRef, async_trait, pg,
-};
+use ractor::{Actor, ActorProcessingErr, ActorRef, async_trait, pg};
 
 pub struct PrivateChannel;
 

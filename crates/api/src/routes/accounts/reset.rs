@@ -75,7 +75,9 @@ pub async fn request(
 
     let code = random_range(111111..999999);
 
-    state.email_ttl.push(format!("{}-reset", model.email.clone()), code);
+    state
+        .otp
+        .push(format!("{}-reset", model.email.clone()), code);
 
     match state.mailer {
         Some(mailer) => {
@@ -137,14 +139,13 @@ pub async fn reset(
             .unwrap());
     }
 
-
-    match state.email_ttl.get(&format!("{}-reset", model.email.clone())) {
+    match state.otp.get(&format!("{}-reset", model.email.clone())) {
         Some(code) => {
             if code != model.code {
                 return Err(crate::Error::InvalidCode);
             }
 
-            state.email_ttl.remove(&format!("{}-reset", model.email.clone()));
+            state.otp.remove(&format!("{}-reset", model.email.clone()));
 
             let from = Mailbox::new(
                 Some("Derailed".to_owned()),

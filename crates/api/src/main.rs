@@ -25,7 +25,9 @@ pub struct State {
     pub password_hasher: argon2::Argon2<'static>,
     pub mailer: Option<SmtpTransport>,
 
-    pub email_ttl: TtlDashmap<String, i32>,
+    pub otp: Arc<TtlDashmap<String, i32>>,
+    pub email_change: Arc<TtlDashmap<String, crate::routes::accounts::modify::EmailChange>>,
+
     pub captcha: Option<Arc<TurnstileClient>>,
     pub alpha_code: String,
 }
@@ -71,6 +73,14 @@ pub enum Error {
     #[status(400)]
     #[error("Actor is already followed")]
     AlreadyFollowed,
+
+    // Acccount Modify Errors
+    #[status(400)]
+    #[error("An email change was never requested or ttl ran out")]
+    NoEmailChange,
+    #[status(400)]
+    #[error("The provided email address is identical to your current one")]
+    SameEmail,
 
     // Channel Errors
     #[status(404)]
@@ -198,9 +208,11 @@ async fn main() {
         s3_client,
         password_hasher: argon2::Argon2::default(),
         mailer,
-        email_ttl: TtlDashmap::<String, i32>::new(
-            Duration::from_secs(3600),
-        ),
+        otp: Arc::new(TtlDashmap::<String, i32>::new(Duration::from_secs(3600))),
+        email_change: Arc::new(TtlDashmap::<
+            String,
+            crate::routes::accounts::modify::EmailChange,
+        >::new(Duration::from_secs(600))),
         captcha,
         alpha_code,
     };

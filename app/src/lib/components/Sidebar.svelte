@@ -8,7 +8,7 @@ import {
 } from "$lib/state";
 import GuildScroll from "./GuildScroll.svelte";
 import User from "$lib/components/User.svelte";
-import Settings from "./Settings.svelte";
+import Settings from "./dialogs/Settings.svelte";
 import { Dialog } from "bits-ui";
 import CurrentUserDialog from "./CurrentUserDialog.svelte";
 

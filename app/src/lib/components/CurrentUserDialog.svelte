@@ -1,7 +1,7 @@
 <script>
 import { Dialog } from "bits-ui";
 import { currentActor } from "$lib/state";
-import Settings from "./Settings.svelte";
+import Settings from "./dialogs/Settings.svelte";
 import Client from "../api";
 
 </script>

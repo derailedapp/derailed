@@ -14,6 +14,7 @@ pub struct RegisterData {
     #[validate(min_length = 5)]
     email: String,
     #[validate(min_length = 4)]
+    #[validate(max_length = 20)]
     username: String,
     password: String,
 
@@ -109,7 +110,7 @@ pub async fn route(
     .execute(&mut *txn)
     .await?;
 
-    let token = BASE64_STANDARD.encode(rand::rng().random::<[u8; 16]>());
+    let token = BASE64_STANDARD.encode(rand::rng().random::<[u8; 32]>());
     let session_id = hex::encode(sha2::Sha256::digest(token.as_bytes()));
     let start = SystemTime::now();
     let now = start.duration_since(UNIX_EPOCH).unwrap().as_secs() as i64;

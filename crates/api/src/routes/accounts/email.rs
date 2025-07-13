@@ -59,10 +59,9 @@ pub async fn route(
     let to = Mailbox::new(None, model.email.parse().unwrap());
 
     let code = random_range(111111..999999);
+    state.otp.push(email.clone(), code);
 
-    state.email_ttl.push(email.clone(), code);
-
-    match state.mailer {
+    match &state.mailer {
         Some(mailer) => {
             let email = Message::builder()
                 .from(from)

@@ -1,20 +1,20 @@
 <script lang="ts">
 import { Dialog, Tabs } from "bits-ui";
 
-import { SignOut, Gear, User, X, At, Pencil, EnvelopeSimple, GithubLogo, Butterfly, Lock, IdentificationBadge, XLogo } from "phosphor-svelte";
+import { SignOut, Gear, User as UserIcon, X, Pencil, GithubLogo, Butterfly,  IdentificationBadge, XLogo } from "phosphor-svelte";
 import { readAndCompressImage } from "browser-image-resizer";
 
 import { addToast } from "$lib/state";
 
 import { CropType } from "$lib/state";
-import Cropper from "./Cropper.svelte";
+import Cropper from "../Cropper.svelte";
 import { goto } from "$app/navigation";
 import { currentActor, currentAccount } from "$lib/state";
 import Client from "$lib/api";
+import Email from "./settings/Email.svelte";
+import Password from "./settings/Password.svelte";
+import Username from "./settings/Username.svelte";
 
-let banner: File | undefined = $state();
-let avatar: File | undefined = $state();
-let newDisplayName: string = $derived($currentActor!.display_name || "");
 
 let bannerInput: HTMLInputElement | undefined = $state();
 let avatarInput: HTMLInputElement | undefined = $state();
@@ -41,6 +41,15 @@ const getAvatar = (currentAvatarId: string | null) => {
 
 	return "/default_pfp.webp";
 };
+
+let banner: File | undefined = $state();
+let avatar: File | undefined = $state();
+let newDisplayName: string = $derived($currentActor!.display_name || "");
+
+let usernameDialog = $state(false);
+let emailDialog = $state(false);
+let passwordDialog = $state(false);
+
 
 const updateActor = async (e: Event) => {
 	e.preventDefault();
@@ -69,6 +78,7 @@ const updateActor = async (e: Event) => {
             return addToast("error", "Failed to update avatar/banner", 3000);
         }
 
+        currentActor.set(await request.json());
         hasChanges = true;
     }
 
@@ -78,6 +88,7 @@ const updateActor = async (e: Event) => {
             return addToast("error", "Failed to update profile", 3000);
         }
 
+        currentActor.set(await request.json());
         hasChanges = true;
     }
 
@@ -122,6 +133,11 @@ const reset = (reset: boolean) => {
 		banner = undefined;
 		avatar = undefined;
 
+        usernameDialog = false;
+        emailDialog = false;
+        passwordDialog = false;
+
+
 		newDisplayName = $currentActor!.display_name || "";
 	}
 };
@@ -157,7 +173,7 @@ const logout = async () => {
                             class="py-2 mt-5 data-[state=active]:bg-aside/40 hover:bg-aside/20 duration-75 rounded-lg">
                             
                             <div class="flex flex-row items-center ml-2">
-                                <User size="20px" />
+                                <UserIcon size="20px" />
                                 <h1 class="text-sm ml-2">Account</h1>
                             </div>
                         </Tabs.Trigger>
@@ -214,76 +230,9 @@ const logout = async () => {
                         </button>
                     </div>
 
-                    <Dialog.Root>
-                        <Dialog.Trigger class="flex flex-row items-center gap-3 w-[800px] h-[55px] bg-sexy-lighter-black rounded-xl text-weep-gray hover:text-white duration-75">
-                            <At size="25px" class="ml-3"/>
-
-                            <div class="flex flex-col items-start">
-                                <div class="text-xs">
-                                    USERNAME
-                                </div>
-                                <div class="text-md font-bold">{$currentActor!.username}</div>
-                            </div>
-
-                            <div class="ml-auto mr-3">
-                                <Pencil size="20px" />
-                            </div>
-                        </Dialog.Trigger>
-
-                        <Dialog.Portal>
-                            <Dialog.Overlay
-                                class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
-                            />
-                        </Dialog.Portal>
-                    </Dialog.Root>
-
-                    <Dialog.Root>
-                        <Dialog.Trigger class="flex flex-row items-center gap-3 w-[800px] h-[55px] bg-sexy-lighter-black rounded-xl text-weep-gray hover:text-white duration-75">
-                            <EnvelopeSimple size="25px" class="ml-3"/>
-
-                            <div class="flex flex-col items-start">
-                                <div class="text-xs">
-                                    EMAIL
-                                </div>
-                                <div class="flex flex-row gap-2">
-                                    <div class="text-md font-bold">{$currentAccount!.email}</div>
-                                </div>
-                            </div>
-
-                            <div class="ml-auto mr-3">
-                                <Pencil size="20px" />
-                            </div>
-                        </Dialog.Trigger>
-
-                        <Dialog.Portal>
-                            <Dialog.Overlay
-                                class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
-                            />
-                        </Dialog.Portal>
-                    </Dialog.Root>
-
-                    <Dialog.Root>
-                        <Dialog.Trigger class="flex flex-row items-center gap-3 w-[800px] h-[55px] bg-sexy-lighter-black rounded-xl text-weep-gray hover:text-white duration-75">
-                            <Lock size="25px" class="ml-3"/>
-
-                            <div class="flex flex-col items-start">
-                                <div class="text-xs">
-                                    PASSWORD
-                                </div>
-                                <div class="text-md font-bold">{"*".repeat(10)}</div>
-                            </div>
-
-                            <div class="ml-auto mr-3">
-                                <Pencil size="20px" />
-                            </div>
-                        </Dialog.Trigger>
-
-                        <Dialog.Portal>
-                            <Dialog.Overlay
-                                class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
-                            />
-                        </Dialog.Portal>
-                    </Dialog.Root>
+                    <Username bind:dialogOpen={usernameDialog} Client={Client} />
+                    <Password bind:dialogOpen={passwordDialog} Client={Client} />
+                    <Email bind:dialogOpen={emailDialog} Client={Client} />
                 </Tabs.Content>
 
                 <Tabs.Content value="profile" class="flex flex-col items-center mt-6 w-[1000px] h-full gap-12 overflow-y-auto">
@@ -345,7 +294,7 @@ const logout = async () => {
                     </button>
                 </Tabs.Content>
 
-                <Dialog.Close class="fixed right-0 flex flex-col justify-start mt-3 mr-3 group">
+                <Dialog.Close class="fixed right-0 flex flex-col justify-start mt-6 mr-7 group">
                     <div class="border-3 border-lightest-bg rounded-full p-2 group-hover:border-white duration-200 transition-all">
                         <X size="20px" />
                     </div>
