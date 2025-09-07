@@ -44,7 +44,7 @@
 </script>
 
 <Dialog.Root bind:open={dialogOpen} onOpenChange={(v) => reset(!v)}>
-    <Dialog.Trigger class="flex flex-row items-center gap-3 w-[800px] h-[55px] bg-sexy-lighter-black rounded-xl text-weep-gray hover:text-white duration-75">
+    <Dialog.Trigger class="flex flex-row items-center gap-3 w-full h-[55px] bg-sexy-lighter-black rounded-xl text-weep-gray hover:text-white duration-75">
         <At size="25px" class="ml-3"/>
 
         <div class="flex flex-col items-start">
@@ -65,7 +65,7 @@
         />
 
         <Dialog.Content class="bg-dark-bg rounded-3xl fixed left-[50%] top-[50%] max-w-[500px] max-h-[330px] w-full h-full z-50 translate-x-[-50%] translate-y-[-50%] 
-        data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 border border-tertiary-bg">
+        data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 border border-weep-gray">
             <form onsubmit={update} class="flex flex-col items-center justify-center gap-8 m-8">
                 <div class="w-full">
                     <div class="text-lg font-bold text-weep-gray tracking-tighter">
@@ -80,7 +80,7 @@
                     <input type="password" autocomplete="current-password" required class="h-[55px] w-full bg-sexy-lighter-black rounded-xl text-white" bind:value={currentPassword}/>
                 </div>
 
-                <button class="px-4 text-white rounded-4xl py-0.5 hover:scale-105 hover:bg-fourth-bg bg-secondary-bg border border-tertiary-bg duration-500">
+                <button class="px-4 text-white rounded-4xl py-0.5 hover:scale-105 hover:bg-fourth-bg bg-secondary-bg border border-weep-gray duration-500">
                     Save
                 </button>
             </form>

@@ -29,9 +29,9 @@ export function getChannelName() {
 	return name!;
 }
 </script>
-<div class="flex flex-row w-full m-0.5">
-    <div class="w-full grid grid-rows-[56px_1fr_minmax(56px,auto)] bg-dark-bg border m-0.5 border-tertiary-bg rounded-3xl rounded-b-xl" class:rounded-tr-none={isDM} class:mr-0={isDM}>
-        <div class="flex flex-1 flex-row items-center p-4 h-[56px] border-b border-tertiary-bg">
+<div class="flex flex-row w-full m-0.5 mr-0">
+    <div class="w-full grid grid-rows-[56px_1fr_minmax(56px,auto)] m-0.5 rounded-2xl" class:rounded-tr-none={isDM} class:mr-0={isDM}>
+        <div class="flex flex-1 flex-row items-center p-4 h-[56px] border-b border-weep-gray">
             <div class="flex items-center gap-1.5 select-none">
                 <Hash color="#a0a0a5" height="22" width="22" />
                 <div class="text-white truncate max-w-50">

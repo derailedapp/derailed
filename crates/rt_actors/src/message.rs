@@ -45,6 +45,10 @@ pub enum Dispatch {
     ChannelCreate(models::channels::Channel),
     #[serde(rename = "MESSAGE_CREATE")]
     MessageCreate(models::messages::Message),
+    #[serde(rename = "MESSAGE_UPDATE")]
+    MessageUpdate(models::messages::Message),
+    #[serde(rename = "MESSAGE_DELETE")]
+    MessageDelete(String),
     #[serde(rename = "RELATIONSHIP_UPDATE")]
     RelationshipUpdate(Relationship),
     WSClose,

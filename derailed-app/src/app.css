@@ -1,0 +1,6 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+
+@theme {
+    --color-grayway: hsl(0, 0%, 87%);
+}

@@ -1,25 +1,8 @@
 use axum::{middleware, routing::{delete, post}};
 use tower::ServiceBuilder;
-mod create;
-mod list;
-mod delete;
-mod modify;
-mod mark;
 
 pub fn router(state: crate::State) -> axum::Router<crate::State> {
     axum::Router::new()
-        .route(
-            "/channels/{channel_id}/messages",
-            post(create::route).get(list::route),
-        )
-        .route(
-            "/channels/{channel_id}/messages/{message_id}",
-            delete(delete::route).patch(modify::route)
-        )
-        .route(
-            "/channels/{channel_id}/messages/{message_id}/mark",
-            post(mark::route)
-        )
         .layer(
             ServiceBuilder::new()
                 .layer(middleware::from_fn_with_state(

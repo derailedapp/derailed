@@ -160,10 +160,10 @@ const logout = async () => {
         <Dialog.Overlay
             class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
         />
-        <Dialog.Content class="bg-dark-bg rounded-3xl fixed left-[50%] top-[50%] max-w-[1200px] max-h-[900px] w-full h-full z-50 translate-x-[-50%] translate-y-[-50%] 
+        <Dialog.Content class="rounded-3xl fixed left-[50%] top-[50%] max-w-[1150px] max-h-[900px] w-full h-full z-50 translate-x-[-50%] translate-y-[-50%] 
         data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
             <Tabs.Root bind:value={selectedTab} onValueChange={() => reset(true)} class="flex flex-row h-full w-full">
-                <Tabs.List class="flex justify-center w-[200px] h-full border border-tertiary-bg rounded-3xl rounded-r-none">
+                <Tabs.List class="flex justify-center w-[275px] m-2 h-full border border-weep-gray rounded-3xl">
                     <div class="flex flex-col gap-2 mt-6 mx-3 w-full">
                         <div class="flex flex-row justify-center items-center font-bold">
                             SETTINGS
@@ -194,7 +194,7 @@ const logout = async () => {
                             <SignOut weight="bold" class="ml-auto mr-2 size-[17px] group-hover:mr-1 transition-all duration-800"/>
                         </button>
 
-                        <div class="border-b border-tertiary-bg w-full h-px"></div>
+                        <div class="border-b border-weep-gray w-full h-px"></div>
 
                         <div class="flex flex-row justify-center mb-2 gap-4">
                             <a href="https://github.com/derailedapp">
@@ -212,10 +212,10 @@ const logout = async () => {
                     </div>
                 </Tabs.List>
 
-                <Tabs.Content value="account" class="flex flex-col items-center mt-6 w-[1000px] h-full gap-3 overflow-y-auto">
-                    <h1 class="font-bold text-xl mb-5">Account</h1>
+                <Tabs.Content value="account" class="flex flex-col w-full mx-14 items-center mt-6 rounded-xl bg-dark-bg border border-tertiary-bg h-full gap-3">
+                    <h1 class="font-bold text-xl mb-10">Account</h1>
 
-                    <div class="flex flex-row items-center gap-3 w-[800px] h-[80px] rounded-xl">
+                    <div class="flex flex-row items-center gap-3 h-[80px] rounded-xl w-full">
                         {#if $currentActor?.avatar_id}
                             <img src={Client.getCDNUrl("avatars", $currentActor.avatar_id)} class="ml-3 size-18 rounded-full">
                         {:else}
@@ -225,7 +225,7 @@ const logout = async () => {
                             <p class="text-md font-bold">{$currentActor!.username}</p>
                             <p class="text-xs font-bold">{$currentActor!.id}</p>
                         </div>
-                        <button onclick={() => {selectedTab = "profile"}} class="ml-auto px-4 text-white rounded-4xl py-0.5 hover:scale-105 hover:bg-fourth-bg bg-secondary-bg border border-tertiary-bg duration-500">
+                        <button onclick={() => {selectedTab = "profile"}} class="ml-auto px-4 text-white rounded-4xl py-0.5 hover:scale-105 hover:bg-fourth-bg bg-secondary-bg border border-weep-gray duration-500">
                             Edit Profile
                         </button>
                     </div>
@@ -289,7 +289,7 @@ const logout = async () => {
                         />
                     </div>
 
-                    <button onclick={updateActor} class="px-4 text-white rounded-4xl py-0.5 hover:scale-105 hover:bg-fourth-bg bg-secondary-bg border border-tertiary-bg duration-500">
+                    <button onclick={updateActor} class="px-4 text-white rounded-4xl py-0.5 hover:scale-105 hover:bg-fourth-bg bg-secondary-bg border border-weep-gray duration-500">
                         Save
                     </button>
                 </Tabs.Content>

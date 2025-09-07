@@ -17,9 +17,9 @@ let {
 } = $props();
 </script>
 
-<div class="w-[350px] h-auto m-1 rounded-xl" class:ml-0={unroundLeft}>
+<div class="w-[400px] h-auto m-0.5 ml-0 rounded-xl" class:ml-0={unroundLeft}>
     <div class="flex flex-col items-center gap-2 z-[3] h-auto text-white w-full" class:rounded-xl={round} class:rounded-l-none={unroundLeft}>
-        <div class="w-full flex border bg-dark-bg border-tertiary-bg rounded-xl flex-col pb-1" class:rounded-l-none={unroundLeft} class:border-l-0={unroundLeft}>
+        <div class="w-full flex border bg-white border-weep-gray rounded-xl flex-col pb-1" class:rounded-l-none={unroundLeft} class:border-l-0={unroundLeft}>
             <div>
                 <div class="flex flex-col w-full items-center justify-center">
                     {#if !user?.banner_id}
@@ -43,7 +43,7 @@ let {
                         {/if}
                     </div>
 
-                    <div class="flex flex-col justify-center border-tertiary-bg border-t border-b w-full items-center pt-14 pb-4 select-none">
+                    <div class="flex flex-col justify-center border-weep-gray border-t border-b w-full items-center pt-14 pb-4 select-none">
                         {#if user?.display_name}
                             <div class="font-semibold text-xl">
                                 {user?.display_name}

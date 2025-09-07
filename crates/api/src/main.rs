@@ -92,6 +92,12 @@ pub enum Error {
     #[status(400)]
     #[error("No pagination options given")]
     NoPaginationOptions,
+    #[status(404)]
+    #[error("Message not found")]
+    MessageNotFound,
+    #[status(403)]
+    #[error("Cannot delete this message")]
+    MessageCantDelete,
 
     // Middleware Errors
     #[status(401)]
