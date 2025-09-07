@@ -20,12 +20,11 @@ const changeStatus = async () => {
 	addToast("success", "Updated status", 3000);
 };
 </script>
-<div class="flex flex-col select-none m-0.5">
-    <div class="flex h-full w-full">
-        <GuildScroll />
-        <div class="w-[280px] bg-dark-bg border border-tertiary-bg rounded-3xl rounded-l-none rounded-b-none select-none m-0.5 ml-0 mb-0 flex flex-col justify-between">
+<div class="flex flex-col select-none h-full m-0.5">
+    <div class="flex flex-col h-full w-full mb-1">
+        <div class="w-[280px] bg-white border h-full border-weep-gray rounded-2xl select-none m-0.5 flex flex-col justify-between">
             <div class="z-[3]">
-				<div class="border-b border-tertiary-bg h-[56px]">
+				<div class="border-b border-weep-gray h-[56px]">
 					<a href="/app">
 						<div class="p-4 text-white flex items-center gap-2 group">
 							<HandWaving weight="fill" class="inline w-5 h-5" />
@@ -35,13 +34,6 @@ const changeStatus = async () => {
 						</div>
 					</a>
 				</div>
-                <div class="px-4 mb-0 py-2 flex items-center justify-between">
-                    {#if (type === "dms")}
-                        <div class="text-white text-sm">
-                            Direct Messages
-                        </div>
-                    {/if}
-                </div>
                 <div class="overflow-y-auto">
                     {#if (type === "dms")}
                         {#each $channels as rtChannel}
@@ -52,5 +44,4 @@ const changeStatus = async () => {
             </div>
         </div>
     </div>
-    <CurrentUserDialog />
 </div>

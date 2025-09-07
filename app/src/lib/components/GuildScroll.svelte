@@ -5,7 +5,7 @@ import { goto } from "$app/navigation";
     <div class="border-b border-sexy-lighter-gray w-full h-[1px]"></div>
 {/snippet}
 
-<div class="bg-dark-bg border border-tertiary-bg w-[65px] m-0.5 mr-0 mb-0 border-r-0 rounded-r-none rounded-3xl rounded-b-none">
+<div class="bg-dark-bg border border-weep-gray w-[65px] m-0.5 mr-0 mb-0 border-r-0 rounded-r-none rounded-3xl rounded-b-none">
     <div class="flex flex-col items-center gap-2 pb-5 z-[3] w-full">
         <button onclick={() => goto("/app")} class="rounded-3xl transition-all ease-in-out
             duration-700 pt-[16px] h-full">

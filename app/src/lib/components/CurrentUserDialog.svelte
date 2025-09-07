@@ -5,7 +5,7 @@ import Settings from "./dialogs/Settings.svelte";
 import Client from "../api";
 
 </script>
-<div class="m-0.5 mt-0 backdrop-blur-3xl bg-dark-bg border rounded-b-xl border-tertiary-bg border-t-0">
+<div class="m-0.5 mt-0 backdrop-blur-3xl bg-white border rounded-b-2xl border-weep-gray border-t-0">
     <div class="flex flex-row justify-center items-center gap-2 w-full h-full">
         <Dialog.Root>
             <Dialog.Trigger>

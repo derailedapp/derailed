@@ -47,10 +47,12 @@ export function getAvatarUrl() {
 
 <!--TODO: Add logic-->
 
-<a href={`/app/channels/${channelId}`} class="flex flex-row border-blurple items-center gap-3 hover:bg-sexy-lighter-black/70 hover:backdrop-blur-3xl p-4 py-1.5 my-0.5 transition-all duration-100 w-full border-l" class:bg-lightest-bg={selected} class:to-aside={selected} class:border-l-transparent={!selected}>
+<a href={`/app/channels/${channelId}`} class="flex flex-row border-blurple items-center gap-3 hover:bg-sexy-lighter-black/70 hover:backdrop-blur-3xl p-4 py-1.5 transition-all duration-100 w-full border-l" class:bg-blurple={selected} class:to-aside={selected} class:border-l-transparent={!selected}>
     <img class="rounded-full h-8 w-auto" src={getAvatarUrl()} alt={`@${getChannelName()}`} />
 
-    <div class="text-weep-gray truncate" class:text-white={readState?.last_message_id != channel?.last_message_id || selected}>
-        {getChannelName()}
-    </div>
+	<div>
+		<div class="text-weep-gray truncate" class:text-white={readState?.last_message_id != channel?.last_message_id || selected}>
+        	{getChannelName()}
+    	</div>
+	</div>
 </a>
